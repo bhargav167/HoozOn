@@ -1,0 +1,300 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
+using CloudinaryDotNet;
+using CloudinaryDotNet.Actions;
+using HoozOn.Data;
+using HoozOn.Data.JobRepo;
+using HoozOn.DTOs;
+using HoozOn.DTOs.Photos;
+using HoozOn.Entities.Job;
+using HoozOn.Entities.Responces;
+using HoozOn.Entities.Tag;
+using HoozOn.Extensions;
+using HoozOn.Helpers;
+using HoozOn.Helpers.Job;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+
+namespace HoozOn.Controllers.Job {
+    [ApiController]
+    [Route ("api/[controller]")]
+    public class JobController : ControllerBase {
+        private readonly IJobRepo _jobrepo;
+        private readonly DataContext _context;
+        private readonly IMapper _mapper;
+        private readonly IOptions<CloudinarySettings> _cloudinaryConfig;
+        private Cloudinary _cloudinary;
+        private readonly IWebHostEnvironment _environment;
+
+        public JobController (IJobRepo jobrepo, IMapper mapper,
+            IWebHostEnvironment environment,
+            DataContext context,
+            IOptions<CloudinarySettings> cloudinarysetting) {
+            _jobrepo = jobrepo;
+            _mapper = mapper;
+            _context = context;
+            this._environment = environment;
+            _cloudinaryConfig = cloudinarysetting;
+            Account acc = new Account (
+                _cloudinaryConfig.Value.CloudName,
+                _cloudinaryConfig.Value.ApiKey,
+                _cloudinaryConfig.Value.ApiSecret
+            );
+            _cloudinary = new Cloudinary (acc);
+        }
+        //Register Method api/Job/AddJob
+        [HttpPost ("AddJob")]
+        public async Task<IActionResult> Addjob ([FromBody] JobModel job) {
+            //Instances of Responces
+            ResponceData responceData = new ResponceData ();
+            // Checking Duplicate Entry
+            if (await _jobrepo.IsJobExist (job.Id)) {
+                var jobToUpdate = await _jobrepo.getJobToUpdate (job.Id);
+                jobToUpdate.JobStatus = job.JobStatus;
+                jobToUpdate.Latitude = job.Latitude;
+                jobToUpdate.Longitude = job.Longitude;
+                jobToUpdate.Address = job.Address;
+                jobToUpdate.Descriptions = job.Descriptions;
+                jobToUpdate.IsAnonymous = job.IsAnonymous;
+                jobToUpdate.ImagesUrl = jobToUpdate.ImagesUrl;
+
+                _context.Jobs.Update (jobToUpdate);
+                await _context.SaveChangesAsync ();
+
+                // ModelState.AddModelError ("Duplicates", "This Job already taken! Please Add another Job");
+                responceData.Status = 200;
+                responceData.Success = true;
+                responceData.Status_Message = "Job Updated Successfully";
+                return Ok (responceData);
+            }
+
+            // validate request
+            if (!ModelState.IsValid)
+                return BadRequest (ModelState);
+
+            var CreatedJob = await _jobrepo.AddJob (job);
+
+            responceData.Status = 200;
+            responceData.Success = true;
+            responceData.Status_Message = "Your Job saved Successfully";
+            return Ok (new { responceData, CreatedJob });
+
+        }
+        //Add User Profile Image
+        [HttpPost ("AddJobImage/{jobId}")]
+        public async Task<IActionResult> AddJobImage (int jobId, [FromHeader] IFormFile file) {
+            //     //Saving Image to cloudinary
+            //       //Handle Image to save to cloudinary
+            var imgfile = file;
+            var uploadResult = new ImageUploadResult ();
+            PhotoDto photoDto = new PhotoDto ();
+
+            if (imgfile.Length > 0) {
+                using (var stream = imgfile.OpenReadStream ()) {
+                    var uploadParms = new ImageUploadParams () {
+                    File = new FileDescription (imgfile.Name, stream),
+                    Transformation = new Transformation ()
+                    };
+                    uploadResult = _cloudinary.Upload (uploadParms);
+                    if (uploadResult.Format.ToLower () == "pdf" || uploadResult.Format.ToLower () == "docx") {
+                        photoDto.Success = false;
+                        photoDto.Status = 400;
+                        photoDto.Status_Message = "Uploded file not supported. Please Choose image file";
+                        return BadRequest (photoDto);
+                    }
+                }
+            }
+            // var LastJob = await _context.Jobs.OrderByDescending (x => x.Id).Take (1).FirstOrDefaultAsync ();
+            var LastJob = await _context.Jobs.FirstOrDefaultAsync (c => c.Id == jobId);
+            //Photo field for responces 
+            LastJob.ImagesUrl = uploadResult.Uri.ToString ();
+            _context.Jobs.Update (LastJob);
+            await _context.SaveChangesAsync ();
+            return Ok (LastJob);
+        }
+
+        //Update Job Method api/Job/UpdateJob
+        [HttpPost ("UpdateJob/{JobId}")]
+        public async Task<IActionResult> UpdateJob (int JobId, [FromBody] JobModel job) {
+            //Instances of Responces
+            ResponceData responceData = new ResponceData ();
+            // Checking Duplicate Entry
+            if (await _jobrepo.IsJobExist (JobId)) {
+                var CreatedJob = await _jobrepo.getJobToUpdate (JobId);
+                CreatedJob.JobStatus = job.JobStatus;
+                CreatedJob.Latitude = job.Latitude;
+                CreatedJob.Longitude = job.Longitude;
+                CreatedJob.Address = job.Address;
+                CreatedJob.Descriptions = job.Descriptions;
+                CreatedJob.IsAnonymous = job.IsAnonymous;
+                CreatedJob.JobStatus = job.JobStatus;
+
+                _context.Jobs.Update (CreatedJob);
+                await _context.SaveChangesAsync ();
+
+                // ModelState.AddModelError ("Duplicates", "This Job already taken! Please Add another Job");
+                responceData.Status = 200;
+                responceData.Success = true;
+                responceData.Status_Message = "Job Updated Successfully";
+                return Ok (new { responceData, CreatedJob });
+            }
+
+            // validate request
+            if (!ModelState.IsValid)
+                return BadRequest (ModelState);
+
+            return null;
+        }
+
+        //Get All Job from Db
+        [HttpGet ("AllJob")]
+        public async Task<IActionResult> GetJobs ([FromQuery] UserParams userParams) {
+            var jobs = await _jobrepo.GetAllJob (userParams);
+            var AllJob = await _context.Jobs.Where (x => x.JobStatus == userParams.JobStatus).ToListAsync ();
+            JobResponces res = new JobResponces ();
+            if (jobs.Count == 0) {
+                res.PageNumber = 0;
+                res.PageSize = 0;
+                res.TotalRecord = 0;
+                res.Status = 209;
+                res.Success = true;
+                res.status_message = "success";
+                return Ok (res);
+            }
+            res.PageNumber = userParams.PageNumber;
+            res.PageSize = userParams.PageSize;
+
+            res.Status = 200;
+            res.Success = true;
+            res.status_message = "success";
+            res.data = jobs;
+            res.TotalRecord = res.data.Count ();
+            decimal pagecount = AllJob.Count / res.PageSize;
+            res.TotalPage = Convert.ToInt16 (Math.Floor (pagecount+1));
+            foreach (var item in res.data) {
+                item.TimeAgo = DateFormat.RelativeDate (item.CreatedBy);
+            }
+            foreach (var item in res.data) {
+                var totalMessages = await _context.JobUserChat.Where (c => c.JobId == item.Id).ToListAsync ();
+                item.TotalResponces = totalMessages.Count ();
+            }
+            return Ok (res);
+        }
+
+        [HttpGet ("JobById/{Id}")]
+        public async Task<IActionResult> JobById (int Id, [FromQuery] UserParams userParams) {
+            var job = await _jobrepo.getJobById (Id, userParams);
+            var AllJob = await _context.Jobs.Where (c => c.UserId == Id && c.JobStatus == userParams.JobStatus).ToListAsync ();
+            JobResponces res = new JobResponces ();
+            if (job.Count == 0) {
+                res.PageNumber = 0;
+                res.PageSize = 0;
+                res.TotalRecord = 0;
+                res.Status = 209;
+                res.Success = true;
+                res.status_message = "success";
+                return Ok (res);
+
+            }
+            res.PageNumber = userParams.PageNumber;
+            res.PageSize = userParams.PageSize;
+            res.Status = 200;
+            res.Success = true;
+            res.status_message = "success";
+            res.data = job;
+            res.TotalRecord = res.data.Count ();
+            float total = AllJob.Count;
+            float pagecount = total / userParams.PageSize;
+            res.TotalPage = Convert.ToInt16 (Math.Ceiling (pagecount));
+
+            foreach (var item in res.data) {
+                item.TimeAgo = DateFormat.RelativeDate (item.CreatedBy);
+            }
+            foreach (var item in res.data) {
+                var totalMessages = await _context.JobUserChat.Where (c => c.JobId == item.Id).ToListAsync ();
+                item.TotalResponces = totalMessages.Count ();
+            }
+            return Ok (res);
+        }
+
+        //Single Job By Job Id
+        [HttpGet ("SingleJobByJobId")]
+        public async Task<IActionResult> SingleJobByJobId ([FromQuery] JobParams jobParams) {
+            var job = await _jobrepo.getJobByJobId (jobParams);
+            JobResponces res = new JobResponces ();
+            if (job == null) {
+                res.TotalRecord = 0;
+                res.Status = 209;
+                res.Success = true;
+                res.status_message = "success";
+                return Ok (res);
+            }
+            res.Status = 200;
+            res.Success = true;
+            res.status_message = "success";
+            res.data = job;
+            res.TotalRecord = res.data.Count ();
+            foreach (var item in res.data) {
+                item.TimeAgo = DateFormat.RelativeDate (item.CreatedBy);
+            }
+            return Ok (res);
+        }
+        //Update Job Details                                                                                                                                  
+        //     [HttpPut ("{Id}")]
+        //     public async Task<IActionResult> updateJob (int Id, [FromBody] JobDtos jobDtos) {
+        //         if (!ModelState.IsValid)
+        //             return BadRequest (ModelState);
+
+        //         var job = await _jobrepo.getJobById (Id);
+        //         if (job == null)
+        //             return NotFound ($"Could not find Job with id of {Id}");
+
+        //         _mapper.Map (jobDtos, job);
+        //         if (await _jobrepo.SaveAll ())
+        //             return NoContent ();
+
+        //         throw new Exception ($"Updating job with id {Id} failed. Please try later to update.");
+        //     }
+
+        //     [HttpDelete ("{Id}")]
+        //     public async Task<IActionResult> DeleteJob (int Id) {
+        //         if (!ModelState.IsValid)
+        //             return BadRequest (ModelState);
+
+        //         var job = await _jobrepo.getJobById (Id);
+        //         if (job == null)
+        //             return NotFound ($"Could not find job with id of {Id}");
+
+        //         _jobrepo.Delete (job);
+        //         await _jobrepo.SaveAll ();
+        //         return NoContent ();
+
+        //         throw new System.Exception ($"Deleting Job with id {Id} failed. Please try later");
+        //     }
+
+        //Get Job By Addtress
+        //Get All Job from Db
+        [HttpGet ("GetJobsByAddress")]
+        public async Task<IActionResult> GetJobsByAddress ([FromQuery] JobParams jobParams) {
+            var jobs = await _jobrepo.GetAllJobByAddress (jobParams);
+
+            NewJob res = new NewJob ();
+            if (jobs.Count == 0) {
+                return Ok (res);
+            }
+            res.data = jobs;
+            foreach (var item in res.data) {
+                item.TimeAgo = DateFormat.RelativeDate (item.CreatedBy);
+            }
+            return Ok (res);
+        } 
+    }
+}
