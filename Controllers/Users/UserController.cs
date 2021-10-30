@@ -1,15 +1,17 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using HoozOn.Data.TaggingRepo;
-using HoozOn.Entities.Responces;
+using HoozOn.Data;
 using HoozOn.Data.PhaseRepo1;
+using HoozOn.Data.TaggingRepo;
 using HoozOn.DTOs;
+using HoozOn.Entities.Authentication;
+using HoozOn.Entities.Responces;
 using HoozOn.Entities.Users;
 using HoozOn.Helpers;
 using Microsoft.AspNetCore.Mvc;
-using HoozOn.Entities.Authentication;
-using HoozOn.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace HoozOn.Controllers.Users {
     [ApiController]
@@ -18,8 +20,8 @@ namespace HoozOn.Controllers.Users {
         private readonly ICrudRepo _crudrepo;
         private readonly ITaggingRepo _itaggingrepo;
         private readonly IMapper _mapper;
-         private readonly DataContext _context;
-        public UserController (ICrudRepo crudrepo, IMapper mapper, ITaggingRepo itaggingrepo,DataContext context) {
+        private readonly DataContext _context;
+        public UserController (ICrudRepo crudrepo, IMapper mapper, ITaggingRepo itaggingrepo, DataContext context) {
             _crudrepo = crudrepo;
             _mapper = mapper;
             _itaggingrepo = itaggingrepo;
@@ -61,7 +63,7 @@ namespace HoozOn.Controllers.Users {
         }
 
         [HttpGet ("UserById/{Id}")]
-        public async Task<IActionResult> UserById (int Id) { 
+        public async Task<IActionResult> UserById (int Id) {
             var serchItemShowing = await _itaggingrepo.getUserWithTagById (Id);
             return Ok (serchItemShowing);
         }
@@ -81,27 +83,31 @@ namespace HoozOn.Controllers.Users {
                 return Ok (responceData);
             }
 
-            user.Name=userDtos.Name;
-            user.UserName=userDtos.UserName;
-            user.MobileNumber=userDtos.MobileNumber;
-            user.Email=userDtos.Email;
-            user.AboutUs=userDtos.AboutUs;
-            user.UserAddress=userDtos.UserAddress;
-            user.WebSiteUrl=userDtos.WebSiteUrl;
-            user.IsProfileCreated=true;
-            
+            user.Name = userDtos.Name;
+            user.UserName = userDtos.UserName;
+            user.MobileNumber = userDtos.MobileNumber;
+            user.Email = userDtos.Email;
+            user.AboutUs = userDtos.AboutUs;
+            user.UserAddress = userDtos.UserAddress;
+            user.WebSiteUrl = userDtos.WebSiteUrl;
+            user.IsProfileCreated = true;
+
             userDtos.ImageUrl = user.ImageUrl;
             userDtos.CoverImageUrl = user.CoverImageUrl;
-          
-            _context.SocialAuthentication.Update(user);
 
-            foreach (var item in userDtos.tags)
-            {
-                item.UserId=Id;
-                await _context.Tags.AddAsync(item);
+            _context.SocialAuthentication.Update (user);
+
+            //Remove All Previous Tags Before Updateing User Tag
+            var Usertagings = await _context.Tags.Where (c => c.UserId == Id).ToListAsync ();
+            _context.Tags.RemoveRange (Usertagings);
+            //END  
+
+            foreach (var item in userDtos.tags) {
+                item.UserId = Id;
+                await _context.Tags.AddAsync (item);
             }
-            
-            if (await _context.SaveChangesAsync()>0) {
+
+            if (await _context.SaveChangesAsync () > 0) {
                 user.Success = true;
                 user.Status = 201;
                 user.Status_Message = $"User with id {Id} has been updated successfully.";
@@ -132,5 +138,35 @@ namespace HoozOn.Controllers.Users {
             var serchItemShowing = await _itaggingrepo.getUserWithTagById (userId);
             return Ok (serchItemShowing);
         }
+
+        //Add JOb By Users
+        [HttpPost ("AddUserJobs")]
+        public async Task<IActionResult> AddUserJobs ([FromBody] UserJobs userjob) {
+            ResponceData _responce = new ResponceData ();
+            UserJobs CreatedUserJob=new UserJobs();
+            // Checking Duplicate Entry
+            if (await _crudrepo.IsUserJobExist (userjob.socialAuthenticationId, userjob.jobModelId)) {
+                ModelState.AddModelError ("Duplicates", "This Job already added!");
+
+                _responce.Success = true;
+                _responce.Status = 422;
+                _responce.Status_Message = "Job already added!";
+                 CreatedUserJob = null;
+                return Ok(new {_responce,CreatedUserJob});
+            }
+
+            // validate request
+            if (!ModelState.IsValid) {
+                return BadRequest ();
+            }
+
+            //Saving Success data.
+             CreatedUserJob = await _crudrepo.AddUserJob (userjob);
+            _responce.Success = true;
+            _responce.Status = 200;
+            _responce.Status_Message = "Job added successfully!";
+            return Ok (new { _responce, CreatedUserJob });
+        }
+
     }
 }

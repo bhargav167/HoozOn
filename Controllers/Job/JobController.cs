@@ -20,8 +20,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace HoozOn.Controllers.Job {
     [ApiController]
@@ -247,38 +245,7 @@ namespace HoozOn.Controllers.Job {
             }
             return Ok (res);
         }
-        //Update Job Details                                                                                                                                  
-        //     [HttpPut ("{Id}")]
-        //     public async Task<IActionResult> updateJob (int Id, [FromBody] JobDtos jobDtos) {
-        //         if (!ModelState.IsValid)
-        //             return BadRequest (ModelState);
-
-        //         var job = await _jobrepo.getJobById (Id);
-        //         if (job == null)
-        //             return NotFound ($"Could not find Job with id of {Id}");
-
-        //         _mapper.Map (jobDtos, job);
-        //         if (await _jobrepo.SaveAll ())
-        //             return NoContent ();
-
-        //         throw new Exception ($"Updating job with id {Id} failed. Please try later to update.");
-        //     }
-
-        //     [HttpDelete ("{Id}")]
-        //     public async Task<IActionResult> DeleteJob (int Id) {
-        //         if (!ModelState.IsValid)
-        //             return BadRequest (ModelState);
-
-        //         var job = await _jobrepo.getJobById (Id);
-        //         if (job == null)
-        //             return NotFound ($"Could not find job with id of {Id}");
-
-        //         _jobrepo.Delete (job);
-        //         await _jobrepo.SaveAll ();
-        //         return NoContent ();
-
-        //         throw new System.Exception ($"Deleting Job with id {Id} failed. Please try later");
-        //     }
+       
 
         //Get Job By Addtress
         //Get All Job from Db
@@ -296,5 +263,77 @@ namespace HoozOn.Controllers.Job {
             }
             return Ok (res);
         } 
+    
+    //Job By Public Post
+      [HttpGet ("AllJobByPublicPost")]
+        public async Task<IActionResult> AllJobByPublicPost ([FromQuery] UserParams userParams) {
+            var jobs = await _jobrepo.GetAllJobByPublic (userParams);
+           var AllJob = await _context.Jobs.Where (x => x.JobStatus == userParams.JobStatus).ToListAsync ();
+            JobResponces res = new JobResponces ();
+            if (jobs.Count == 0) {
+                res.PageNumber = 0;
+                res.PageSize = 0;
+                res.TotalRecord = 0;
+                res.Status = 209;
+                res.Success = true;
+                res.status_message = "success";
+                return Ok (res);
+            }
+            res.PageNumber = userParams.PageNumber;
+            res.PageSize = userParams.PageSize;
+
+            res.Status = 200;
+            res.Success = true;
+            res.status_message = "success";
+            res.data = jobs;
+            res.TotalRecord = res.data.Count ();
+            decimal pagecount = AllJob.Count / res.PageSize;
+            res.TotalPage = Convert.ToInt16 (Math.Floor (pagecount+1));
+            foreach (var item in res.data) {
+                item.TimeAgo = DateFormat.RelativeDate (item.CreatedBy);
+            }
+            foreach (var item in res.data) {
+                var totalMessages = await _context.JobUserChat.Where (c => c.JobId == item.Id).ToListAsync ();
+                item.TotalResponces = totalMessages.Count ();
+            }
+            return Ok (res);
+        }
+
+    // Job List With Added Job By User
+        
+        [HttpGet ("GetAllWithAddedJob")]
+        public async Task<IActionResult> GetAllWithAddedJob ([FromQuery] JobParams userParams) {
+            var jobs = await _jobrepo.GetAllWithAddedJob (userParams);
+            var AllJob = await _context.Jobs.Where (x => x.JobStatus == "OPEN").ToListAsync ();
+            JobResponces res = new JobResponces ();
+            if (jobs.Count == 0) {
+                res.PageNumber = 0;
+                res.PageSize = 0;
+                res.TotalRecord = 0;
+                res.Status = 209;
+                res.Success = true;
+                res.status_message = "success";
+                return Ok (res);
+            }
+            res.PageNumber = userParams.PageNumber;
+            res.PageSize = userParams.pageSize;
+
+            res.Status = 200;
+            res.Success = true;
+            res.status_message = "success";
+            res.data = jobs;
+            res.TotalRecord = res.data.Count ();
+            decimal pagecount = AllJob.Count / res.PageSize;
+            res.TotalPage = Convert.ToInt16 (Math.Floor (pagecount+1));
+            foreach (var item in res.data) {
+                item.TimeAgo = DateFormat.RelativeDate (item.CreatedBy);
+            }
+            foreach (var item in res.data) {
+                var totalMessages = await _context.JobUserChat.Where (c => c.JobId == item.Id).ToListAsync ();
+                item.TotalResponces = totalMessages.Count ();
+            }
+            return Ok (res);
+        }
+
     }
 }

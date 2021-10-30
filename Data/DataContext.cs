@@ -2,6 +2,7 @@ using HoozOn.Entities.Authentication;
 using HoozOn.Entities.Job;
 using HoozOn.Entities.Message;
 using HoozOn.Entities.Message.JobMessage;
+using HoozOn.Entities.Report;
 using HoozOn.Entities.Roles;
 using HoozOn.Entities.Tag;
 using HoozOn.Entities.UserReview;
@@ -12,6 +13,7 @@ namespace HoozOn.Data {
     public class DataContext : DbContext {
         public DataContext (DbContextOptions<DataContext> options) : base (options) { }
         public DbSet<User> Users { get; set; }
+        public DbSet<UserJobs> UserJobs { get; set; }
         public DbSet<Tags> Tags { get; set; }
         public DbSet<JobModel> Jobs { get; set; }
 
@@ -21,8 +23,7 @@ namespace HoozOn.Data {
 
         //Tagging
         public DbSet<TagMaster> TagMaster { get; set; }
-        public DbSet<JobTags> JobTag { get; set; }
-        public DbSet<TestJob> TestJobs { get; set; }
+        public DbSet<JobTags> JobTag { get; set; } 
 
         //MESSAGE-----------------------------------------------------
         public DbSet<MessageModal> Message { get; set; }
@@ -32,6 +33,10 @@ namespace HoozOn.Data {
 
         //Review------------------------------------------------------
         public DbSet<Review> UserReview{get;set;}
+
+        //Reporting---------------------------------------------------
+         public DbSet<Reporting> Reporting{get; set;}
+        
         protected override void OnModelCreating (ModelBuilder builder) {
             base.OnModelCreating (builder);
         }

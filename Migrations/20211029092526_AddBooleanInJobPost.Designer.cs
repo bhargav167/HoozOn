@@ -4,14 +4,16 @@ using HoozOn.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HoozOn.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20211029092526_AddBooleanInJobPost")]
+    partial class AddBooleanInJobPost
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -137,6 +139,27 @@ namespace HoozOn.Migrations
                     b.ToTable("Jobs");
                 });
 
+            modelBuilder.Entity("HoozOn.Entities.Job.TestJob", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("City")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Latitude")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Longitude")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TestJobs");
+                });
+
             modelBuilder.Entity("HoozOn.Entities.Message.JobMessage.JobMessages", b =>
                 {
                     b.Property<int>("Id")
@@ -260,34 +283,6 @@ namespace HoozOn.Migrations
                     b.HasIndex("SenderId");
 
                     b.ToTable("MessagedUser");
-                });
-
-            modelBuilder.Entity("HoozOn.Entities.Report.Reporting", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Isusue")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("jobModelId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("socialAuthenticationId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("jobModelId");
-
-                    b.HasIndex("socialAuthenticationId");
-
-                    b.ToTable("Reporting");
                 });
 
             modelBuilder.Entity("HoozOn.Entities.Roles.Role", b =>
@@ -472,28 +467,6 @@ namespace HoozOn.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("HoozOn.Entities.Users.UserJobs", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("jobModelId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("socialAuthenticationId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("jobModelId");
-
-                    b.HasIndex("socialAuthenticationId");
-
-                    b.ToTable("UserJobs");
-                });
-
             modelBuilder.Entity("HoozOn.Entities.Job.JobModel", b =>
                 {
                     b.HasOne("HoozOn.Entities.Authentication.SocialAuthentication", "User")
@@ -575,21 +548,6 @@ namespace HoozOn.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("HoozOn.Entities.Report.Reporting", b =>
-                {
-                    b.HasOne("HoozOn.Entities.Job.JobModel", "jobModel")
-                        .WithMany()
-                        .HasForeignKey("jobModelId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("HoozOn.Entities.Authentication.SocialAuthentication", "socialAuthentication")
-                        .WithMany()
-                        .HasForeignKey("socialAuthenticationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("HoozOn.Entities.Tag.JobTags", b =>
                 {
                     b.HasOne("HoozOn.Entities.Job.JobModel", "Job")
@@ -640,21 +598,6 @@ namespace HoozOn.Migrations
                     b.HasOne("HoozOn.Entities.Authentication.SocialAuthentication", "SocialAuthentication")
                         .WithMany()
                         .HasForeignKey("SocialAuthenticationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("HoozOn.Entities.Users.UserJobs", b =>
-                {
-                    b.HasOne("HoozOn.Entities.Job.JobModel", "jobModel")
-                        .WithMany()
-                        .HasForeignKey("jobModelId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("HoozOn.Entities.Authentication.SocialAuthentication", "socialAuthentication")
-                        .WithMany()
-                        .HasForeignKey("socialAuthenticationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

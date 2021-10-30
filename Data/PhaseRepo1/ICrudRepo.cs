@@ -16,5 +16,9 @@ namespace HoozOn.Data.PhaseRepo1 {
         Task<User> getUserByAuthId (int id);
         Task<SocialAuthentication> getAuthUserById (int id);
         Task<PagedList<User>> GetUser (UserParams userParam);
+
+        //AddUserJob
+        Task<bool> IsUserJobExist (int userId,int jobId);
+        Task<UserJobs> AddUserJob (UserJobs usersJob);
     }
 }

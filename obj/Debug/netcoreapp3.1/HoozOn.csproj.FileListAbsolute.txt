@@ -405,7 +405,6 @@ K:\Workspace\HoozOn\obj\Debug\netcoreapp3.1\staticwebassets\HoozOn.StaticWebAsse
 K:\Workspace\HoozOn\obj\Debug\netcoreapp3.1\staticwebassets\HoozOn.StaticWebAssets.xml
 K:\Workspace\HoozOn\obj\Debug\netcoreapp3.1\scopedcss\bundle\HoozOn.styles.css
 K:\Workspace\HoozOn\obj\Debug\netcoreapp3.1\HoozOn.RazorTargetAssemblyInfo.cache
-K:\Workspace\HoozOn\obj\Debug\netcoreapp3.1\HoozOn.csproj.CopyComplete
 K:\Workspace\HoozOn\obj\Debug\netcoreapp3.1\HoozOn.dll
 K:\Workspace\HoozOn\obj\Debug\netcoreapp3.1\HoozOn.pdb
 K:\Workspace\HoozOn\obj\Debug\netcoreapp3.1\HoozOn.genruntimeconfig.cache

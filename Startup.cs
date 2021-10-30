@@ -9,6 +9,7 @@ using HoozOn.Data.UserReview;
 using HoozOn.Helpers;
 using HoozOn.Hubs;
 using HoozOn.Middleware;
+using HoozOn.Services.Report;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -34,6 +35,7 @@ namespace HoozOn {
             services.AddScoped<ITaggingRepo, TaggingRepo> ();
             services.AddScoped<IMessageRepo, MessageRepo> ();
             services.AddScoped<IUserReview, UserReview> ();
+            services.AddScoped<IReport, Report> ();
             services.AddControllers ();
             services.AddCors ();
             services.Configure<CloudinarySettings> (_config.GetSection ("CloudinarySettings"));
@@ -81,7 +83,7 @@ namespace HoozOn {
 
             app.UseEndpoints (endpoints => {
                 endpoints.MapControllers ();
-                endpoints.MapHub<ChatHub>("/chatsocket");     // path will look like this https://localhost:44379/chatsocket
+                endpoints.MapHub<ChatHub> ("/chatsocket"); // path will look like this https://localhost:44379/chatsocket
                 endpoints.MapFallbackToController ("Index", "Fallback");
             });
         }

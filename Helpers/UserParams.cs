@@ -10,6 +10,7 @@ namespace HoozOn.Helpers {
             set { pageSize = (value > MaxPageSize) ? MaxPageSize : value; }
         }
         public string UserName { get; set; }
+        public int userId { get; set; } 
         public string JobStatus { get; set; } = "OPEN";
         public string OrderBy { get; set; }
     }

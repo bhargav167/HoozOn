@@ -12,11 +12,17 @@ namespace HoozOn.Data.JobRepo {
         //Job Repo
         Task<bool> IsJobExist (int Id);
         Task<JobModel> AddJob (JobModel job);
-        Task<PagedList<JobModel>> getJobById (int id,UserParams userParam);
-         Task<PagedList<JobModel>> getJobByJobId (JobParams jobParam);
-          Task<JobModel> getJobToUpdate (int JobId);
+        Task<PagedList<JobModel>> getJobById (int id, UserParams userParam);
+        Task<PagedList<JobModel>> getJobByJobId (JobParams jobParam);
+        Task<JobModel> getJobToUpdate (int JobId);
         Task<PagedList<JobModel>> GetJob (UserParams userParam);
         Task<PagedList<JobModel>> GetAllJob (UserParams userParam);
-        Task<List<JobModel>> GetAllJobByAddress (JobParams jobParam);  
+        Task<List<JobModel>> GetAllJobByAddress (JobParams jobParam);
+
+        //Job With Public Post Only
+        Task<PagedList<JobModel>> GetAllJobByPublic (UserParams userParam);
+
+        //JobList By Added Job by user
+        Task<PagedList<JobModel>> GetAllWithAddedJob (JobParams userParam);
     }
 }

@@ -76,6 +76,49 @@ namespace HoozOn.Data.JobRepo {
             return modal;
         }
 
+        public async Task<PagedList<JobModel>> GetAllJobByPublic (UserParams userParam) {
+            var job = _context.Jobs.Where (x => x.JobStatus == userParam.JobStatus && x.IsPublic == true).Include (x => x.Tags).Include (x => x.User)
+                .OrderByDescending (c => c.Id).AsQueryable ();
+            return await PagedList<JobModel>.CreateAsync (job, userParam.PageNumber, userParam.PageSize);
+        }
+
+        public async Task<PagedList<JobModel>> GetAllWithAddedJob (JobParams jobParam) {
+             List<JobModel> modal = new List<JobModel> ();
+            var jobs = await _context.Jobs.Where (x => x.JobStatus == "OPEN")
+                .Include (x => x.Tags).Include (x => x.User).OrderByDescending (c => c.Id).ToListAsync (); 
+
+            var loginUserTags = await _context.SocialAuthentication.Include (x => x.tags)
+                .Where (c => c.Id == jobParam.UserId).FirstOrDefaultAsync ();
+
+            var addedJobs = await _context.UserJobs.Include(c=>c.jobModel).Where (x => x.socialAuthenticationId == jobParam.UserId).ToListAsync ();
+            
+            // GetAllJob Job With Address And User Tags Related
+
+            if (jobs.Count > 0) {
+                if (loginUserTags != null) {
+                    foreach (var job in jobs) {
+                        foreach (var jobtag in job.Tags) {
+                            foreach (var item in loginUserTags.tags) {
+                                if (item.TagName == jobtag.TagName) {
+                                    modal.Add (job);
+                                }
+                            }
+                        }
+                    }
+                    foreach (var item in addedJobs)
+                    {
+                        modal.Insert(0,item.jobModel);
+                    }
+                } else {
+                    foreach (var job in jobs) {
+                        modal.Add (job);
+                    }
+                } 
+            }
+              var vv=modal.AsQueryable();
+              return await PagedList<JobModel>.CreateAsync (vv, jobParam.PageNumber, jobParam.pageSize);
+        } 
+
         public async Task<PagedList<JobModel>> GetJob (UserParams userParam) {
             var job = _context.Jobs.AsQueryable ();
             return await PagedList<JobModel>.CreateAsync (job, userParam.PageNumber, userParam.PageSize);
@@ -83,15 +126,15 @@ namespace HoozOn.Data.JobRepo {
 
         public async Task<PagedList<JobModel>> getJobById (int Id, UserParams userParam) {
             var job = _context.Jobs.Where (u => u.UserId == Id && u.JobStatus == userParam.JobStatus)
-            .Include (c => c.Tags).Include (c => c.User)
-             .OrderByDescending (c => c.Id)
-            .AsQueryable ();
+                .Include (c => c.Tags).Include (c => c.User)
+                .OrderByDescending (c => c.Id)
+                .AsQueryable ();
             return await PagedList<JobModel>.CreateAsync (job, userParam.PageNumber, userParam.PageSize);
         }
 
         public async Task<PagedList<JobModel>> getJobByJobId (JobParams jobParam) {
             var singlejob = _context.Jobs.Where (x => x.Id == jobParam.JobId).Include (x => x.Tags).Include (c => c.User)
-             .OrderByDescending (c => c.Id).AsQueryable ();
+                .OrderByDescending (c => c.Id).AsQueryable ();
             return await PagedList<JobModel>.CreateAsync (singlejob, jobParam.PageNumber, jobParam.pageSize);
         }
 

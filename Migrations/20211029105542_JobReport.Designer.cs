@@ -4,14 +4,16 @@ using HoozOn.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HoozOn.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20211029105542_JobReport")]
+    partial class JobReport
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -472,28 +474,6 @@ namespace HoozOn.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("HoozOn.Entities.Users.UserJobs", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("jobModelId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("socialAuthenticationId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("jobModelId");
-
-                    b.HasIndex("socialAuthenticationId");
-
-                    b.ToTable("UserJobs");
-                });
-
             modelBuilder.Entity("HoozOn.Entities.Job.JobModel", b =>
                 {
                     b.HasOne("HoozOn.Entities.Authentication.SocialAuthentication", "User")
@@ -640,21 +620,6 @@ namespace HoozOn.Migrations
                     b.HasOne("HoozOn.Entities.Authentication.SocialAuthentication", "SocialAuthentication")
                         .WithMany()
                         .HasForeignKey("SocialAuthenticationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("HoozOn.Entities.Users.UserJobs", b =>
-                {
-                    b.HasOne("HoozOn.Entities.Job.JobModel", "jobModel")
-                        .WithMany()
-                        .HasForeignKey("jobModelId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("HoozOn.Entities.Authentication.SocialAuthentication", "socialAuthentication")
-                        .WithMany()
-                        .HasForeignKey("socialAuthenticationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

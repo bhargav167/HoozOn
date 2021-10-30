@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using HoozOn.Entities.Authentication;
-using HoozOn.Entities.Tag;
-using Microsoft.AspNetCore.Http;
+using HoozOn.Entities.Tag; 
 
 namespace HoozOn.Entities.Job {
     public class JobModel { 
@@ -19,16 +18,23 @@ namespace HoozOn.Entities.Job {
         public string ImagesUrl { get; set; }
         public string Latitude { get; set; }
         public string Longitude { get; set; }
-        public string Address { get; set; }
-        public ICollection<JobTags> Tags { get; set; }
+        public string Address { get; set; } 
         public string Status { get; set; }
+
+        //Boolean Properties
         public bool IsAnonymous { get; set; }
+        public bool IsPublic { get; set; }
+        public bool IsLocal { get; set; }
+        public bool IsGlobal { get; set; }
+        //End Properties
         public DateTime CreatedBy { get; set; }
+
         [NotMapped]
         public string TimeAgo { get; set; }
         [NotMapped]
         public int TotalResponces { get; set; } 
         public string JobStatus { get; set; } 
+        public ICollection<JobTags> Tags { get; set; }
         public JobModel () {
             CreatedBy = DateTime.Now;
             JobStatus="OPEN";

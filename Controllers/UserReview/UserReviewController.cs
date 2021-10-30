@@ -36,5 +36,16 @@ namespace HoozOn.Controllers.UserReview {
             }
         }
 
+        [HttpGet ("GetUserReview/{userId}")]
+        public async Task<IActionResult> GetUserReview (int userId) {
+            float totalReview = 0;
+            var serchItemShowing = await _userReview.GetReviews (userId);
+            int reviewCount=await _userReview.GetReviewsCount(userId);
+            foreach (var item in serchItemShowing) {
+                totalReview = totalReview + item.ReviewValue;
+            }
+            float reviewValue=totalReview/reviewCount;
+            return Ok (reviewValue);
+        }
     }
 }
