@@ -84,8 +84,8 @@ namespace HoozOn.Data.JobRepo {
 
         public async Task<PagedList<JobModel>> GetAllWithAddedJob (JobParams jobParam) {
              List<JobModel> modal = new List<JobModel> ();
-            var jobs = await _context.Jobs.Where (x => x.JobStatus == "OPEN")
-                .Include (x => x.Tags).Include (x => x.User).OrderByDescending (c => c.Id).ToListAsync (); 
+            var jobs =  _context.Jobs.Where (x => x.JobStatus == "OPEN")
+                .Include (x => x.Tags).Include (x => x.User).OrderByDescending (c => c.Id).AsQueryable();
 
             var loginUserTags = await _context.SocialAuthentication.Include (x => x.tags)
                 .Where (c => c.Id == jobParam.UserId).FirstOrDefaultAsync ();
@@ -94,13 +94,14 @@ namespace HoozOn.Data.JobRepo {
             
             // GetAllJob Job With Address And User Tags Related
 
-            if (jobs.Count > 0) {
+            if (jobs.Count() > 0) {
                 if (loginUserTags != null) {
                     foreach (var job in jobs) {
                         foreach (var jobtag in job.Tags) {
                             foreach (var item in loginUserTags.tags) {
                                 if (item.TagName == jobtag.TagName) {
                                     modal.Add (job);
+                                   
                                 }
                             }
                         }
@@ -111,12 +112,12 @@ namespace HoozOn.Data.JobRepo {
                     }
                 } else {
                     foreach (var job in jobs) {
-                        modal.Add (job);
+                        modal.Add (job); 
                     }
                 } 
             }
-              var vv=modal.AsQueryable();
-              return await PagedList<JobModel>.CreateAsync (vv, jobParam.PageNumber, jobParam.pageSize);
+               
+               return await PagedList<JobModel>.CreateAsync1 (modal, jobParam.PageNumber, jobParam.pageSize);
         } 
 
         public async Task<PagedList<JobModel>> GetJob (UserParams userParam) {

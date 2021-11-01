@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using HoozOn.Entities.Authentication;
-using HoozOn.Entities.Tag; 
+using HoozOn.Entities.Tag;
+using Microsoft.AspNetCore.Http;
 
 namespace HoozOn.Entities.Job {
     public class JobModel { 
@@ -28,12 +29,13 @@ namespace HoozOn.Entities.Job {
         public bool IsGlobal { get; set; }
         //End Properties
         public DateTime CreatedBy { get; set; }
-
         [NotMapped]
         public string TimeAgo { get; set; }
         [NotMapped]
         public int TotalResponces { get; set; } 
         public string JobStatus { get; set; } 
+        [NotMapped]
+        public IFormFile JobImges { get; set; } 
         public ICollection<JobTags> Tags { get; set; }
         public JobModel () {
             CreatedBy = DateTime.Now;

@@ -299,7 +299,7 @@ namespace HoozOn.Controllers.Job {
             return Ok (res);
         }
 
-    // Job List With Added Job By User
+      // Job List With Added Job By User
         
         [HttpGet ("GetAllWithAddedJob")]
         public async Task<IActionResult> GetAllWithAddedJob ([FromQuery] JobParams userParams) {
@@ -324,7 +324,7 @@ namespace HoozOn.Controllers.Job {
             res.data = jobs;
             res.TotalRecord = res.data.Count ();
             decimal pagecount = AllJob.Count / res.PageSize;
-            res.TotalPage = Convert.ToInt16 (Math.Floor (pagecount+1));
+            res.TotalPage = Convert.ToInt16 (Math.Ceiling (pagecount+1));
             foreach (var item in res.data) {
                 item.TimeAgo = DateFormat.RelativeDate (item.CreatedBy);
             }
@@ -335,5 +335,43 @@ namespace HoozOn.Controllers.Job {
             return Ok (res);
         }
 
+        [HttpPost ("TestAddjob")]
+        public async Task<IActionResult> TestAddjob ([FromForm] JobModel job) {
+            //Instances of Responces
+            ResponceData responceData = new ResponceData ();
+            // Checking Duplicate Entry
+            if (await _jobrepo.IsJobExist (job.Id)) {
+                var jobToUpdate = await _jobrepo.getJobToUpdate (job.Id);
+                jobToUpdate.JobStatus = job.JobStatus;
+                jobToUpdate.Latitude = job.Latitude;
+                jobToUpdate.Longitude = job.Longitude;
+                jobToUpdate.Address = job.Address;
+                jobToUpdate.Descriptions = job.Descriptions;
+                jobToUpdate.IsAnonymous = job.IsAnonymous;
+                jobToUpdate.ImagesUrl = jobToUpdate.ImagesUrl;
+
+                _context.Jobs.Update (jobToUpdate);
+                await _context.SaveChangesAsync ();
+
+                // ModelState.AddModelError ("Duplicates", "This Job already taken! Please Add another Job");
+                responceData.Status = 200;
+                responceData.Success = true;
+                responceData.Status_Message = "Job Updated Successfully";
+                return Ok (responceData);
+            }
+
+            // validate request
+            if (!ModelState.IsValid)
+                return BadRequest (ModelState);
+
+            var CreatedJob = await _jobrepo.AddJob (job);
+
+            responceData.Status = 200;
+            responceData.Success = true;
+            responceData.Status_Message = "Your Job saved Successfully";
+            return Ok (new { responceData, CreatedJob });
+
+        }
+        
     }
 }
