@@ -7,11 +7,11 @@ using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using HoozOn.Data;
 using HoozOn.Data.JobRepo;
-using HoozOn.DTOs;
 using HoozOn.DTOs.Photos;
+using HoozOn.Entities;
+using HoozOn.Entities.Authentication;
 using HoozOn.Entities.Job;
 using HoozOn.Entities.Responces;
-using HoozOn.Entities.Tag;
 using HoozOn.Extensions;
 using HoozOn.Helpers;
 using HoozOn.Helpers.Job;
@@ -32,6 +32,12 @@ namespace HoozOn.Controllers.Job {
         private Cloudinary _cloudinary;
         private readonly IWebHostEnvironment _environment;
 
+        enum JobStatus {
+            OPEN,
+            CLOSED,
+            ONHOLD,
+            DELETE
+        }
         public JobController (IJobRepo jobrepo, IMapper mapper,
             IWebHostEnvironment environment,
             DataContext context,
@@ -100,6 +106,7 @@ namespace HoozOn.Controllers.Job {
                     var uploadParms = new ImageUploadParams () {
                     File = new FileDescription (imgfile.Name, stream),
                     Transformation = new Transformation ()
+                   
                     };
                     uploadResult = _cloudinary.Upload (uploadParms);
                     if (uploadResult.Format.ToLower () == "pdf" || uploadResult.Format.ToLower () == "docx") {
@@ -156,27 +163,21 @@ namespace HoozOn.Controllers.Job {
         [HttpGet ("AllJob")]
         public async Task<IActionResult> GetJobs ([FromQuery] UserParams userParams) {
             var jobs = await _jobrepo.GetAllJob (userParams);
-            var AllJob = await _context.Jobs.Where (x => x.JobStatus == userParams.JobStatus).ToListAsync ();
+
             JobResponces res = new JobResponces ();
             if (jobs.Count == 0) {
-                res.PageNumber = 0;
-                res.PageSize = 0;
-                res.TotalRecord = 0;
                 res.Status = 209;
                 res.Success = true;
                 res.status_message = "success";
                 return Ok (res);
             }
-            res.PageNumber = userParams.PageNumber;
-            res.PageSize = userParams.PageSize;
 
             res.Status = 200;
             res.Success = true;
             res.status_message = "success";
             res.data = jobs;
             res.TotalRecord = res.data.Count ();
-            decimal pagecount = AllJob.Count / res.PageSize;
-            res.TotalPage = Convert.ToInt16 (Math.Floor (pagecount+1));
+
             foreach (var item in res.data) {
                 item.TimeAgo = DateFormat.RelativeDate (item.CreatedBy);
             }
@@ -196,7 +197,18 @@ namespace HoozOn.Controllers.Job {
                 res.PageNumber = 0;
                 res.PageSize = 0;
                 res.TotalRecord = 0;
-                res.Status = 209;
+                if (userParams.JobStatus == JobStatus.OPEN.ToString ()) {
+                    res.Status = 101;
+                }
+                if (userParams.JobStatus == JobStatus.CLOSED.ToString ()) {
+                    res.Status = 102;
+                }
+                if (userParams.JobStatus == JobStatus.ONHOLD.ToString ()) {
+                    res.Status = 103;
+                }
+                if (userParams.JobStatus == JobStatus.DELETE.ToString ()) {
+                    res.Status = 104;
+                }
                 res.Success = true;
                 res.status_message = "success";
                 return Ok (res);
@@ -213,6 +225,54 @@ namespace HoozOn.Controllers.Job {
             float pagecount = total / userParams.PageSize;
             res.TotalPage = Convert.ToInt16 (Math.Ceiling (pagecount));
 
+            foreach (var item in res.data) {
+                item.TimeAgo = DateFormat.RelativeDate (item.CreatedBy);
+            }
+            foreach (var item in res.data) {
+                var totalMessages = await _context.JobUserChat.Where (c => c.JobId == item.Id).ToListAsync ();
+                item.TotalResponces = totalMessages.Count ();
+            }
+            return Ok (res);
+        }
+
+        // Job List With Added Job By User
+
+        [HttpGet ("GetAllWithAddedJob")]
+        public async Task<IActionResult> GetAllWithAddedJob ([FromQuery] JobParams userParams) {
+            var jobs = await _jobrepo.GetAllWithAddedJob (userParams);
+            var AllJob = await _context.Jobs.Where (x => x.JobStatus == userParams.JobStatus).ToListAsync ();
+            JobResponces res = new JobResponces ();
+            if (jobs.Count == 0) {
+                res.PageNumber = 0;
+                res.PageSize = 0;
+                res.TotalRecord = 0;
+                if (userParams.JobStatus == JobStatus.OPEN.ToString ()) {
+                    res.Status = 101;
+                }
+                if (userParams.JobStatus == JobStatus.CLOSED.ToString ()) {
+                    res.Status = 102;
+                }
+                if (userParams.JobStatus == JobStatus.ONHOLD.ToString ()) {
+                    res.Status = 103;
+                }
+                if (userParams.JobStatus == JobStatus.DELETE.ToString ()) {
+                    res.Status = 104;
+                }
+
+                res.Success = true;
+                res.status_message = "success";
+                return Ok (res);
+            }
+            res.PageNumber = userParams.PageNumber;
+            res.PageSize = userParams.pageSize;
+
+            res.Status = 200;
+            res.Success = true;
+            res.status_message = "success";
+            res.data = jobs;
+            res.TotalRecord = res.data.Count ();
+            decimal pagecount = AllJob.Count / res.PageSize;
+            res.TotalPage = Convert.ToInt16 (Math.Ceiling (pagecount + 1));
             foreach (var item in res.data) {
                 item.TimeAgo = DateFormat.RelativeDate (item.CreatedBy);
             }
@@ -243,9 +303,12 @@ namespace HoozOn.Controllers.Job {
             foreach (var item in res.data) {
                 item.TimeAgo = DateFormat.RelativeDate (item.CreatedBy);
             }
+            foreach (var item in res.data) {
+                var totalMessages = await _context.JobUserChat.Where (c => c.JobId == item.Id).ToListAsync ();
+                item.TotalResponces = totalMessages.Count ();
+            }
             return Ok (res);
         }
-       
 
         //Get Job By Addtress
         //Get All Job from Db
@@ -262,13 +325,62 @@ namespace HoozOn.Controllers.Job {
                 item.TimeAgo = DateFormat.RelativeDate (item.CreatedBy);
             }
             return Ok (res);
-        } 
-    
-    //Job By Public Post
-      [HttpGet ("AllJobByPublicPost")]
+        }
+
+        [HttpGet ("GetUserByAddressAdTag")]
+        public async Task<IActionResult> GetUserByAddressAdTag ([FromQuery] JobParams jobParam) {
+            DataResponces modal = new DataResponces ();
+            List<SocialAuthentication> users = new List<SocialAuthentication> ();
+            var user = await _context.SocialAuthentication.Where (x => x.UserAddress.Contains (jobParam.Address))
+                .Include (x => x.tags).OrderByDescending (c => c.Id).ToListAsync ();
+
+            var loginUserTags = await _context.SocialAuthentication.Include (x => x.tags)
+                .Where (c => c.Id == jobParam.UserId).FirstOrDefaultAsync ();
+
+            // GetAllJob Job With Tag Search
+            if (user.Count == 0) {
+                var job = await _context.SocialAuthentication
+                    .Include (x => x.tags).ToListAsync ();
+                foreach (var item in job) {
+                    foreach (var tag in item.tags) {
+                        if (tag.TagName.ToLower () == jobParam.Address.ToLower ()) {
+                            users.Add (item);
+                            modal.data = users;
+                        }
+                    }
+                }
+            }
+            // GetAllJob Job With Address And User Tags Related
+
+            if (user.Count > 0) {
+                if (loginUserTags != null) {
+                    foreach (var job in user) {
+                        foreach (var jobtag in job.tags) {
+                            foreach (var item in loginUserTags.tags) {
+                                if (item.TagName.ToLower () == jobtag.TagName.ToLower ()) {
+                                    users.Add (job);
+                                    modal.data = users;
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    foreach (var job in user) {
+                        users.Add (job);
+                        modal.data = users;
+                    }
+                }
+
+            }
+
+            return Ok (modal);
+        }
+
+        //Job By Public Post
+        [HttpGet ("AllJobByPublicPost")]
         public async Task<IActionResult> AllJobByPublicPost ([FromQuery] UserParams userParams) {
             var jobs = await _jobrepo.GetAllJobByPublic (userParams);
-           var AllJob = await _context.Jobs.Where (x => x.JobStatus == userParams.JobStatus).ToListAsync ();
+            var AllJob = await _context.Jobs.Where (x => x.JobStatus == userParams.JobStatus).ToListAsync ();
             JobResponces res = new JobResponces ();
             if (jobs.Count == 0) {
                 res.PageNumber = 0;
@@ -288,7 +400,7 @@ namespace HoozOn.Controllers.Job {
             res.data = jobs;
             res.TotalRecord = res.data.Count ();
             decimal pagecount = AllJob.Count / res.PageSize;
-            res.TotalPage = Convert.ToInt16 (Math.Floor (pagecount+1));
+            res.TotalPage = Convert.ToInt16 (Math.Floor (pagecount + 1));
             foreach (var item in res.data) {
                 item.TimeAgo = DateFormat.RelativeDate (item.CreatedBy);
             }
@@ -299,42 +411,27 @@ namespace HoozOn.Controllers.Job {
             return Ok (res);
         }
 
-      // Job List With Added Job By User
-        
-        [HttpGet ("GetAllWithAddedJob")]
-        public async Task<IActionResult> GetAllWithAddedJob ([FromQuery] JobParams userParams) {
-            var jobs = await _jobrepo.GetAllWithAddedJob (userParams);
-            var AllJob = await _context.Jobs.Where (x => x.JobStatus == "OPEN").ToListAsync ();
-            JobResponces res = new JobResponces ();
-            if (jobs.Count == 0) {
-                res.PageNumber = 0;
-                res.PageSize = 0;
-                res.TotalRecord = 0;
-                res.Status = 209;
-                res.Success = true;
-                res.status_message = "success";
-                return Ok (res);
-            }
-            res.PageNumber = userParams.PageNumber;
-            res.PageSize = userParams.pageSize;
+        //Update JOb Status 
+        [HttpPost ("UpdateJobStatus/{JobId}/{JobStatus}")]
+        public async Task<IActionResult> UpdateJobStatus (int JobId, string JobStatus) {
+            //Instances of Responces
+            ResponceData responceData = new ResponceData ();
+            // Checking Duplicate Entry
+            if (await _jobrepo.IsJobExist (JobId)) {
+                var CreatedJob = await _jobrepo.getJobToUpdate (JobId);
+                CreatedJob.JobStatus = JobStatus;
 
-            res.Status = 200;
-            res.Success = true;
-            res.status_message = "success";
-            res.data = jobs;
-            res.TotalRecord = res.data.Count ();
-            decimal pagecount = AllJob.Count / res.PageSize;
-            res.TotalPage = Convert.ToInt16 (Math.Ceiling (pagecount+1));
-            foreach (var item in res.data) {
-                item.TimeAgo = DateFormat.RelativeDate (item.CreatedBy);
+                _context.Jobs.Update (CreatedJob);
+                await _context.SaveChangesAsync ();
+                responceData.Status = 200;
+                responceData.Success = true;
+                responceData.Status_Message = "Job status Updated Successfully";
+                return Ok (new { responceData, CreatedJob });
             }
-            foreach (var item in res.data) {
-                var totalMessages = await _context.JobUserChat.Where (c => c.JobId == item.Id).ToListAsync ();
-                item.TotalResponces = totalMessages.Count ();
-            }
-            return Ok (res);
+            return null;
         }
 
+        //Testing APIS
         [HttpPost ("TestAddjob")]
         public async Task<IActionResult> TestAddjob ([FromForm] JobModel job) {
             //Instances of Responces
@@ -372,6 +469,6 @@ namespace HoozOn.Controllers.Job {
             return Ok (new { responceData, CreatedJob });
 
         }
-        
+
     }
 }

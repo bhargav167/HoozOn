@@ -16,7 +16,7 @@ namespace HoozOn.Data.JobRepo {
         Task<PagedList<JobModel>> getJobByJobId (JobParams jobParam);
         Task<JobModel> getJobToUpdate (int JobId);
         Task<PagedList<JobModel>> GetJob (UserParams userParam);
-        Task<PagedList<JobModel>> GetAllJob (UserParams userParam);
+        Task<List<JobModel>> GetAllJob (UserParams userParam);
         Task<List<JobModel>> GetAllJobByAddress (JobParams jobParam);
 
         //Job With Public Post Only

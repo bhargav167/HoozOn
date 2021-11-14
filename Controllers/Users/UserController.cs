@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -7,6 +8,7 @@ using HoozOn.Data.PhaseRepo1;
 using HoozOn.Data.TaggingRepo;
 using HoozOn.DTOs;
 using HoozOn.Entities.Authentication;
+using HoozOn.Entities.Job;
 using HoozOn.Entities.Responces;
 using HoozOn.Entities.Users;
 using HoozOn.Helpers;
@@ -91,6 +93,8 @@ namespace HoozOn.Controllers.Users {
             user.UserAddress = userDtos.UserAddress;
             user.WebSiteUrl = userDtos.WebSiteUrl;
             user.IsProfileCreated = true;
+            user.Latitude=userDtos.Latitude;
+            user.Longitude=userDtos.Longitude;
 
             userDtos.ImageUrl = user.ImageUrl;
             userDtos.CoverImageUrl = user.CoverImageUrl;
@@ -139,11 +143,37 @@ namespace HoozOn.Controllers.Users {
             return Ok (serchItemShowing);
         }
 
+        [HttpGet ("UserListWithUserTagMatching/{userId}")]
+        public async Task<ActionResult<IEnumerable<SocialAuthentication>>> UserListWithUserTagMatching (int userId) {
+            List<SocialAuthentication> authUser = new List<SocialAuthentication> ();
+            var CurrentUser = await _crudrepo.getAuthUserByIdWithTags (userId);
+            var allUser = await _crudrepo.GetAllSocialAuthUserWithoutLoggedInUser (userId);
+
+            foreach (var item1 in allUser) {
+                foreach (var item3 in item1.tags) {
+                    foreach (var item2 in CurrentUser.tags) {
+                        if (item2.TagName == item3.TagName) {
+                            authUser.Add (item1);
+                        }
+                    }
+                }
+            }
+
+            if (authUser.ToList ().Count () == 0) {
+                ResponceData _responces = new ResponceData ();
+                _responces.Status = 209;
+                _responces.Success = true;
+                _responces.Status_Message = "No data found";
+                return Ok (_responces);
+            }
+            return Ok (authUser.GroupBy (x => x.Id).Select (x => x.First ()).ToList ());
+        }
+
         //Add JOb By Users
         [HttpPost ("AddUserJobs")]
         public async Task<IActionResult> AddUserJobs ([FromBody] UserJobs userjob) {
             ResponceData _responce = new ResponceData ();
-            UserJobs CreatedUserJob=new UserJobs();
+            UserJobs CreatedUserJob = new UserJobs ();
             // Checking Duplicate Entry
             if (await _crudrepo.IsUserJobExist (userjob.socialAuthenticationId, userjob.jobModelId)) {
                 ModelState.AddModelError ("Duplicates", "This Job already added!");
@@ -151,8 +181,8 @@ namespace HoozOn.Controllers.Users {
                 _responce.Success = true;
                 _responce.Status = 422;
                 _responce.Status_Message = "Job already added!";
-                 CreatedUserJob = null;
-                return Ok(new {_responce,CreatedUserJob});
+                CreatedUserJob = null;
+                return Ok (new { _responce, CreatedUserJob });
             }
 
             // validate request
@@ -161,12 +191,38 @@ namespace HoozOn.Controllers.Users {
             }
 
             //Saving Success data.
-             CreatedUserJob = await _crudrepo.AddUserJob (userjob);
+            CreatedUserJob = await _crudrepo.AddUserJob (userjob);
             _responce.Success = true;
             _responce.Status = 200;
             _responce.Status_Message = "Job added successfully!";
             return Ok (new { _responce, CreatedUserJob });
         }
 
+        // User List By Their Tag MACHING WIth job tag
+        [HttpGet ("UserListWithUserTagMatchingWithJob/{userId}/{tagSearch}")]
+        public async Task<ActionResult<IEnumerable<SocialAuthentication>>> UserListWithUserTagMatchingWithJob (int userId, string tagSearch) {
+            List<JobModel> authUser = new List<JobModel> ();
+            var CurrentUser = await _crudrepo.getAuthUserByIdWithTags (userId);
+            var allJob = await _context.Jobs.Include (t => t.Tags).ToListAsync ();
+
+            foreach (var item1 in allJob) {
+                foreach (var item3 in item1.Tags) {
+                    foreach (var item2 in CurrentUser.tags) {
+                        if (item3.TagName.ToLower() == tagSearch.ToLower()) {
+                            authUser.Add (item1);
+                        }
+                    }
+                }
+            }
+
+            if (authUser.ToList ().Count () == 0) {
+                ResponceData _responces = new ResponceData ();
+                _responces.Status = 209;
+                _responces.Success = true;
+                _responces.Status_Message = "No data found";
+                return Ok (_responces);
+            }
+            return Ok (authUser.GroupBy (x => x.Id).Select (x => x.First ()).ToList ());
+        } 
     }
 }

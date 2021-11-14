@@ -156,6 +156,12 @@ namespace HoozOn.Controllers.Messages {
             return Ok (userJobResponces);
         }
 
+         [HttpGet ("UserJobResponceWithSender/{jobId}/{userId}")]
+        public async Task<ActionResult<IEnumerable<JobUserChat>>> UserJobResponceWithSender (int jobId, int userId) {
+            var userJobResponces = await _iMessageRepo.JobUserResponcesDetailsWithSender (jobId, userId);
+            return Ok (userJobResponces);
+        }
+
         [HttpGet ("JobUserChartByJob/{jobId}/{userId}")]
         public async Task<ActionResult<IEnumerable<JobUserChat>>> JobUserChartByJob (int jobId, int userId) {
             var userJobResponces = await _iMessageRepo.JobUserChartByJob (jobId, userId);
@@ -169,7 +175,6 @@ namespace HoozOn.Controllers.Messages {
             foreach (var item in messages) {
                 if (item.SenderId == senderId) {
                     item.SenderContent = item.Content;
-                    // item.TimeAgo = DateFormat.RelativeDate (item.MessageSent);
                     users.Add (item);
                 }
                 if (item.SenderId == recipentId) {

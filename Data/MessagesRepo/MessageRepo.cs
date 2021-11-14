@@ -73,11 +73,11 @@ namespace HoozOn.Data.MessagesRepo {
             return query;
         }
 
-        public async Task<JobUserChat> JobUserChartByJob (int jobId, int userId) {
+        public async Task<List<JobUserChat>> JobUserChartByJob (int jobId, int userId) {
             var responcesDetails = await _context.JobUserChat
                 .Include (b => b.Recipient)
                 .Where (x => x.JobId == jobId && x.SenderId == userId)
-                .FirstOrDefaultAsync ();
+                .ToListAsync ();
             return responcesDetails;
         }
 
@@ -109,5 +109,15 @@ namespace HoozOn.Data.MessagesRepo {
             }
             return responcesDetails;
         }
+    
+     public async Task<IEnumerable<JobUserChat>> JobUserResponcesDetailsWithSender (int jobId, int userId) {
+            List<JobUserChat> jobUserChats=new List<JobUserChat>();
+            var responcesDetails = await _context.JobUserChat.Include (c => c.Sender)
+               .Where (x => x.JobId == jobId).ToListAsync ();
+
+          
+            return responcesDetails;
+        }
+   
     }
 }

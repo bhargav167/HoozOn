@@ -10,14 +10,14 @@ namespace HoozOn.Data.MessagesRepo {
         Task<IEnumerable<MessageDto>> GetMessagesForUser(int userId);
         Task<IEnumerable<MessagedUsers>> GetMessagedUser(int userId);
         Task<IEnumerable<MessageDto>> GetSingleUserChat(int senderId,int RecipientId);
-
         Task<MessagedUsers> AddChatUser (MessagedUsers messagedUser);
-
+       
         //Message Against Jobs
         Task<JobMessages> AddJobChat (JobMessages messagedUser);
         Task<JobUserChat> AddJobUserChat (JobUserChat jobUserChat);
         Task<IEnumerable<JobUserChat>> JobUserResponcesDetails (int jobId,int userId);
-        Task<JobUserChat> JobUserChartByJob (int jobId,int userId);
+        Task<IEnumerable<JobUserChat>> JobUserResponcesDetailsWithSender (int jobId,int userId);
+        Task<List<JobUserChat>> JobUserChartByJob (int jobId,int userId);
          Task<IEnumerable<MessageDto>> GetSingleUserChatByJob(int jobId,int senderId,int RecipientId);
 
     }

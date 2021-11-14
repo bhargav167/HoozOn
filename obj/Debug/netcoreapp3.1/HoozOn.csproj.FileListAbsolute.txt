@@ -410,3 +410,4 @@ K:\Workspace\HoozOn\obj\Debug\netcoreapp3.1\HoozOn.pdb
 K:\Workspace\HoozOn\obj\Debug\netcoreapp3.1\HoozOn.genruntimeconfig.cache
 K:\Workspace\HoozOn\obj\Debug\netcoreapp3.1\HoozOn.csproj.AssemblyReference.cache
 K:\Workspace\HoozOn\obj\Debug\netcoreapp3.1\HoozOn.GeneratedMSBuildEditorConfig.editorconfig
+K:\Workspace\HoozOn\obj\Debug\netcoreapp3.1\HoozOn.csproj.CopyComplete

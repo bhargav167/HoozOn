@@ -26,10 +26,24 @@ namespace HoozOn.Data.JobRepo {
             _context.Remove (entity);
         }
 
-        public async Task<PagedList<JobModel>> GetAllJob (UserParams userParam) {
-            var job = _context.Jobs.Where (x => x.JobStatus == userParam.JobStatus).Include (x => x.Tags).Include (x => x.User)
-                .OrderByDescending (c => c.Id).AsQueryable ();
-            return await PagedList<JobModel>.CreateAsync (job, userParam.PageNumber, userParam.PageSize);
+        public async Task<List<JobModel>> GetAllJob (UserParams userParam) {
+            List<JobModel> modal=new List<JobModel>();
+              var job = await _context.Jobs.Where (x => x.JobStatus == "OPEN").Include (x => x.Tags).Include (x => x.User)
+              .OrderByDescending (c => c.Id).ToListAsync();
+
+              if(userParam.SearchTagTerm!=null){
+                    foreach (var item in job) {
+                    foreach (var tag in item.Tags) {
+                        if (tag.TagName.ToLower() == userParam.SearchTagTerm.ToLower()) {
+                            modal.Add (item);
+                        }
+                    }
+                }
+              }else{
+                   return job; 
+                }
+              
+                return modal;
         }
 
         public async Task<List<JobModel>> GetAllJobByAddress (JobParams jobParam) {
@@ -83,42 +97,38 @@ namespace HoozOn.Data.JobRepo {
         }
 
         public async Task<PagedList<JobModel>> GetAllWithAddedJob (JobParams jobParam) {
-             List<JobModel> modal = new List<JobModel> ();
-            var jobs =  _context.Jobs.Where (x => x.JobStatus == "OPEN")
-                .Include (x => x.Tags).Include (x => x.User).OrderByDescending (c => c.Id).AsQueryable();
+            List<JobModel> modal = new List<JobModel> ();
+            var jobs = _context.Jobs.Where (x => x.JobStatus == jobParam.JobStatus)
+                .Include (x => x.Tags).Include (x => x.User).OrderByDescending (c => c.Id).AsQueryable ();
 
             var loginUserTags = await _context.SocialAuthentication.Include (x => x.tags)
                 .Where (c => c.Id == jobParam.UserId).FirstOrDefaultAsync ();
 
-            var addedJobs = await _context.UserJobs.Include(c=>c.jobModel).Where (x => x.socialAuthenticationId == jobParam.UserId).ToListAsync ();
-            
-            // GetAllJob Job With Address And User Tags Related
+            var addedJobs = await _context.UserJobs.Include (c => c.jobModel).Where (x => x.socialAuthenticationId == jobParam.UserId).ToListAsync ();
 
-            if (jobs.Count() > 0) {
+            // GetAllJob Job With Address And User Tags Related 
+            if (jobs.Count () > 0) {
                 if (loginUserTags != null) {
                     foreach (var job in jobs) {
                         foreach (var jobtag in job.Tags) {
                             foreach (var item in loginUserTags.tags) {
                                 if (item.TagName == jobtag.TagName) {
                                     modal.Add (job);
-                                   
                                 }
                             }
                         }
                     }
-                    foreach (var item in addedJobs)
-                    {
-                        modal.Insert(0,item.jobModel);
+                    foreach (var item in addedJobs) {
+                        modal.Insert (0, item.jobModel);
                     }
                 } else {
                     foreach (var job in jobs) {
-                        modal.Add (job); 
+                        modal.Add (job);
                     }
-                } 
+                }
             }
-               
-               return await PagedList<JobModel>.CreateAsync1 (modal, jobParam.PageNumber, jobParam.pageSize);
-        } 
+            return await PagedList<JobModel>.CreateAsync1 (modal, jobParam.PageNumber, jobParam.pageSize);
+        }
 
         public async Task<PagedList<JobModel>> GetJob (UserParams userParam) {
             var job = _context.Jobs.AsQueryable ();

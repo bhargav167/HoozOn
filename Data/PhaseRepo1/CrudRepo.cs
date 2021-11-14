@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using HoozOn.Entities.Authentication;
 using HoozOn.Entities.Users;
@@ -56,20 +58,28 @@ namespace HoozOn.Data.PhaseRepo1 {
             return user;
         }
 
-        public async Task<bool> IsUserJobExist(int userId, int jobId)
-        {
-             if (await _context.UserJobs.AnyAsync (e => e.socialAuthenticationId == userId && e.jobModelId==jobId))
+        public async Task<bool> IsUserJobExist (int userId, int jobId) {
+            if (await _context.UserJobs.AnyAsync (e => e.socialAuthenticationId == userId && e.jobModelId == jobId))
                 return true;
 
             return false;
         }
 
-        public async Task<UserJobs> AddUserJob(UserJobs usersJob)
-        {
-             await _context.UserJobs.AddAsync (usersJob);
+        public async Task<UserJobs> AddUserJob (UserJobs usersJob) {
+            await _context.UserJobs.AddAsync (usersJob);
             await _context.SaveChangesAsync ();
 
             return usersJob;
+        }
+
+        public async Task<SocialAuthentication> getAuthUserByIdWithTags (int userId) {
+            var user = await _context.SocialAuthentication.Include (t => t.tags).FirstOrDefaultAsync (u => u.Id == userId);
+            return user;
+        }
+
+        public async Task<IEnumerable<SocialAuthentication>> GetAllSocialAuthUserWithoutLoggedInUser (int authId) {
+            var user = await _context.SocialAuthentication.Where(x=>x.Id!=authId).Include(a=>a.tags).ToListAsync ();
+            return user;
         }
     }
 }
