@@ -12,6 +12,7 @@ using HoozOn.DTOs.Message;
 using HoozOn.Entities.Authentication;
 using HoozOn.Entities.Message;
 using HoozOn.Entities.Message.JobMessage;
+using HoozOn.Entities.Responces;
 using HoozOn.Extensions;
 using HoozOn.Hubs;
 using Microsoft.AspNetCore.Mvc;
@@ -78,6 +79,7 @@ namespace HoozOn.Controllers.Messages {
             _crudrepo.Add (message);
 
             if (await _crudrepo.SaveAll ()) {
+                messageForCreationDto.ChatTime=DateFormat.MeridianTime(message.MessageSent);
                 var messageToReturn = _mapper.Map<MessageToReturnDto> (message);
                 // return CreatedAtRoute("GetMessage", new {id = message.Id}, messageToReturn);
                 return Ok (messageForCreationDto);
@@ -115,11 +117,13 @@ namespace HoozOn.Controllers.Messages {
                 if (item.SenderId == senderId) {
                     item.SenderContent = item.Content;
                     item.TimeAgo = DateFormat.RelativeDate (item.MessageSent);
+                    item.Times = DateFormat.MeridianTime (item.MessageSent);
                     users.Add (item);
                 }
                 if (item.SenderId == recipentId) {
                     item.RecipientContent = item.Content;
                     item.TimeAgo = DateFormat.RelativeDate (item.MessageSent);
+                    item.Times = DateFormat.MeridianTime (item.MessageSent);
                     users.Add (item);
                 }
             }
@@ -138,7 +142,6 @@ namespace HoozOn.Controllers.Messages {
             jobUserChat.JobId = jobId;
             jobUserChat.SenderId = senderId;
             jobUserChat.RecipientId = recipientId;
-
             var isUserConnected = await _context.JobUserChat.Where (k => k.JobId == jobId && k.SenderId == senderId).FirstOrDefaultAsync ();
             if (isUserConnected == null)
                 await _iMessageRepo.AddJobUserChat (jobUserChat);
@@ -150,13 +153,14 @@ namespace HoozOn.Controllers.Messages {
         }
 
         //USER LIST WHO RESPONCE TO YOUR JOB
+
         [HttpGet ("UserJobResponce/{jobId}/{userId}")]
         public async Task<ActionResult<IEnumerable<JobUserChat>>> UserJobResponce (int jobId, int userId) {
             var userJobResponces = await _iMessageRepo.JobUserResponcesDetails (jobId, userId);
             return Ok (userJobResponces);
         }
 
-         [HttpGet ("UserJobResponceWithSender/{jobId}/{userId}")]
+        [HttpGet ("UserJobResponceWithSender/{jobId}/{userId}")]
         public async Task<ActionResult<IEnumerable<JobUserChat>>> UserJobResponceWithSender (int jobId, int userId) {
             var userJobResponces = await _iMessageRepo.JobUserResponcesDetailsWithSender (jobId, userId);
             return Ok (userJobResponces);
@@ -175,15 +179,45 @@ namespace HoozOn.Controllers.Messages {
             foreach (var item in messages) {
                 if (item.SenderId == senderId) {
                     item.SenderContent = item.Content;
+                    item.TimeAgo = DateFormat.RelativeDate (item.MessageSent);
+                    item.Times = DateFormat.MeridianTime (item.MessageSent);
                     users.Add (item);
                 }
                 if (item.SenderId == recipentId) {
                     item.RecipientContent = item.Content;
-                    // item.TimeAgo = DateFormat.RelativeDate (item.MessageSent);
+                    item.TimeAgo = DateFormat.RelativeDate (item.MessageSent);
+                    item.Times = DateFormat.MeridianTime (item.MessageSent);
                     users.Add (item);
                 }
             }
             return Ok (users);
+        }
+
+        // Update IsRead Job Responces Message In JobUserChat
+        [HttpPost ("JobUserMessageResponceUpdate/{jobId}/{senderId}/{recipentId}")]
+        public async Task<IActionResult> JobUserMessageResponceUpdate (int jobId, int senderId, int recipentId) {
+            try {
+                 StatusResponces statusResponces=new StatusResponces();
+                var ChatToUpdate = await _context.JobUserChat
+                    .Where (x => x.JobId == jobId && x.SenderId == senderId && x.RecipientId == recipentId)
+                    .FirstOrDefaultAsync (); 
+
+                if (ChatToUpdate == null){ 
+                      statusResponces.status=false;
+                    return Ok(statusResponces);
+
+                }
+             
+              //  ChatToUpdate.IsRead = true;
+                 statusResponces.status=true;
+                _context.JobUserChat.Update (ChatToUpdate);
+                await _context.SaveChangesAsync ();
+
+                return Ok (statusResponces);
+            } catch (System.Exception ex) {
+                throw new Exception("Error In Updating"+ex);
+            }
+
         }
 
     }

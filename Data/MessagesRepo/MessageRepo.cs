@@ -83,41 +83,40 @@ namespace HoozOn.Data.MessagesRepo {
 
         //User List For JobChart Intraction 
         public async Task<IEnumerable<JobUserChat>> JobUserResponcesDetails (int jobId, int userId) {
-            List<JobUserChat> jobUserChats=new List<JobUserChat>();
+            List<JobUserChat> jobUserChats = new List<JobUserChat> ();
             var responcesDetails = await _context.JobUserChat.Include (c => c.Job).Include (c => c.Sender)
                 .Include (b => b.Recipient).Where (x => x.JobId == jobId).ToListAsync ();
 
             foreach (var item in responcesDetails) {
-                if(item.SenderId==userId){
-                   item.IsAnonymous=item.Job.IsAnonymous;
-                    item.Sender.AboutUs=item.Recipient.AboutUs;
-                    item.Sender.CoverImageUrl=item.Recipient.CoverImageUrl;
-                    item.Sender.Email=item.Recipient.Email;
-                    item.Sender.Id=item.Recipient.Id;
-                    item.Sender.ImageUrl=item.Recipient.ImageUrl;
-                    item.Sender.IsProfileCreated=item.Recipient.IsProfileCreated;
-                    item.Sender.Latitude=item.Recipient.Latitude;
-                    item.Sender.Longitude=item.Recipient.Longitude;
-                    item.Sender.MobileNumber=item.Recipient.MobileNumber;
-                    item.Sender.Name=item.Recipient.Name;
-                    item.Sender.tags=item.Recipient.tags;
-                    jobUserChats.Add(item);
-                }else{
-                     item.IsAnonymous=item.Job.IsAnonymous;
-                    jobUserChats.Add(item);
+                if (item.SenderId == userId) {
+                    item.IsAnonymous = item.Job.IsAnonymous;
+                    item.Sender.AboutUs = item.Recipient.AboutUs;
+                    item.Sender.CoverImageUrl = item.Recipient.CoverImageUrl;
+                    item.Sender.Email = item.Recipient.Email;
+                    item.Sender.Id = item.Recipient.Id;
+                    item.Sender.ImageUrl = item.Recipient.ImageUrl;
+                    item.Sender.IsProfileCreated = item.Recipient.IsProfileCreated;
+                    item.Sender.Latitude = item.Recipient.Latitude;
+                    item.Sender.Longitude = item.Recipient.Longitude;
+                    item.Sender.MobileNumber = item.Recipient.MobileNumber;
+                    item.Sender.Name = item.Recipient.Name;
+                    item.Sender.tags = item.Recipient.tags;
+                    jobUserChats.Add (item);
+                } else {
+                    item.IsAnonymous = item.Job.IsAnonymous;
+                    jobUserChats.Add (item);
                 }
             }
             return responcesDetails;
         }
-    
-     public async Task<IEnumerable<JobUserChat>> JobUserResponcesDetailsWithSender (int jobId, int userId) {
-            List<JobUserChat> jobUserChats=new List<JobUserChat>();
-            var responcesDetails = await _context.JobUserChat.Include (c => c.Sender)
-               .Where (x => x.JobId == jobId).ToListAsync ();
 
-          
+        public async Task<IEnumerable<JobUserChat>> JobUserResponcesDetailsWithSender (int jobId, int userId) {
+            List<JobUserChat> jobUserChats = new List<JobUserChat> ();
+            var responcesDetails = await _context.JobUserChat.Include (c => c.Sender)
+                .Where (x => x.JobId == jobId).ToListAsync ();
+
             return responcesDetails;
         }
-   
+
     }
 }

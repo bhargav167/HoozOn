@@ -214,6 +214,8 @@ namespace HoozOn.Controllers.Job {
                 return Ok (res);
 
             }
+          
+
             res.PageNumber = userParams.PageNumber;
             res.PageSize = userParams.PageSize;
             res.Status = 200;
@@ -277,7 +279,7 @@ namespace HoozOn.Controllers.Job {
                 item.TimeAgo = DateFormat.RelativeDate (item.CreatedBy);
             }
             foreach (var item in res.data) {
-                var totalMessages = await _context.JobUserChat.Where (c => c.JobId == item.Id).ToListAsync ();
+                var totalMessages = await _context.JobUserChat.Where (c => c.JobId == item.Id && c.IsRead==false).ToListAsync ();
                 item.TotalResponces = totalMessages.Count ();
             }
             return Ok (res);
@@ -304,7 +306,7 @@ namespace HoozOn.Controllers.Job {
                 item.TimeAgo = DateFormat.RelativeDate (item.CreatedBy);
             }
             foreach (var item in res.data) {
-                var totalMessages = await _context.JobUserChat.Where (c => c.JobId == item.Id).ToListAsync ();
+                var totalMessages = await _context.JobUserChat.Where (c => c.JobId == item.Id && c.IsRead==false).ToListAsync ();
                 item.TotalResponces = totalMessages.Count ();
             }
             return Ok (res);
@@ -405,7 +407,7 @@ namespace HoozOn.Controllers.Job {
                 item.TimeAgo = DateFormat.RelativeDate (item.CreatedBy);
             }
             foreach (var item in res.data) {
-                var totalMessages = await _context.JobUserChat.Where (c => c.JobId == item.Id).ToListAsync ();
+                var totalMessages = await _context.JobUserChat.Where (c => c.JobId == item.Id && c.IsRead==false).ToListAsync ();
                 item.TotalResponces = totalMessages.Count ();
             }
             return Ok (res);

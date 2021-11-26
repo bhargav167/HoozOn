@@ -36,7 +36,7 @@ namespace HoozOn.Data {
 
         //Reporting---------------------------------------------------
          public DbSet<Reporting> Reporting{get; set;}
-        
+         public DbSet<ContactUs> ContactUs{get; set;} 
         protected override void OnModelCreating (ModelBuilder builder) {
             base.OnModelCreating (builder);
         }

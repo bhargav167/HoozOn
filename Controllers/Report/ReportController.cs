@@ -28,5 +28,20 @@ namespace HoozOn.Controllers.Report {
             return Ok (new { _responceData, CreatedReporting });
         }
 
+        //Register Method api/Job/AddJob
+        [HttpPost ("AddContactForm")]
+        public async Task<IActionResult> AddJobReport ([FromBody] ContactUs contactUs) {
+            // validate request
+            if (!ModelState.IsValid)
+                return BadRequest (ModelState);
+
+            ResponceData _responceData = new ResponceData ();
+            _responceData.Status = 200;
+            _responceData.Success = true;
+            _responceData.Status_Message = "Saved Successfully";
+            var CreatedContact = await _reportRepo.AddContactUs(contactUs);
+            return Ok (new { _responceData, CreatedContact });
+        }
+
     }
 }

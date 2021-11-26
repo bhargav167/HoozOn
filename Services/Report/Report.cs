@@ -9,6 +9,13 @@ namespace HoozOn.Services.Report {
             _context = context;
         }
 
+        public async Task<ContactUs> AddContactUs (ContactUs contact) {
+            await _context.ContactUs.AddAsync (contact);
+            await _context.SaveChangesAsync ();
+
+            return contact;
+        }
+
         public async Task<Reporting> Reporting (Reporting reporting) {
             await _context.Reporting.AddAsync (reporting);
             await _context.SaveChangesAsync ();

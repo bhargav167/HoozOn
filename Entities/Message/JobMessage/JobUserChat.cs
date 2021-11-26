@@ -14,6 +14,11 @@ namespace HoozOn.Entities.Message.JobMessage
         public int SenderId { get; set; }
         public SocialAuthentication Sender { get; set; }
         public int RecipientId { get; set; }
-        public SocialAuthentication Recipient { get; set; }
+        public SocialAuthentication Recipient { get; set; } 
+        public bool IsRead { get; set; }
+        public JobUserChat()
+        {
+          IsRead=false;
+        }
     }
 }

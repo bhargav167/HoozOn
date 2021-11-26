@@ -7,5 +7,6 @@ namespace HoozOn.Services.Report
     {
         
          Task<Reporting> Reporting (Reporting reporting);
+         Task<ContactUs> AddContactUs (ContactUs contact);
     }
 }
