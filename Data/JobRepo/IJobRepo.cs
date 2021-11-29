@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using HoozOn.Entities.Job;
+using HoozOn.Entities.Tag;
 using HoozOn.Helpers;
 using HoozOn.Helpers.Job;
 
@@ -18,6 +19,7 @@ namespace HoozOn.Data.JobRepo {
         Task<PagedList<JobModel>> GetJob (UserParams userParam);
         Task<List<JobModel>> GetAllJob (UserParams userParam);
         Task<List<JobModel>> GetAllJobByAddress (JobParams jobParam);
+        Task<List<JobTags>> GetAllJobByMultiTag (JobParams jobParam);
 
         //Job With Public Post Only
         Task<PagedList<JobModel>> GetAllJobByPublic (UserParams userParam);

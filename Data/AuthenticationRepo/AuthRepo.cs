@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
+using HoozOn.Data;
 using HoozOn.Entities.Authentication;
 using HoozOn.Helpers;
-using HoozOn.Data;
 using Microsoft.EntityFrameworkCore;
 namespace HoozOn.Data.AuthenticationRepo {
     public class AuthRepo : IAuthRepo {
@@ -33,12 +33,16 @@ namespace HoozOn.Data.AuthenticationRepo {
             return false;
         }
 
-        public async Task<bool> IsUserNameExist(string UserName)
-        {
-            if (await _context.SocialAuthentication.AnyAsync (e => e.UserName.Substring(0,3) == UserName.Substring(0,3)  ))
+        public async Task<bool> IsUserNameExist (string UserName) {
+            if (await _context.SocialAuthentication.AnyAsync (e => e.UserName.Substring (0, 3) == UserName.Substring (0, 3)))
                 return true;
 
             return false;
+        }
+
+        public async Task<SocialAuthentication> Login (string email, string password) {
+            var loginUser = await _context.SocialAuthentication.FirstOrDefaultAsync (x => x.Email == email && x.Password == password);
+            return loginUser;
         }
     }
 }

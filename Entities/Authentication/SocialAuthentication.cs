@@ -15,6 +15,7 @@ namespace HoozOn.Entities.Authentication
         public string CoverImageUrl { get; set; } 
         public string Name { get; set; }
         public string MobileNumber { get; set; }
+        public string Password { get; set; }
         public string WebSiteUrl { get; set; } 
         public string Latitude { get; set; } 
         public string Longitude { get; set; }

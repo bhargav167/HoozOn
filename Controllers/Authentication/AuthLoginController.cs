@@ -4,14 +4,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
+using hoozonlinedatabase.Extensions;
 using HoozOn.Data;
 using HoozOn.Data.AuthenticationRepo;
 using HoozOn.Data.PhaseRepo1;
 using HoozOn.DTOs.Photos;
 using HoozOn.Entities.Authentication;
+using HoozOn.Entities.Responces;
 using HoozOn.Entities.Users;
 using HoozOn.Helpers;
-using hoozonlinedatabase.Extensions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -23,7 +24,7 @@ namespace HoozOn.Controllers.Authentication {
     public class AuthLoginController : ControllerBase {
         private readonly IAuthRepo _iAuthRepo;
         private readonly ICrudRepo _iUserRepo;
-        private readonly DataContext _context; 
+        private readonly DataContext _context;
         private readonly IWebHostEnvironment _environment;
         private readonly IOptions<CloudinarySettings> _cloudinaryConfig;
         private Cloudinary _cloudinary;
@@ -34,7 +35,7 @@ namespace HoozOn.Controllers.Authentication {
             IOptions<CloudinarySettings> cloudinarysetting) {
             _iAuthRepo = iAuthRepo;
             _iUserRepo = iUserRepo;
-            
+
             _context = context;
             this._environment = environment;
             _cloudinaryConfig = cloudinarysetting;
@@ -58,7 +59,7 @@ namespace HoozOn.Controllers.Authentication {
                     Existuser.Success = true;
                     Existuser.LoginTime = DateTime.Now;
                     Existuser.Status_Message = "User with this google account already exist";
-                   
+
                     return Ok (Existuser);
                 }
 
@@ -66,30 +67,28 @@ namespace HoozOn.Controllers.Authentication {
                 if (!ModelState.IsValid)
                     return BadRequest (ModelState);
 
-                    //Create random UserName on server
-                 var createdUserName = RandomUserName.CreateUserName(socialAuthentication.UserName); 
+                //Create random UserName on server
+                var createdUserName = RandomUserName.CreateUserName (socialAuthentication.UserName);
 
-                 //TODO Check If CreatedUsername Exist
-                 
+                //TODO Check If CreatedUsername Exist
 
-                 //Initiliz auth status
+                //Initiliz auth status
                 socialAuthentication.Status = 200;
-                socialAuthentication.Name=socialAuthentication.UserName;
-                socialAuthentication.UserName=createdUserName;
-                socialAuthentication.ImageUrl="https://st.depositphotos.com/2101611/3925/v/600/depositphotos_39258143-stock-illustration-businessman-avatar-profile-picture.jpg";
-                socialAuthentication.CoverImageUrl="https://i.pinimg.com/originals/0c/f6/c3/0cf6c362a7cf6bc8e4e404811176f5c1.png";
+                socialAuthentication.Name = socialAuthentication.UserName;
+                socialAuthentication.UserName = createdUserName;
+                socialAuthentication.ImageUrl = "https://st.depositphotos.com/2101611/3925/v/600/depositphotos_39258143-stock-illustration-businessman-avatar-profile-picture.jpg";
+                socialAuthentication.CoverImageUrl = "https://i.pinimg.com/originals/0c/f6/c3/0cf6c362a7cf6bc8e4e404811176f5c1.png";
                 socialAuthentication.Success = true;
                 socialAuthentication.LoginTime = DateTime.Now;
                 socialAuthentication.Status_Message = "User added to database successfully";
 
                 var CreatedAuth = await _iAuthRepo.AddAuth (socialAuthentication);
-                
 
                 //Assign User Profile detail to create
                 User userDtos = new User ();
-                  userDtos.Name=socialAuthentication.Name;
+                userDtos.Name = socialAuthentication.Name;
                 userDtos.UserName = socialAuthentication.UserName;
-              
+
                 userDtos.ImageUrl = socialAuthentication.ImageUrl;
                 userDtos.CoverImageUrl = socialAuthentication.CoverImageUrl;
                 userDtos.SocialAuthenticationId = CreatedAuth.Id;
@@ -100,6 +99,70 @@ namespace HoozOn.Controllers.Authentication {
                 throw new Exception ($"Error in adding Auth Data {ex}");
             }
             // }
+        }
+
+        //CustomUser Method api/Auth/AddCustomUser
+        [HttpPost ("AddCustomUser")]
+        public async Task<IActionResult> AddCustomUser ([FromBody] SocialAuthentication socialAuthentication) {
+            try {
+                // Checking Duplicate Entry
+                if (await _iAuthRepo.IsAuthExist (socialAuthentication.Email)) {
+                    var Existuser = await _iAuthRepo.getAuthByEmail (socialAuthentication.Email);
+                    Existuser.Status = 409;
+                    Existuser.Success = true;
+                    Existuser.LoginTime = DateTime.Now;
+                    Existuser.Status_Message = "User with this google account already exist";
+
+                    return Ok (Existuser);
+                }
+                  // validate request
+                if (!ModelState.IsValid)
+                    return BadRequest (ModelState);
+
+                   //Create random UserName on server
+                var createdUserName = RandomUserName.CreateUserName (socialAuthentication.UserName);
+
+                //TODO Check If CreatedUsername Exist
+
+                //Initiliz auth status
+                socialAuthentication.Status = 200;
+                socialAuthentication.Name = socialAuthentication.UserName;
+                socialAuthentication.UserName = createdUserName;
+                socialAuthentication.ImageUrl = "https://st.depositphotos.com/2101611/3925/v/600/depositphotos_39258143-stock-illustration-businessman-avatar-profile-picture.jpg";
+                socialAuthentication.CoverImageUrl = "https://i.pinimg.com/originals/0c/f6/c3/0cf6c362a7cf6bc8e4e404811176f5c1.png";
+                socialAuthentication.Success = true;
+                socialAuthentication.LoginTime = DateTime.Now;
+                socialAuthentication.Status_Message = "User added to database successfully";
+
+                var CreatedAuth = await _iAuthRepo.AddAuth (socialAuthentication);
+                 return Ok (CreatedAuth);
+            } catch (Exception ex) {
+                throw new Exception ($"Error in adding Auth Data {ex}");
+            }
+            return NoContent ();
+        }
+
+        //CustomUser Login ByPassword Method api/Auth/AddCustomUser
+        [HttpPost ("Login")]
+        public async Task<IActionResult> Login ([FromBody] AuthLogin login) {
+            try {
+                // Checking Duplicate Entry
+                if (await _iAuthRepo.IsAuthExist (login.Email)) {
+                    var Existuser = await _iAuthRepo.Login (login.Email, login.Password);
+                    //Initiliz auth status
+                    if (Existuser == null) {
+                        ResponceData responce = new ResponceData ();
+                        responce.Status = 209;
+                        responce.Success = true;
+                        responce.Status_Message = "Email or password is not correct. Please check";
+                        return Ok (responce);
+                    }
+                    return Ok (Existuser);
+                }
+            } catch (Exception ex) {
+                throw new Exception ($"Error in adding Auth Data {ex}");
+            }
+            return NoContent ();
         }
 
         //Add User Profile Image

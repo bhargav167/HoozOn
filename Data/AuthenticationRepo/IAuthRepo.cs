@@ -10,5 +10,8 @@ namespace HoozOn.Data.AuthenticationRepo
         Task<SocialAuthentication> getAuthById (int id);
         Task<SocialAuthentication> getAuthByEmail (string email);
         Task<bool> IsUserNameExist (string UserName);
+
+        // Login
+        Task<SocialAuthentication> Login (string email,string password);
     }
 }

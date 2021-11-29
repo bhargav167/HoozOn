@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using HoozOn.Entities.Job;
+using HoozOn.Entities.Tag;
 using HoozOn.Helpers;
 using HoozOn.Helpers.Job;
 using Microsoft.EntityFrameworkCore;
@@ -27,23 +28,23 @@ namespace HoozOn.Data.JobRepo {
         }
 
         public async Task<List<JobModel>> GetAllJob (UserParams userParam) {
-            List<JobModel> modal=new List<JobModel>();
-              var job = await _context.Jobs.Where (x => x.JobStatus == "OPEN").Include (x => x.Tags).Include (x => x.User)
-              .OrderByDescending (c => c.Id).ToListAsync();
+            List<JobModel> modal = new List<JobModel> ();
+            var job = await _context.Jobs.Where (x => x.JobStatus == "OPEN").Include (x => x.Tags).Include (x => x.User)
+                .OrderByDescending (c => c.Id).ToListAsync ();
 
-              if(userParam.SearchTagTerm!=null){
-                    foreach (var item in job) {
+            if (userParam.SearchTagTerm != null) {
+                foreach (var item in job) {
                     foreach (var tag in item.Tags) {
-                        if (tag.TagName.ToLower() == userParam.SearchTagTerm.ToLower()) {
+                        if (tag.TagName.ToLower () == userParam.SearchTagTerm.ToLower ()) {
                             modal.Add (item);
                         }
                     }
                 }
-              }else{
-                   return job; 
-                }
-              
-                return modal;
+            } else {
+                return job;
+            }
+
+            return modal;
         }
 
         public async Task<List<JobModel>> GetAllJobByAddress (JobParams jobParam) {
@@ -147,6 +148,15 @@ namespace HoozOn.Data.JobRepo {
             var singlejob = _context.Jobs.Where (x => x.Id == jobParam.JobId).Include (x => x.Tags).Include (c => c.User)
                 .OrderByDescending (c => c.Id).AsQueryable ();
             return await PagedList<JobModel>.CreateAsync (singlejob, jobParam.PageNumber, jobParam.pageSize);
+        }
+
+        //Wall Method
+        public async Task<List<JobTags>> GetAllJobByMultiTag (JobParams jobParam) {
+            var jobBasedOnTagSearch = await _context.JobTag.Include (x => x.Job).Include (x => x.Job.Tags)
+                .Include (x => x.Job.User)
+                .Where (c => c.TagName.ToLower ().Contains (jobParam.searchTag.ToLower ())).ToListAsync ();
+
+            return jobBasedOnTagSearch;
         }
 
         public Task<JobModel> getJobToUpdate (int JobId) {
