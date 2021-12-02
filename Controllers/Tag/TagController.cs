@@ -1,9 +1,9 @@
 using System;
 using System.Threading.Tasks;
 using AutoMapper;
+using HoozOn.Data.PhaseRepo1;
 using HoozOn.Data.TaggingRepo;
 using HoozOn.Entities.Responces;
-using HoozOn.Data.PhaseRepo1;
 using HoozOn.Entities.Tag;
 using Microsoft.AspNetCore.Mvc;
 
@@ -40,8 +40,8 @@ namespace hoozonlinedatabase.Controllers.Tag {
                 foreach (var item in tags) {
                     item.UserId = userId;
 
-                    if(item.TagMasterId==0)
-                    item.TagMasterId=5;
+                    if (item.TagMasterId == 0)
+                        item.TagMasterId = 5;
 
                     if (!await _itaggingrepo.IsTagExist (userId, item.TagName)) {
                         //Add Tagging To User
@@ -62,7 +62,21 @@ namespace hoozonlinedatabase.Controllers.Tag {
         [HttpGet ("TagSuggestion/{searchTerm}")]
         public async Task<IActionResult> TagSuggetion (string searchTerm) {
             var serchItemShowing = await _itaggingrepo.SuggestTag (searchTerm);
-            return Ok (serchItemShowing);
+            TagMasterResponces tmr = new TagMasterResponces ();
+            if (serchItemShowing != null) { 
+                tmr.data = serchItemShowing;
+                tmr.Success = true;
+                tmr.Status = 200;
+                tmr.status_message = "Fetch All value";
+                return Ok (tmr);
+            }else{
+                tmr.data = null;
+                tmr.Success = true;
+                tmr.Status = 200;
+                tmr.status_message = "No data avalable.";
+                return Ok (tmr);
+            }
+
         }
 
         [HttpGet ("UserWithTags/{userId}")]
@@ -73,16 +87,16 @@ namespace hoozonlinedatabase.Controllers.Tag {
 
         //Delete Tagging By AuthId 
         [HttpPost ("Delete/{userId}/{tagMasterId}")]
-        public async Task<IActionResult> Delete (int userId,int tagMasterId) {
+        public async Task<IActionResult> Delete (int userId, int tagMasterId) {
             try {
                 // Create Instances Of Responces
-                 ResponceData responceData = new ResponceData ();
-                var tags = await _itaggingrepo.getTagsByAuthIdAndTagId (userId,tagMasterId);
-                if (tags == null){
-                responceData.Status = 204;
-                responceData.Success = true;
-                responceData.Status_Message = $"There is no tagging avalable for user with id {userId}";
-                return Ok(responceData);
+                ResponceData responceData = new ResponceData ();
+                var tags = await _itaggingrepo.getTagsByAuthIdAndTagId (userId, tagMasterId);
+                if (tags == null) {
+                    responceData.Status = 204;
+                    responceData.Success = true;
+                    responceData.Status_Message = $"There is no tagging avalable for user with id {userId}";
+                    return Ok (responceData);
                 }
 
                 //Delete Query

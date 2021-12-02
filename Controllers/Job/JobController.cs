@@ -180,6 +180,9 @@ namespace HoozOn.Controllers.Job {
 
             foreach (var item in res.data) {
                 item.TimeAgo = DateFormat.RelativeDate (item.CreatedBy);
+                if(item.ImagesUrl==null){
+                    item.ImagesUrl="https://ichef.bbci.co.uk/news/976/cpsprodpb/16755/production/_119298919_repair2.png";
+                }
             }
             foreach (var item in res.data) {
                 var totalMessages = await _context.JobUserChat.Where (c => c.JobId == item.Id).ToListAsync ();

@@ -154,7 +154,7 @@ namespace HoozOn.Data.JobRepo {
         public async Task<List<JobTags>> GetAllJobByMultiTag (JobParams jobParam) {
             var jobBasedOnTagSearch = await _context.JobTag.Include (x => x.Job).Include (x => x.Job.Tags)
                 .Include (x => x.Job.User)
-                .Where (c => c.TagName.ToLower ().Contains (jobParam.searchTag.ToLower ())).ToListAsync ();
+                .Where (c => c.TagName.ToLower ().Contains (jobParam.searchTag.Trim().ToLower ())).ToListAsync ();
 
             return jobBasedOnTagSearch;
         }

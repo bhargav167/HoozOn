@@ -13,8 +13,10 @@ namespace HoozOn.Data.TaggingRepo
 
         //Tag Repo 
         Task<Tags> AddTag (Tags tag); 
+         Task<TagMaster> AddTagMaster (TagMaster tag); 
          Task<List<TagMaster>> SuggestTag (string searchTerm); 
         Task<bool> IsTagExist (int userId,string tagName);
+        Task<bool> IsTagMasterExist (string tagName);
         Task<SocialAuthentication> getUserWithTagById (int id);
         Task<List<Tags>> getTagsByAuthId (int authId);
          Task<Tags> getTagsByAuthIdAndTagId (int authId,int tagMasterId);
