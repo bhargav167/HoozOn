@@ -17,6 +17,9 @@ namespace HoozOn.Entities.Job {
         [StringLength (200, MinimumLength = 5, ErrorMessage = "Description Length must be alteast 5 character long.")]
         public string Descriptions { get; set; }
         public string ImagesUrl { get; set; }
+        public string ImageName { get; set; } 
+        [NotMapped]
+        public string ThumbNailImage { get; set; } 
         public string Latitude { get; set; }
         public string Longitude { get; set; }
         public string Address { get; set; } 

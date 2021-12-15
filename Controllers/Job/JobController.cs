@@ -95,6 +95,14 @@ namespace HoozOn.Controllers.Job {
         //Add User Profile Image
         [HttpPost ("AddJobImage/{jobId}")]
         public async Task<IActionResult> AddJobImage (int jobId, [FromHeader] IFormFile file) {
+            if(file==null)
+            {
+                ResponceData data=new ResponceData();
+                data.Status=200;
+                data.Status_Message="Uploaded Blank image";
+                data.Success=true;
+                return Ok(data);
+            }
             //     //Saving Image to cloudinary
             //       //Handle Image to save to cloudinary
             var imgfile = file;
@@ -106,7 +114,7 @@ namespace HoozOn.Controllers.Job {
                     var uploadParms = new ImageUploadParams () {
                     File = new FileDescription (imgfile.Name, stream),
                     Transformation = new Transformation ()
-                   
+
                     };
                     uploadResult = _cloudinary.Upload (uploadParms);
                     if (uploadResult.Format.ToLower () == "pdf" || uploadResult.Format.ToLower () == "docx") {
@@ -117,10 +125,12 @@ namespace HoozOn.Controllers.Job {
                     }
                 }
             }
-            // var LastJob = await _context.Jobs.OrderByDescending (x => x.Id).Take (1).FirstOrDefaultAsync ();
+             //var LastJob = await _context.Jobs.OrderByDescending (x => x.Id).Take (1).FirstOrDefaultAsync ();
             var LastJob = await _context.Jobs.FirstOrDefaultAsync (c => c.Id == jobId);
+            
             //Photo field for responces 
             LastJob.ImagesUrl = uploadResult.Uri.ToString ();
+            LastJob.ImageName=uploadResult.PublicId+"."+uploadResult.Format;
             _context.Jobs.Update (LastJob);
             await _context.SaveChangesAsync ();
             return Ok (LastJob);
@@ -180,8 +190,9 @@ namespace HoozOn.Controllers.Job {
 
             foreach (var item in res.data) {
                 item.TimeAgo = DateFormat.RelativeDate (item.CreatedBy);
-                if(item.ImagesUrl==null){
-                    item.ImagesUrl="https://ichef.bbci.co.uk/news/976/cpsprodpb/16755/production/_119298919_repair2.png";
+                item.ThumbNailImage= _cloudinary.Api.UrlImgUp.Transform(new Transformation().Quality("auto").FetchFormat("auto").Width(350).Height(250).Gravity("faces").Crop("fill")).BuildUrl(item.ImageName);
+                if (item.ImagesUrl == null) {
+                    item.ImagesUrl = "https://ichef.bbci.co.uk/news/976/cpsprodpb/16755/production/_119298919_repair2.png";
                 }
             }
             foreach (var item in res.data) {
@@ -217,7 +228,6 @@ namespace HoozOn.Controllers.Job {
                 return Ok (res);
 
             }
-          
 
             res.PageNumber = userParams.PageNumber;
             res.PageSize = userParams.PageSize;
@@ -282,7 +292,7 @@ namespace HoozOn.Controllers.Job {
                 item.TimeAgo = DateFormat.RelativeDate (item.CreatedBy);
             }
             foreach (var item in res.data) {
-                var totalMessages = await _context.JobUserChat.Where (c => c.JobId == item.Id && c.IsRead==false).ToListAsync ();
+                var totalMessages = await _context.JobUserChat.Where (c => c.JobId == item.Id && c.IsRead == false).ToListAsync ();
                 item.TotalResponces = totalMessages.Count ();
             }
             return Ok (res);
@@ -309,7 +319,7 @@ namespace HoozOn.Controllers.Job {
                 item.TimeAgo = DateFormat.RelativeDate (item.CreatedBy);
             }
             foreach (var item in res.data) {
-                var totalMessages = await _context.JobUserChat.Where (c => c.JobId == item.Id && c.IsRead==false).ToListAsync ();
+                var totalMessages = await _context.JobUserChat.Where (c => c.JobId == item.Id && c.IsRead == false).ToListAsync ();
                 item.TotalResponces = totalMessages.Count ();
             }
             return Ok (res);
@@ -410,7 +420,7 @@ namespace HoozOn.Controllers.Job {
                 item.TimeAgo = DateFormat.RelativeDate (item.CreatedBy);
             }
             foreach (var item in res.data) {
-                var totalMessages = await _context.JobUserChat.Where (c => c.JobId == item.Id && c.IsRead==false).ToListAsync ();
+                var totalMessages = await _context.JobUserChat.Where (c => c.JobId == item.Id && c.IsRead == false).ToListAsync ();
                 item.TotalResponces = totalMessages.Count ();
             }
             return Ok (res);
@@ -473,6 +483,26 @@ namespace HoozOn.Controllers.Job {
             responceData.Status_Message = "Your Job saved Successfully";
             return Ok (new { responceData, CreatedJob });
 
+        }
+
+        //For Web oNly for now later remove
+        //Single Job By Job Id
+        [HttpGet ("WebSingleJobByJobId/{jobId}")]
+        public async Task<IActionResult> WebSingleJobByJobId (int jobId) {
+            var job = _context.Jobs.Where (x => x.Id == jobId).Include (x => x.Tags).Include (c => c.User)
+                .OrderByDescending (c => c.Id).AsQueryable ();
+
+            try {
+                var totalMessages = await _context.JobUserChat.Where (c => c.JobId == jobId && c.IsRead == false).ToListAsync ();
+                foreach (var item in job) {
+                    item.TimeAgo = DateFormat.RelativeDate (item.CreatedBy);
+                    item.TotalResponces = totalMessages.Count ();
+                }
+            } catch (System.Exception ex) {
+                return Ok (ex);
+            }
+
+            return Ok (job);
         }
 
     }

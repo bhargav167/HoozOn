@@ -1,17 +1,32 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CloudinaryDotNet;
+using HoozOn.Data.TaggingRepo;
 using HoozOn.Entities.Job;
 using HoozOn.Entities.Tag;
+using HoozOn.Extensions;
 using HoozOn.Helpers;
 using HoozOn.Helpers.Job;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace HoozOn.Data.JobRepo {
     public class JobRepo : IJobRepo {
         private readonly DataContext _context;
-        public JobRepo (DataContext context) {
+        private readonly ITaggingRepo _itaggingrepo;
+        private readonly IOptions<CloudinarySettings> _cloudinaryConfig;
+        private Cloudinary _cloudinary;
+        public JobRepo (DataContext context, ITaggingRepo itaggingrepo, IOptions<CloudinarySettings> cloudinarysetting) {
             _context = context;
+            _itaggingrepo = itaggingrepo;
+            _cloudinaryConfig = cloudinarysetting;
+            Account acc = new Account (
+                _cloudinaryConfig.Value.CloudName,
+                _cloudinaryConfig.Value.ApiKey,
+                _cloudinaryConfig.Value.ApiSecret
+            );
+            _cloudinary = new Cloudinary (acc);
         }
         public void Add<T> (T entity) where T : class {
             _context.Add (entity);
@@ -154,7 +169,7 @@ namespace HoozOn.Data.JobRepo {
         public async Task<List<JobTags>> GetAllJobByMultiTag (JobParams jobParam) {
             var jobBasedOnTagSearch = await _context.JobTag.Include (x => x.Job).Include (x => x.Job.Tags)
                 .Include (x => x.Job.User)
-                .Where (c => c.TagName.ToLower ().Contains (jobParam.searchTag.Trim().ToLower ())).ToListAsync ();
+                .Where (c => c.TagName.ToLower ().Contains (jobParam.searchTag.Trim ().ToLower ())).ToListAsync ();
 
             return jobBasedOnTagSearch;
         }
@@ -174,5 +189,85 @@ namespace HoozOn.Data.JobRepo {
         public async Task<bool> SaveAll () {
             return await _context.SaveChangesAsync () > 0;
         }
+
+        public async Task<List<Tags>> GetAllUserByMultiTag (UserParams userParam) {
+            var jobBasedOnTagSearch = await _context.Tags.Include (x => x.User).Include (x => x.User.tags)
+                .Where (c => c.TagName.ToLower ().Contains (userParam.SearchTagTerm.Trim ().ToLower ())).ToListAsync ();
+
+            return jobBasedOnTagSearch;
+        }
+
+        public async Task<PagedList<JobTags>> GetJobsByMultiTags (JobParams jobParams) {
+            WallResponce jobTags = new WallResponce ();
+            List<JobTags> jobs1 = new List<JobTags> ();
+
+            if (jobParams.searchTag == null) {
+                var jobBasedOnTagSearch = await _context.JobTag.Include (x => x.Job).Include (x => x.Job.User)
+                    .Include (x => x.Job.Tags).OrderByDescending (c => c.JobId).ToListAsync ();
+
+                foreach (var item in jobBasedOnTagSearch) {
+                    
+                    item.Job.ImagesUrl =  
+                    _cloudinary.Api.UrlImgUp.Transform(new Transformation().Quality("auto").FetchFormat("auto").Width(350).Height(250).Gravity("faces").Crop("fill")).BuildUrl(item.Job.ImageName);
+                    item.Job.TimeAgo = DateFormat.RelativeDate (item.Job.CreatedBy);
+                    jobTags.Success = true;
+                    jobTags.Status = 200;
+                    jobTags.status_message = "";
+                    jobs1.Add (item);
+                    jobTags.data = jobs1.Where (x => x.Job.JobStatus == "OPEN").OrderByDescending (c => c.JobId).GroupBy (x => x.JobId).Select (x => x.First ()).ToList ();
+
+                }
+                return await PagedList<JobTags>.CreateAsync1 (jobTags.data, jobParams.PageNumber, jobParams.pageSize);
+            }
+
+            var jobs = await GetAllJobByMultiTag (jobParams);
+
+            foreach (var item in jobs) {
+                item.Job.TimeAgo = DateFormat.RelativeDate (item.Job.CreatedBy);
+                jobTags.Success = true;
+                jobTags.Status = 200;
+                jobTags.status_message = "";
+                jobs1.Add (item);
+                jobTags.data = jobs1.Where (x => x.Job.JobStatus == "OPEN").OrderByDescending (c => c.JobId).GroupBy (x => x.JobId).Select (x => x.First ()).ToList ();
+            }
+
+            if (jobs.Count == 0) {
+                var jobBasedOnTagSearch = await _context.JobTag.Include (x => x.Job)
+                    .Include (x => x.Job.Tags).Include (x => x.Job.User).ToListAsync ();
+                var searchtag = jobParams.searchTag.Trim ().Split (' ');
+                foreach (var item2 in searchtag) {
+                    foreach (var item in jobBasedOnTagSearch) {
+                        var tag = item.TagName.Split (' ');
+                        foreach (var item1 in tag) {
+                            if (item2.ToLower () == item1.ToLower ()) {
+                                item.Job.TimeAgo = DateFormat.RelativeDate (item.Job.CreatedBy);
+                                jobTags.Success = true;
+                                jobTags.Status = 200;
+                                jobTags.status_message = "";
+                                jobs1.Add (item);
+                                jobTags.data = jobs1.Where (x => x.Job.JobStatus == "OPEN").OrderByDescending (c => c.JobId).GroupBy (x => x.JobId).Select (x => x.First ()).ToList ();
+                            }
+                        }
+
+                    }
+                }
+
+                //If No tag match then add that tag to tag master
+
+                if (jobTags.data == null && !await _itaggingrepo.IsTagMasterExist (jobParams.searchTag)) {
+                    // TagMaster tagMaster = new TagMaster ();
+                    // tagMaster.TagName = jobParams.searchTag;
+                    // await _itaggingrepo.AddTagMaster (tagMaster);
+                    // await _context.SaveChangesAsync ();
+
+                    return await PagedList<JobTags>.CreateAsync1 (jobTags.data, jobParams.PageNumber, jobParams.pageSize);
+                }
+
+                return await PagedList<JobTags>.CreateAsync1 (jobTags.data, jobParams.PageNumber, jobParams.pageSize);
+            }
+
+            return await PagedList<JobTags>.CreateAsync1 (jobTags.data, jobParams.PageNumber, jobParams.pageSize);
+        }
+
     }
 }

@@ -6,7 +6,6 @@ using AutoMapper;
 using HoozOn.Data;
 using HoozOn.Data.PhaseRepo1;
 using HoozOn.Data.TaggingRepo;
-using HoozOn.DTOs;
 using HoozOn.Entities.Authentication;
 using HoozOn.Entities.Job;
 using HoozOn.Entities.Responces;
@@ -169,7 +168,7 @@ namespace HoozOn.Controllers.Users {
             return Ok (authUser.GroupBy (x => x.Id).Select (x => x.First ()).ToList ());
         }
 
-        //Add JOb By Users
+        //Add JOb By Users checking now
         [HttpPost ("AddUserJobs")]
         public async Task<IActionResult> AddUserJobs ([FromBody] UserJobs userjob) {
             ResponceData _responce = new ResponceData ();
@@ -186,9 +185,8 @@ namespace HoozOn.Controllers.Users {
             }
 
             // validate request
-            if (!ModelState.IsValid) {
-                return BadRequest ();
-            }
+            if (!ModelState.IsValid)  
+                return BadRequest (); 
 
             //Saving Success data.
             CreatedUserJob = await _crudrepo.AddUserJob (userjob);

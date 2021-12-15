@@ -38,10 +38,7 @@ namespace HoozOn.Data.TaggingRepo {
         }
         public async Task<List<TagMaster>> SuggestTag (string searchTerm) {
             var suggestionTerm = await _context.TagMaster.Where (c => c.TagName.Contains (searchTerm)).ToListAsync ();
-            if (suggestionTerm.Count == 0) {
-                var allTerm = await _context.TagMaster.ToListAsync ();
-                return allTerm;
-            }
+            
             return suggestionTerm;
         }
 

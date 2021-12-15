@@ -9,7 +9,7 @@ namespace HoozOn.Helpers.Job {
             set { pageSize = (value > MaxPageSize) ? MaxPageSize : value; }
         }
         public string Address { get; set; }
-        public string searchTag { get; set; }
+        public string searchTag { get; set; }="";
          public string JobStatus { get; set; } = "OPEN";
         public int? UserId { get; set; }
     }
