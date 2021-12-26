@@ -19,6 +19,7 @@ namespace HoozOn.Entities.Authentication
         public string WebSiteUrl { get; set; } 
         public string Latitude { get; set; } 
         public string Longitude { get; set; }
+        public string City { get; set; }
         public string UserAddress { get; set; } 
         public string AboutUs { get; set; }
         public ICollection<Tags> tags { get; set; }

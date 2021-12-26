@@ -1,6 +1,7 @@
 K:\Workspace\HoozOn\bin\Debug\netcoreapp3.1\publish\HoozOn.exe
 K:\Workspace\HoozOn\bin\Debug\netcoreapp3.1\publish\wwwroot\3rdpartylicenses.txt
 K:\Workspace\HoozOn\bin\Debug\netcoreapp3.1\publish\wwwroot\assets\.npmignore
+K:\Workspace\HoozOn\bin\Debug\netcoreapp3.1\publish\wwwroot\assets\imgs.png
 K:\Workspace\HoozOn\bin\Debug\netcoreapp3.1\publish\wwwroot\assets\Logo\hoozlogo.png
 K:\Workspace\HoozOn\bin\Debug\netcoreapp3.1\publish\wwwroot\fa-brands-400.216edb96b562c79adc09.svg
 K:\Workspace\HoozOn\bin\Debug\netcoreapp3.1\publish\wwwroot\fa-brands-400.329a95a9172fdb2cccb4.woff

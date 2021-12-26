@@ -24,6 +24,9 @@ namespace HoozOn.Entities.Job {
         public string Longitude { get; set; }
         public string Address { get; set; } 
         public string Status { get; set; }
+        public string City { get; set; }
+        
+        
 
         //Boolean Properties
         public bool IsAnonymous { get; set; }

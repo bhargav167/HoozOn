@@ -120,7 +120,7 @@ namespace HoozOn.Data.JobRepo {
             var loginUserTags = await _context.SocialAuthentication.Include (x => x.tags)
                 .Where (c => c.Id == jobParam.UserId).FirstOrDefaultAsync ();
 
-            var addedJobs = await _context.UserJobs.Include (c => c.jobModel).Where (x => x.socialAuthenticationId == jobParam.UserId).ToListAsync ();
+            var addedJobs = await _context.UserJobs.Include (c => c.jobModel).Include (c => c.jobModel.Tags).Include (c => c.jobModel.User).Where (x => x.socialAuthenticationId == jobParam.UserId && x.jobModel.JobStatus==jobParam.JobStatus).ToListAsync ();
 
             // GetAllJob Job With Address And User Tags Related 
             if (jobs.Count () > 0) {

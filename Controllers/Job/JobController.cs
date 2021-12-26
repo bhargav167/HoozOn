@@ -190,10 +190,13 @@ namespace HoozOn.Controllers.Job {
 
             foreach (var item in res.data) {
                 item.TimeAgo = DateFormat.RelativeDate (item.CreatedBy);
-                item.ThumbNailImage= _cloudinary.Api.UrlImgUp.Transform(new Transformation().Quality("auto").FetchFormat("auto").Width(350).Height(250).Gravity("faces").Crop("fill")).BuildUrl(item.ImageName);
-                if (item.ImagesUrl == null) {
-                    item.ImagesUrl = "https://ichef.bbci.co.uk/news/976/cpsprodpb/16755/production/_119298919_repair2.png";
-                }
+                 if (item.ImagesUrl == null) {
+                        item.ThumbNailImage = null;
+                    } else {
+                        item.ThumbNailImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
+                                .Quality ("auto").FetchFormat ("auto").Width (500).Height (500).Gravity ("faces").Crop ("fill"))
+                            .BuildUrl (item.ImageName);
+                    }
             }
             foreach (var item in res.data) {
                 var totalMessages = await _context.JobUserChat.Where (c => c.JobId == item.Id).ToListAsync ();
@@ -242,6 +245,13 @@ namespace HoozOn.Controllers.Job {
 
             foreach (var item in res.data) {
                 item.TimeAgo = DateFormat.RelativeDate (item.CreatedBy);
+                 if (item.ImagesUrl == null) {
+                        item.ThumbNailImage = null;
+                    } else {
+                        item.ThumbNailImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
+                                .Quality ("auto").FetchFormat ("auto").Width (500).Height (500).Gravity ("faces").Crop ("fill"))
+                            .BuildUrl (item.ImageName);
+                    }
             }
             foreach (var item in res.data) {
                 var totalMessages = await _context.JobUserChat.Where (c => c.JobId == item.Id).ToListAsync ();
@@ -290,6 +300,13 @@ namespace HoozOn.Controllers.Job {
             res.TotalPage = Convert.ToInt16 (Math.Ceiling (pagecount + 1));
             foreach (var item in res.data) {
                 item.TimeAgo = DateFormat.RelativeDate (item.CreatedBy);
+                 if (item.ImagesUrl == null) {
+                        item.ThumbNailImage = null;
+                    } else {
+                        item.ThumbNailImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
+                                .Quality ("auto").FetchFormat ("auto").Width (500).Height (500).Gravity ("faces").Crop ("fill"))
+                            .BuildUrl (item.ImageName);
+                    }
             }
             foreach (var item in res.data) {
                 var totalMessages = await _context.JobUserChat.Where (c => c.JobId == item.Id && c.IsRead == false).ToListAsync ();
@@ -317,6 +334,13 @@ namespace HoozOn.Controllers.Job {
             res.TotalRecord = res.data.Count ();
             foreach (var item in res.data) {
                 item.TimeAgo = DateFormat.RelativeDate (item.CreatedBy);
+                 if (item.ImagesUrl == null) {
+                        item.ThumbNailImage = null;
+                    } else {
+                        item.ThumbNailImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
+                                .Quality ("auto").FetchFormat ("auto").Width (500).Height (500).Gravity ("faces").Crop ("fill"))
+                            .BuildUrl (item.ImageName);
+                    }
             }
             foreach (var item in res.data) {
                 var totalMessages = await _context.JobUserChat.Where (c => c.JobId == item.Id && c.IsRead == false).ToListAsync ();
@@ -338,6 +362,13 @@ namespace HoozOn.Controllers.Job {
             res.data = jobs;
             foreach (var item in res.data) {
                 item.TimeAgo = DateFormat.RelativeDate (item.CreatedBy);
+                 if (item.ImagesUrl == null) {
+                        item.ThumbNailImage = null;
+                    } else {
+                        item.ThumbNailImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
+                                .Quality ("auto").FetchFormat ("auto").Width (500).Height (500).Gravity ("faces").Crop ("fill"))
+                            .BuildUrl (item.ImageName);
+                    }
             }
             return Ok (res);
         }
@@ -418,6 +449,13 @@ namespace HoozOn.Controllers.Job {
             res.TotalPage = Convert.ToInt16 (Math.Floor (pagecount + 1));
             foreach (var item in res.data) {
                 item.TimeAgo = DateFormat.RelativeDate (item.CreatedBy);
+                 if (item.ImagesUrl == null) {
+                        item.ThumbNailImage = null;
+                    } else {
+                        item.ThumbNailImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
+                                .Quality ("auto").FetchFormat ("auto").Width (500).Height (500).Gravity ("faces").Crop ("fill"))
+                            .BuildUrl (item.ImageName);
+                    }
             }
             foreach (var item in res.data) {
                 var totalMessages = await _context.JobUserChat.Where (c => c.JobId == item.Id && c.IsRead == false).ToListAsync ();
@@ -434,6 +472,12 @@ namespace HoozOn.Controllers.Job {
             // Checking Duplicate Entry
             if (await _jobrepo.IsJobExist (JobId)) {
                 var CreatedJob = await _jobrepo.getJobToUpdate (JobId);
+                if(CreatedJob.JobStatus=="CLOSED"){
+                      responceData.Status = 209;
+                responceData.Success = true;
+                responceData.Status_Message = "Closed Job status cannot be change";
+                return Ok (new { responceData, CreatedJob });
+                }
                 CreatedJob.JobStatus = JobStatus;
 
                 _context.Jobs.Update (CreatedJob);
@@ -496,6 +540,13 @@ namespace HoozOn.Controllers.Job {
                 var totalMessages = await _context.JobUserChat.Where (c => c.JobId == jobId && c.IsRead == false).ToListAsync ();
                 foreach (var item in job) {
                     item.TimeAgo = DateFormat.RelativeDate (item.CreatedBy);
+                     if (item.ImagesUrl == null) {
+                        item.ThumbNailImage = null;
+                    } else {
+                        item.ThumbNailImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
+                                .Quality ("auto").FetchFormat ("auto").Width (500).Height (500).Gravity ("faces").Crop ("fill"))
+                            .BuildUrl (item.ImageName);
+                    }
                     item.TotalResponces = totalMessages.Count ();
                 }
             } catch (System.Exception ex) {

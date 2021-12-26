@@ -62,8 +62,7 @@ namespace HoozOn.Controllers.Messages {
         [HttpPost ("Send/{userId}")]
         public async Task<IActionResult> CreateMessage (int userId, [FromBody] MessageForCreationDto messageForCreationDto) {
             messageForCreationDto.SenderId = userId;
-            await _hubContext.Clients.All.SendAsync ("ReceiveOne", messageForCreationDto.SenderId, messageForCreationDto.Content);
-            var sender = await _iAuthRepo.getAuthById (userId);
+             var sender = await _iAuthRepo.getAuthById (userId);
 
             var recipient = await _iAuthRepo.getAuthById (messageForCreationDto.RecipientId);
 
@@ -80,8 +79,7 @@ namespace HoozOn.Controllers.Messages {
 
             if (await _crudrepo.SaveAll ()) {
                 messageForCreationDto.ChatTime=DateFormat.MeridianTime(message.MessageSent);
-                var messageToReturn = _mapper.Map<MessageToReturnDto> (message);
-                // return CreatedAtRoute("GetMessage", new {id = message.Id}, messageToReturn);
+                var messageToReturn = _mapper.Map<MessageToReturnDto> (message); 
                 return Ok (messageForCreationDto);
             }
 
@@ -107,6 +105,22 @@ namespace HoozOn.Controllers.Messages {
                 }
             }
             return Ok (users);
+        }
+
+        //UserList By Alphabetical Order
+         [HttpGet ("AllChatsUserByAlphaOrder/{userId}")]
+        public async Task<ActionResult<IEnumerable<MessagedUsers>>> AllChatsUserByAlphaOrder (int userId) {
+            List<SocialAuthentication> users = new List<SocialAuthentication> ();
+            var messages = await _iMessageRepo.GetMessagedUser (userId);
+            foreach (var item in messages) {
+                if (item.SenderId == userId) {
+                    users.Add (item.Recipient);
+                }
+                if (item.RecipientId == userId) {
+                    users.Add (item.Sender);
+                }
+            }
+            return Ok (users.OrderBy(x=>x.Name));
         }
 
         [HttpGet ("UserChat/{senderId}/{recipentId}")]
@@ -147,6 +161,7 @@ namespace HoozOn.Controllers.Messages {
                 await _iMessageRepo.AddJobUserChat (jobUserChat);
 
             if (await _crudrepo.SaveAll ()) {
+                
                 return Ok (jobMessages);
             }
             throw new Exception ("Creating the message failed on save");
@@ -204,8 +219,7 @@ namespace HoozOn.Controllers.Messages {
 
                 if (ChatToUpdate == null){ 
                       statusResponces.status=false;
-                    return Ok(statusResponces);
-
+                    return Ok(statusResponces); 
                 }
              
               //  ChatToUpdate.IsRead = true;

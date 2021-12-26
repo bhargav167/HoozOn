@@ -21,14 +21,24 @@ namespace HoozOn.Controllers.Job {
     public class WallController : ControllerBase {
         private readonly IJobRepo _jobrepo;
         private readonly DataContext _context;
-        private readonly ITaggingRepo _itaggingrepo; 
-       
-        public WallController (IJobRepo jobrepo, ITaggingRepo itaggingrepo, DataContext context
+        private readonly ITaggingRepo _itaggingrepo;
+        private readonly IOptions<CloudinarySettings> _cloudinaryConfig;
+        private Cloudinary _cloudinary;
+
+        public WallController (IJobRepo jobrepo, ITaggingRepo itaggingrepo, DataContext context,
+            IOptions<CloudinarySettings> cloudinarysetting
         ) {
             _jobrepo = jobrepo;
             _context = context;
             _itaggingrepo = itaggingrepo;
-           
+            _cloudinaryConfig = cloudinarysetting;
+            Account acc = new Account (
+                _cloudinaryConfig.Value.CloudName,
+                _cloudinaryConfig.Value.ApiKey,
+                _cloudinaryConfig.Value.ApiSecret
+            );
+            _cloudinary = new Cloudinary (acc);
+
         }
 
         [HttpGet ("GetJobsByMultiTags")]
@@ -41,7 +51,13 @@ namespace HoozOn.Controllers.Job {
                     .Include (x => x.Job.Tags).OrderByDescending (c => c.JobId).ToListAsync ();
 
                 foreach (var item in jobBasedOnTagSearch) {
-
+                    if (item.Job.ImagesUrl == null) {
+                        item.Job.ThumbNailImage = null;
+                    } else {
+                        item.Job.ThumbNailImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
+                                .Quality ("auto").FetchFormat ("auto").Width (500).Height (500).Gravity ("faces").Crop ("fill"))
+                            .BuildUrl (item.Job.ImageName);
+                    }
                     item.Job.TimeAgo = DateFormat.RelativeDate (item.Job.CreatedBy);
                     jobTags.Success = true;
                     jobTags.Status = 200;
@@ -56,6 +72,13 @@ namespace HoozOn.Controllers.Job {
             var jobs = await _jobrepo.GetAllJobByMultiTag (jobParams);
 
             foreach (var item in jobs) {
+                if (item.Job.ImagesUrl == null) {
+                    item.Job.ThumbNailImage = null;
+                } else {
+                    item.Job.ThumbNailImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
+                            .Quality ("auto").FetchFormat ("auto").Width (500).Height (500).Gravity ("faces").Crop ("fill"))
+                        .BuildUrl (item.Job.ImageName);
+                }
                 item.Job.TimeAgo = DateFormat.RelativeDate (item.Job.CreatedBy);
                 jobTags.Success = true;
                 jobTags.Status = 200;
@@ -73,6 +96,13 @@ namespace HoozOn.Controllers.Job {
                         var tag = item.TagName.Split (' ');
                         foreach (var item1 in tag) {
                             if (item2.ToLower () == item1.ToLower ()) {
+                                if (item.Job.ImagesUrl == null) {
+                                    item.Job.ThumbNailImage = null;
+                                } else {
+                                    item.Job.ThumbNailImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
+                                            .Quality ("auto").FetchFormat ("auto").Width (500).Height (500).Gravity ("faces").Crop ("fill"))
+                                        .BuildUrl (item.Job.ImageName);
+                                }
                                 item.Job.TimeAgo = DateFormat.RelativeDate (item.Job.CreatedBy);
                                 jobTags.Success = true;
                                 jobTags.Status = 200;
@@ -111,6 +141,7 @@ namespace HoozOn.Controllers.Job {
                     .Include (x => x.User.tags).OrderByDescending (c => c.UserId).ToListAsync ();
 
                 foreach (var item in jobBasedOnTagSearch) {
+                    
                     jobTags.Success = true;
                     jobTags.Status = 200;
                     jobTags.status_message = "";
@@ -163,10 +194,10 @@ namespace HoozOn.Controllers.Job {
         public async Task<IActionResult> WebGetJobsByMultiTags ([FromQuery] JobParams jobParams) {
             try {
                 var wallList = await _jobrepo.GetJobsByMultiTags (jobParams);
-                
+
                 return Ok (wallList);
             } catch (System.Exception ex) {
-                 throw new System.Exception("Error "+ex);
+                throw new System.Exception ("Error " + ex);
             }
 
         }
