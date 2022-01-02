@@ -195,7 +195,7 @@ namespace HoozOn.Controllers.Authentication {
                     }
                 }
                 //Photo field for responces 
-                photoDto.url = uploadResult.Uri.ToString ();
+                photoDto.url = uploadResult.Url.ToString ();
                 photoDto.PublicId = uploadResult.PublicId;
                 photoDto.Success = true;
                 photoDto.Status = 200;
@@ -247,7 +247,7 @@ namespace HoozOn.Controllers.Authentication {
                 }
             }
             //Photo field for responces 
-            photoDto.url = uploadResult.Uri.ToString ();
+            photoDto.url = uploadResult.Url.ToString ();
             photoDto.PublicId = uploadResult.PublicId;
             photoDto.Success = true;
             photoDto.Status = 200;

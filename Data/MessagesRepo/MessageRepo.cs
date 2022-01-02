@@ -45,7 +45,7 @@ namespace HoozOn.Data.MessagesRepo {
 
         public async Task<IEnumerable<MessagedUsers>> GetMessagedUser (int userId) {
             var query = await _context.MessagedUser.Include (x => x.Recipient).Include (x => x.Sender)
-                .Where (c => c.SenderId == userId || c.RecipientId == userId)
+                .Where (c => c.SenderId == userId || c.RecipientId == userId).OrderByDescending(x=>x.MessageSent)
                 .ToListAsync ();
             return query;
         }

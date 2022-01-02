@@ -120,7 +120,7 @@ namespace HoozOn.Data.JobRepo {
             var loginUserTags = await _context.SocialAuthentication.Include (x => x.tags)
                 .Where (c => c.Id == jobParam.UserId).FirstOrDefaultAsync ();
 
-            var addedJobs = await _context.UserJobs.Include (c => c.jobModel).Include (c => c.jobModel.Tags).Include (c => c.jobModel.User).Where (x => x.socialAuthenticationId == jobParam.UserId && x.jobModel.JobStatus==jobParam.JobStatus).ToListAsync ();
+            var addedJobs = await _context.UserJobs.Include (c => c.jobModel).Include (c => c.jobModel.Tags).Include (c => c.jobModel.User).Where (x => x.socialAuthenticationId == jobParam.UserId && x.jobModel.JobStatus == jobParam.JobStatus).ToListAsync ();
 
             // GetAllJob Job With Address And User Tags Related 
             if (jobs.Count () > 0) {
@@ -206,9 +206,15 @@ namespace HoozOn.Data.JobRepo {
                     .Include (x => x.Job.Tags).OrderByDescending (c => c.JobId).ToListAsync ();
 
                 foreach (var item in jobBasedOnTagSearch) {
-                    
-                    item.Job.ImagesUrl =  
-                    _cloudinary.Api.UrlImgUp.Transform(new Transformation().Quality("auto").FetchFormat("auto").Width(350).Height(250).Gravity("faces").Crop("fill")).BuildUrl(item.Job.ImageName);
+                    if (item.Job.ImagesUrl == null) {
+                        item.Job.ImagesUrl = "https://res.cloudinary.com/livsolution/image/upload/v1639118677/pidammkt8acbxzmjauhy.jpg";
+                        item.Job.ThumbNailImage = "https://res.cloudinary.com/livsolution/image/upload/c_fill,f_auto,g_faces,h_500,q_auto,w_500/zzx11jcwlghv2uhxsi9q.jpg";
+
+                    } else {
+                        item.Job.ThumbNailImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
+                                .Quality ("auto").FetchFormat ("auto").Width (500).Height (500).Gravity ("faces").Crop ("fill"))
+                            .BuildUrl (item.Job.ImageName);
+                    }
                     item.Job.TimeAgo = DateFormat.RelativeDate (item.Job.CreatedBy);
                     jobTags.Success = true;
                     jobTags.Status = 200;
@@ -223,6 +229,15 @@ namespace HoozOn.Data.JobRepo {
             var jobs = await GetAllJobByMultiTag (jobParams);
 
             foreach (var item in jobs) {
+                if (item.Job.ImagesUrl == null) {
+                    item.Job.ImagesUrl = "https://res.cloudinary.com/livsolution/image/upload/v1639118677/pidammkt8acbxzmjauhy.jpg";
+                        item.Job.ThumbNailImage = "https://res.cloudinary.com/livsolution/image/upload/c_fill,f_auto,g_faces,h_500,q_auto,w_500/zzx11jcwlghv2uhxsi9q.jpg";
+
+                } else {
+                    item.Job.ThumbNailImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
+                            .Quality ("auto").FetchFormat ("auto").Width (500).Height (500).Gravity ("faces").Crop ("fill"))
+                        .BuildUrl (item.Job.ImageName);
+                }
                 item.Job.TimeAgo = DateFormat.RelativeDate (item.Job.CreatedBy);
                 jobTags.Success = true;
                 jobTags.Status = 200;
@@ -240,6 +255,15 @@ namespace HoozOn.Data.JobRepo {
                         var tag = item.TagName.Split (' ');
                         foreach (var item1 in tag) {
                             if (item2.ToLower () == item1.ToLower ()) {
+                                if (item.Job.ImagesUrl == null) {
+                                    item.Job.ImagesUrl = "https://res.cloudinary.com/livsolution/image/upload/v1639118677/pidammkt8acbxzmjauhy.jpg";
+                        item.Job.ThumbNailImage = "https://res.cloudinary.com/livsolution/image/upload/c_fill,f_auto,g_faces,h_500,q_auto,w_500/zzx11jcwlghv2uhxsi9q.jpg";
+
+                                } else {
+                                    item.Job.ThumbNailImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
+                                            .Quality ("auto").FetchFormat ("auto").Width (500).Height (500).Gravity ("faces").Crop ("fill"))
+                                        .BuildUrl (item.Job.ImageName);
+                                }
                                 item.Job.TimeAgo = DateFormat.RelativeDate (item.Job.CreatedBy);
                                 jobTags.Success = true;
                                 jobTags.Status = 200;

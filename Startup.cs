@@ -58,8 +58,8 @@ namespace HoozOn {
                     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
                 );
             services.AddAuthentication ().AddGoogle (options => {
-                options.ClientId = "523248943342-e3j50o2fojm6fujhck86a3h8bd9ehuho.apps.googleusercontent.com";
-                options.ClientSecret = "UqqppOAaSX1okn-xxPaaRuH-";
+                options.ClientId = "686535990215-6j4hhcqvmi1rdlqg8rq96da45o6gkpph.apps.googleusercontent.com";
+                options.ClientSecret = "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";
             });
         }
 

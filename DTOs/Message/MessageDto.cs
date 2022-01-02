@@ -5,6 +5,7 @@ namespace HoozOn.DTOs.Message
 {
     public class MessageDto
     {
+        private static TimeZoneInfo INDIAN_ZONE = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
         public int Id { get; set; }
         public int SenderId { get; set; }
         public string SenderUsername { get; set; }
@@ -25,5 +26,9 @@ namespace HoozOn.DTOs.Message
         public bool SenderDeleted { get; set; }
         [JsonIgnore]
         public bool RecipientDeleted { get; set; }
+        public MessageDto()
+        {
+            MessageSent = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow,INDIAN_ZONE);
+        }
     }
 }

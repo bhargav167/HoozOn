@@ -39,6 +39,8 @@ namespace HoozOn.Entities.Job {
         public string TimeAgo { get; set; }
         [NotMapped]
         public int TotalResponces { get; set; } 
+        [NotMapped]
+        public int TotalRead { get; set; } 
         public string JobStatus { get; set; } 
         [NotMapped]
         public IFormFile JobImges { get; set; } 

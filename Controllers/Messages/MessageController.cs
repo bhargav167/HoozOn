@@ -29,6 +29,7 @@ namespace HoozOn.Controllers.Messages {
         private readonly IMapper _mapper;
         private readonly IHubContext<ChatHub> _hubContext;
         private readonly DataContext _context;
+         private static TimeZoneInfo INDIAN_ZONE = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
 
         public MessageController (ICrudRepo crudrepo,
             IMapper mapper,
@@ -62,28 +63,37 @@ namespace HoozOn.Controllers.Messages {
         [HttpPost ("Send/{userId}")]
         public async Task<IActionResult> CreateMessage (int userId, [FromBody] MessageForCreationDto messageForCreationDto) {
             messageForCreationDto.SenderId = userId;
-             var sender = await _iAuthRepo.getAuthById (userId);
+            var sender = await _iAuthRepo.getAuthById (userId);
 
             var recipient = await _iAuthRepo.getAuthById (messageForCreationDto.RecipientId);
 
             if (recipient == null)
                 return BadRequest ("Could not find user");
 
-            var message = _mapper.Map<MessageModal> (messageForCreationDto);
-            MessagedUsers messagedUsers = new MessagedUsers ();
-            messagedUsers.SenderId = userId;
-            messagedUsers.RecipientId = messageForCreationDto.RecipientId;
+            //Check If Usered Aready Messaged Each Othet than Update its Time Of Chat To Databases
+            var isUserChat = await _context.MessagedUser.Where (x => x.RecipientId == messageForCreationDto.RecipientId && x.SenderId == userId).FirstOrDefaultAsync ();
+            if (isUserChat == null) {
+                var message = _mapper.Map<MessageModal> (messageForCreationDto);
+                MessagedUsers messagedUsers = new MessagedUsers ();
+                messagedUsers.SenderId = userId;
+                messagedUsers.RecipientId = messageForCreationDto.RecipientId;
 
-            await _iMessageRepo.AddChatUser (messagedUsers);
-            _crudrepo.Add (message);
+                await _iMessageRepo.AddChatUser (messagedUsers);
+                _crudrepo.Add (message);
 
-            if (await _crudrepo.SaveAll ()) {
-                messageForCreationDto.ChatTime=DateFormat.MeridianTime(message.MessageSent);
-                var messageToReturn = _mapper.Map<MessageToReturnDto> (message); 
-                return Ok (messageForCreationDto);
-            }
-
-            throw new Exception ("Creating the message failed on save");
+                if (await _crudrepo.SaveAll ()) {
+                    messageForCreationDto.ChatTime = DateFormat.MeridianTime (message.MessageSent);
+                    var messageToReturn = _mapper.Map<MessageToReturnDto> (message);
+                    return Ok (messageForCreationDto);
+                } 
+            }else{ 
+               
+                isUserChat.MessageSent=TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow,INDIAN_ZONE);
+                  _context.MessagedUser.Update(isUserChat);
+                  await _context.SaveChangesAsync();
+                     return Ok (messageForCreationDto);
+            } 
+            return NoContent();
         }
 
         [HttpGet ("All/{userId}")]
@@ -108,7 +118,7 @@ namespace HoozOn.Controllers.Messages {
         }
 
         //UserList By Alphabetical Order
-         [HttpGet ("AllChatsUserByAlphaOrder/{userId}")]
+        [HttpGet ("AllChatsUserByAlphaOrder/{userId}")]
         public async Task<ActionResult<IEnumerable<MessagedUsers>>> AllChatsUserByAlphaOrder (int userId) {
             List<SocialAuthentication> users = new List<SocialAuthentication> ();
             var messages = await _iMessageRepo.GetMessagedUser (userId);
@@ -120,7 +130,7 @@ namespace HoozOn.Controllers.Messages {
                     users.Add (item.Sender);
                 }
             }
-            return Ok (users.OrderBy(x=>x.Name));
+            return Ok (users.OrderBy (x => x.Name));
         }
 
         [HttpGet ("UserChat/{senderId}/{recipentId}")]
@@ -161,7 +171,7 @@ namespace HoozOn.Controllers.Messages {
                 await _iMessageRepo.AddJobUserChat (jobUserChat);
 
             if (await _crudrepo.SaveAll ()) {
-                
+
                 return Ok (jobMessages);
             }
             throw new Exception ("Creating the message failed on save");
@@ -212,24 +222,24 @@ namespace HoozOn.Controllers.Messages {
         [HttpPost ("JobUserMessageResponceUpdate/{jobId}/{senderId}/{recipentId}")]
         public async Task<IActionResult> JobUserMessageResponceUpdate (int jobId, int senderId, int recipentId) {
             try {
-                 StatusResponces statusResponces=new StatusResponces();
+                StatusResponces statusResponces = new StatusResponces ();
                 var ChatToUpdate = await _context.JobUserChat
                     .Where (x => x.JobId == jobId && x.SenderId == senderId && x.RecipientId == recipentId)
-                    .FirstOrDefaultAsync (); 
+                    .FirstOrDefaultAsync ();
 
-                if (ChatToUpdate == null){ 
-                      statusResponces.status=false;
-                    return Ok(statusResponces); 
+                if (ChatToUpdate == null) {
+                    statusResponces.status = false;
+                    return Ok (statusResponces);
                 }
-             
-              //  ChatToUpdate.IsRead = true;
-                 statusResponces.status=true;
+
+                ChatToUpdate.IsRead = true;
+                statusResponces.status = true;
                 _context.JobUserChat.Update (ChatToUpdate);
                 await _context.SaveChangesAsync ();
 
                 return Ok (statusResponces);
             } catch (System.Exception ex) {
-                throw new Exception("Error In Updating"+ex);
+                throw new Exception ("Error In Updating" + ex);
             }
 
         }

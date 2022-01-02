@@ -5,6 +5,7 @@ namespace HoozOn.Entities.Message.JobMessage
 {
     public class JobMessages
     {
+         private static TimeZoneInfo INDIAN_ZONE = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
         public int Id { get; set; }
         public int JobId { get; set; }
         public JobModel Job { get; set; }
@@ -18,7 +19,7 @@ namespace HoozOn.Entities.Message.JobMessage
         
         public JobMessages()
         {
-            MessageSent=DateTime.Now;
+          MessageSent = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow,INDIAN_ZONE);
             IsRead=false;
         }
     }

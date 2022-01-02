@@ -31,14 +31,16 @@ namespace HoozOn.Data.TaggingRepo {
         }
 
         public async Task<bool> IsTagExist (int userId, string tagName) {
-            if (await _context.Tags.AnyAsync (e => e.UserId == userId && e.TagName == tagName))
+            if (await _context.Tags.AnyAsync (e => e.UserId == userId && e.TagName.ToLower() == tagName.ToLower()))
                 return true;
 
             return false;
         }
         public async Task<List<TagMaster>> SuggestTag (string searchTerm) {
-            var suggestionTerm = await _context.TagMaster.Where (c => c.TagName.Contains (searchTerm)).ToListAsync ();
-            
+            var suggestionTerm = await _context.TagMaster.Where (c => c.TagName.ToLower ()
+                    .Contains (searchTerm.ToLower ()))
+                .ToListAsync ();
+
             return suggestionTerm;
         }
 
@@ -65,10 +67,10 @@ namespace HoozOn.Data.TaggingRepo {
         }
 
         public async Task<bool> IsTagMasterExist (string tagName) {
-            if (await _context.TagMaster.AnyAsync (e => e.TagName.ToLower() == tagName.ToLower()))
+            if (await _context.TagMaster.AnyAsync (e => e.TagName.ToLower () == tagName.ToLower ()))
                 return true;
 
             return false;
-        } 
+        }
     }
 }

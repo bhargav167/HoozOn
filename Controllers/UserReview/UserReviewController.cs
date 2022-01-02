@@ -29,7 +29,7 @@ namespace HoozOn.Controllers.UserReview {
                 var reviewCreated = await _userReview.AddReview (review);
                 responceData.Status = 200;
                 responceData.Success = true;
-                responceData.Status_Message = "Your Job saved Successfully";
+                responceData.Status_Message = "Your Review saved Successfully";
                 return Ok (new { responceData, reviewCreated });
             } catch (System.Exception ex) {
                 throw new System.Exception ("Error occure " + ex);
