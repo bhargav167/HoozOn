@@ -38,6 +38,7 @@ namespace HoozOn.Controllers.Job {
             ONHOLD,
             DELETE
         }
+
         public JobController (IJobRepo jobrepo, IMapper mapper,
             IWebHostEnvironment environment,
             DataContext context,
@@ -84,6 +85,12 @@ namespace HoozOn.Controllers.Job {
             if (!ModelState.IsValid)
                 return BadRequest (ModelState);
 
+            if (job.IsAnonymous == true) {
+                job.AnonmousUserPic = "https://res.cloudinary.com/livsolution/image/upload/v1641136836/Anonymous_zt4y7i.png";
+            } else {
+                job.AnonmousUserPic = null;
+            }
+
             var CreatedJob = await _jobrepo.AddJob (job);
 
             responceData.Status = 200;
@@ -97,11 +104,28 @@ namespace HoozOn.Controllers.Job {
         public async Task<IActionResult> AddJobImage (int jobId, [FromHeader] IFormFile file) {
             if (file == null) {
                 ResponceData data = new ResponceData ();
-                data.Status = 200;
-                data.Status_Message = "Uploaded Blank image";
-                data.Success = true;
-                return Ok (data);
+                Random _random = new Random ();
+
+                List<string> colorCode = new List<string> ();
+                colorCode.Add ("#2D3E50");
+                colorCode.Add ("#F44236");
+                colorCode.Add ("#1BBC9B");
+                colorCode.Add ("#03A9F5");
+                colorCode.Add ("#FFBB00");
+
+                var choosesColorIndex = _random.Next (0, 4);
+                string selectedColor = colorCode[choosesColorIndex];
+                var LastJobs = await _context.Jobs.FirstOrDefaultAsync (c => c.Id == jobId);
+
+                //Photo field for responces 
+                LastJobs.ImagesUrl = null;
+                LastJobs.ImageName = null;
+                LastJobs.ColorCode = selectedColor;
+                    _context.Jobs.Update (LastJobs);
+                await _context.SaveChangesAsync ();
+                return Ok (LastJobs); 
             }
+
             //     //Saving Image to cloudinary
             //       //Handle Image to save to cloudinary
             var imgfile = file;
@@ -124,7 +148,7 @@ namespace HoozOn.Controllers.Job {
                     }
                 }
             }
-            //var LastJob = await _context.Jobs.OrderByDescending (x => x.Id).Take (1).FirstOrDefaultAsync ();
+
             var LastJob = await _context.Jobs.FirstOrDefaultAsync (c => c.Id == jobId);
 
             //Photo field for responces 
@@ -198,7 +222,7 @@ namespace HoozOn.Controllers.Job {
                 }
             }
             foreach (var item in res.data) {
-                  var totalMessages = await _context.JobUserChat.Where (c => c.JobId == item.Id).ToListAsync ();
+                var totalMessages = await _context.JobUserChat.Where (c => c.JobId == item.Id).ToListAsync ();
                 var totalMessagesRead = await _context.JobUserChat.Where (c => c.JobId == item.Id && c.IsRead == false).ToListAsync ();
                 item.TotalResponces = totalMessages.Count ();
                 item.TotalRead = totalMessagesRead.Count ();
@@ -255,7 +279,7 @@ namespace HoozOn.Controllers.Job {
                 }
             }
             foreach (var item in res.data) {
-                   var totalMessages = await _context.JobUserChat.Where (c => c.JobId == item.Id).ToListAsync ();
+                var totalMessages = await _context.JobUserChat.Where (c => c.JobId == item.Id).ToListAsync ();
                 var totalMessagesRead = await _context.JobUserChat.Where (c => c.JobId == item.Id && c.IsRead == false).ToListAsync ();
                 item.TotalResponces = totalMessages.Count ();
                 item.TotalRead = totalMessagesRead.Count ();
@@ -312,7 +336,7 @@ namespace HoozOn.Controllers.Job {
                 }
             }
             foreach (var item in res.data) {
-                  var totalMessages = await _context.JobUserChat.Where (c => c.JobId == item.Id).ToListAsync ();
+                var totalMessages = await _context.JobUserChat.Where (c => c.JobId == item.Id).ToListAsync ();
                 var totalMessagesRead = await _context.JobUserChat.Where (c => c.JobId == item.Id && c.IsRead == false).ToListAsync ();
                 item.TotalResponces = totalMessages.Count ();
                 item.TotalRead = totalMessagesRead.Count ();
@@ -467,9 +491,9 @@ namespace HoozOn.Controllers.Job {
             foreach (var item in res.data) {
                 var totalMessages = await _context.JobUserChat.Where (c => c.JobId == item.Id && c.IsRead == false).ToListAsync ();
                 var totalMessagesRead = await _context.JobUserChat.Where (c => c.JobId == item.Id && c.IsRead == true).ToListAsync ();
-               
+
                 item.TotalResponces = totalMessages.Count ();
-                item.TotalRead=totalMessagesRead.Count();
+                item.TotalRead = totalMessagesRead.Count ();
             }
             return Ok (res);
         }
@@ -548,9 +572,8 @@ namespace HoozOn.Controllers.Job {
 
             try {
                 var totalMessages = await _context.JobUserChat.Where (c => c.JobId == jobId && c.IsRead == false).ToListAsync ();
-                 var totalMessagesRead = await _context.JobUserChat.Where (c => c.JobId == jobId && c.IsRead == true).ToListAsync ();
-               
-              
+                var totalMessagesRead = await _context.JobUserChat.Where (c => c.JobId == jobId && c.IsRead == true).ToListAsync ();
+
                 foreach (var item in job) {
                     item.TimeAgo = DateFormat.RelativeDate (item.CreatedBy);
                     if (item.ImagesUrl == null) {
@@ -561,7 +584,7 @@ namespace HoozOn.Controllers.Job {
                             .BuildUrl (item.ImageName);
                     }
                     item.TotalResponces = totalMessages.Count ();
-                item.TotalRead=totalMessagesRead.Count();
+                    item.TotalRead = totalMessagesRead.Count ();
                 }
             } catch (System.Exception ex) {
                 return Ok (ex);

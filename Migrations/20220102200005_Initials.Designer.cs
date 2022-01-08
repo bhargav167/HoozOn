@@ -4,14 +4,16 @@ using HoozOn.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HoozOn.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20220102200005_Initials")]
+    partial class Initials
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -338,31 +340,6 @@ namespace HoozOn.Migrations
                     b.ToTable("Reporting");
                 });
 
-            modelBuilder.Entity("HoozOn.Entities.Report.UserReport", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Issues")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("repotedID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("repoterID")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("repotedID");
-
-                    b.HasIndex("repoterID");
-
-                    b.ToTable("UserReport");
-                });
-
             modelBuilder.Entity("HoozOn.Entities.Roles.Role", b =>
                 {
                     b.Property<int>("Id")
@@ -398,6 +375,8 @@ namespace HoozOn.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("JobId");
+
+                    b.HasIndex("TagMasterId");
 
                     b.ToTable("JobTag");
                 });
@@ -437,6 +416,8 @@ namespace HoozOn.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("TagMasterId");
 
                     b.HasIndex("UserId");
 
@@ -659,21 +640,6 @@ namespace HoozOn.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("HoozOn.Entities.Report.UserReport", b =>
-                {
-                    b.HasOne("HoozOn.Entities.Authentication.SocialAuthentication", "repoted")
-                        .WithMany()
-                        .HasForeignKey("repotedID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("HoozOn.Entities.Authentication.SocialAuthentication", "repoter")
-                        .WithMany()
-                        .HasForeignKey("repoterID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("HoozOn.Entities.Tag.JobTags", b =>
                 {
                     b.HasOne("HoozOn.Entities.Job.JobModel", "Job")
@@ -681,10 +647,22 @@ namespace HoozOn.Migrations
                         .HasForeignKey("JobId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("HoozOn.Entities.Tag.TagMaster", "TagMaster")
+                        .WithMany()
+                        .HasForeignKey("TagMasterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("HoozOn.Entities.Tag.Tags", b =>
                 {
+                    b.HasOne("HoozOn.Entities.Tag.TagMaster", "TagMaster")
+                        .WithMany()
+                        .HasForeignKey("TagMasterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("HoozOn.Entities.Authentication.SocialAuthentication", "User")
                         .WithMany("tags")
                         .HasForeignKey("UserId")

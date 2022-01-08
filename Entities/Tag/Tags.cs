@@ -9,7 +9,7 @@ namespace HoozOn.Entities.Tag {
         public string TagName { get; set; }
         public int UserId { get; set; }
         public SocialAuthentication User { get; set; }
-        public TagMaster TagMaster { get; set; }
+      //  public TagMaster TagMaster { get; set; }
         public int TagMasterId { get; set; }
         public bool IsApproved { get; set; }
     }

@@ -20,6 +20,7 @@ namespace HoozOn.Controllers.Report {
             if (!ModelState.IsValid)
                 return BadRequest (ModelState);
 
+                
             ResponceData _responceData = new ResponceData ();
             _responceData.Status = 200;
             _responceData.Success = true;
@@ -39,8 +40,31 @@ namespace HoozOn.Controllers.Report {
             _responceData.Status = 200;
             _responceData.Success = true;
             _responceData.Status_Message = "Saved Successfully";
-            var CreatedContact = await _reportRepo.AddContactUs(contactUs);
+            var CreatedContact = await _reportRepo.AddContactUs (contactUs);
             return Ok (new { _responceData, CreatedContact });
+        }
+
+        //Register Method api/Job/AddJob
+        [HttpPost ("AddUserReport")]
+        public async Task<IActionResult> AddUserReport ([FromBody] UserReport reporting) {
+            ResponceData _responceData = new ResponceData ();
+            // validate request
+            if (!ModelState.IsValid)
+                return BadRequest (ModelState);
+            var user = await _reportRepo.getAuthById (reporting.repotedID);
+            if (user == null) {
+                _responceData.Status = 200;
+                _responceData.Success = true;
+                _responceData.Status_Message = "Repoted Successfully";
+            
+                return Ok (new { _responceData });
+            }
+
+            _responceData.Status = 200;
+            _responceData.Success = true;
+            _responceData.Status_Message = "Repoted Successfully";
+            var CreatedReporting = await _reportRepo.ReportingUser (reporting);
+            return Ok (new { _responceData, CreatedReporting });
         }
 
     }

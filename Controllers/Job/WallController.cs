@@ -138,7 +138,7 @@ namespace HoozOn.Controllers.Job {
 
             if (jobParams.SearchTagTerm == null) {
                 var jobBasedOnTagSearch = await _context.Tags.Include (x => x.User)
-                    .Include (x => x.User.tags).OrderByDescending (c => c.UserId).ToListAsync ();
+                    .Include (x => x.User.tags).Where(x=>x.User.Id!=jobParams.userId).OrderByDescending (c => c.UserId).ToListAsync ();
 
                 foreach (var item in jobBasedOnTagSearch) {
                     
@@ -165,7 +165,7 @@ namespace HoozOn.Controllers.Job {
 
             if (jobs.Count == 0) {
                 var jobBasedOnTagSearch = await _context.Tags.Include (x => x.User)
-                    .Include (x => x.User.tags).ToListAsync ();
+                    .Include (x => x.User.tags).Where(x=>x.User.Id!=jobParams.userId).ToListAsync ();
                 var searchtag = jobParams.SearchTagTerm.Trim ().Split (' ');
                 foreach (var item2 in searchtag) {
                     foreach (var item in jobBasedOnTagSearch) {

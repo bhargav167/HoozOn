@@ -23,7 +23,9 @@ namespace HoozOn.Controllers.UserReview {
             ResponceData responceData = new ResponceData ();
             // validate request
             if (!ModelState.IsValid)
-                return BadRequest (ModelState);
+                return BadRequest (ModelState); 
+
+                //Add Check for user avability
 
             try {
                 var reviewCreated = await _userReview.AddReview (review);

@@ -128,7 +128,7 @@ namespace HoozOn.Data.JobRepo {
                     foreach (var job in jobs) {
                         foreach (var jobtag in job.Tags) {
                             foreach (var item in loginUserTags.tags) {
-                                if (item.TagName == jobtag.TagName) {
+                                if (item.TagName.ToLower() == jobtag.TagName.ToLower()) {
                                     modal.Add (job);
                                 }
                             }
@@ -191,7 +191,8 @@ namespace HoozOn.Data.JobRepo {
         }
 
         public async Task<List<Tags>> GetAllUserByMultiTag (UserParams userParam) {
-            var jobBasedOnTagSearch = await _context.Tags.Include (x => x.User).Include (x => x.User.tags)
+            var jobBasedOnTagSearch = await _context.Tags.Include (x => x.User).Include (x => x.User.tags).
+            Where(x=>x.User.Id!=userParam.userId)
                 .Where (c => c.TagName.ToLower ().Contains (userParam.SearchTagTerm.Trim ().ToLower ())).ToListAsync ();
 
             return jobBasedOnTagSearch;
@@ -207,8 +208,8 @@ namespace HoozOn.Data.JobRepo {
 
                 foreach (var item in jobBasedOnTagSearch) {
                     if (item.Job.ImagesUrl == null) {
-                        item.Job.ImagesUrl = "https://res.cloudinary.com/livsolution/image/upload/v1639118677/pidammkt8acbxzmjauhy.jpg";
-                        item.Job.ThumbNailImage = "https://res.cloudinary.com/livsolution/image/upload/c_fill,f_auto,g_faces,h_500,q_auto,w_500/zzx11jcwlghv2uhxsi9q.jpg";
+                        item.Job.ImagesUrl = null;
+                        item.Job.ThumbNailImage = null;
 
                     } else {
                         item.Job.ThumbNailImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
@@ -230,9 +231,8 @@ namespace HoozOn.Data.JobRepo {
 
             foreach (var item in jobs) {
                 if (item.Job.ImagesUrl == null) {
-                    item.Job.ImagesUrl = "https://res.cloudinary.com/livsolution/image/upload/v1639118677/pidammkt8acbxzmjauhy.jpg";
-                        item.Job.ThumbNailImage = "https://res.cloudinary.com/livsolution/image/upload/c_fill,f_auto,g_faces,h_500,q_auto,w_500/zzx11jcwlghv2uhxsi9q.jpg";
-
+                    item.Job.ImagesUrl = null;
+                    item.Job.ThumbNailImage = null;
                 } else {
                     item.Job.ThumbNailImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
                             .Quality ("auto").FetchFormat ("auto").Width (500).Height (500).Gravity ("faces").Crop ("fill"))
@@ -256,9 +256,8 @@ namespace HoozOn.Data.JobRepo {
                         foreach (var item1 in tag) {
                             if (item2.ToLower () == item1.ToLower ()) {
                                 if (item.Job.ImagesUrl == null) {
-                                    item.Job.ImagesUrl = "https://res.cloudinary.com/livsolution/image/upload/v1639118677/pidammkt8acbxzmjauhy.jpg";
-                        item.Job.ThumbNailImage = "https://res.cloudinary.com/livsolution/image/upload/c_fill,f_auto,g_faces,h_500,q_auto,w_500/zzx11jcwlghv2uhxsi9q.jpg";
-
+                                    item.Job.ImagesUrl = null;
+                                    item.Job.ThumbNailImage = null;
                                 } else {
                                     item.Job.ThumbNailImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
                                             .Quality ("auto").FetchFormat ("auto").Width (500).Height (500).Gravity ("faces").Crop ("fill"))

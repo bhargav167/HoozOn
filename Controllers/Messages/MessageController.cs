@@ -104,8 +104,16 @@ namespace HoozOn.Controllers.Messages {
 
         [HttpGet ("AllChatsUser/{userId}")]
         public async Task<ActionResult<IEnumerable<MessagedUsers>>> AllChatsUser (int userId) {
+             ResponceUserData rs=new ResponceUserData();
             List<SocialAuthentication> users = new List<SocialAuthentication> ();
             var messages = await _iMessageRepo.GetMessagedUser (userId);
+            if(messages.Count()==0){ 
+               rs.Status=209;
+               rs.Success=true;
+               rs.Status_Message="No Chat found";
+               rs.data=null;
+               return Ok(rs);
+            }
             foreach (var item in messages) {
                 if (item.SenderId == userId) {
                     users.Add (item.Recipient);
@@ -114,23 +122,41 @@ namespace HoozOn.Controllers.Messages {
                     users.Add (item.Sender);
                 }
             }
-            return Ok (users);
+          users.OrderBy((x => x.Name));
+               rs.Status=200;
+               rs.Success=true;
+               rs.Status_Message="Chat List Found";
+               rs.data=users;
+            return Ok (rs);
         }
 
         //UserList By Alphabetical Order
         [HttpGet ("AllChatsUserByAlphaOrder/{userId}")]
         public async Task<ActionResult<IEnumerable<MessagedUsers>>> AllChatsUserByAlphaOrder (int userId) {
+            ResponceUserData rs=new ResponceUserData();
             List<SocialAuthentication> users = new List<SocialAuthentication> ();
             var messages = await _iMessageRepo.GetMessagedUser (userId);
+             if(messages.Count()==0){ 
+               rs.Status=209;
+               rs.Success=true;
+               rs.Status_Message="No Chat found";
+               rs.data=null;
+               return Ok(rs);
+            }
             foreach (var item in messages) {
                 if (item.SenderId == userId) {
                     users.Add (item.Recipient);
                 }
                 if (item.RecipientId == userId) {
                     users.Add (item.Sender);
-                }
+                } 
             }
-            return Ok (users.OrderBy (x => x.Name));
+            users.OrderBy((x => x.Name));
+               rs.Status=200;
+               rs.Success=true;
+               rs.Status_Message="Chat List Found";
+               rs.data=users;
+            return Ok (rs);
         }
 
         [HttpGet ("UserChat/{senderId}/{recipentId}")]
