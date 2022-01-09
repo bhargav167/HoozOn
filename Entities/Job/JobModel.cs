@@ -14,7 +14,7 @@ namespace HoozOn.Entities.Job {
         public int UserId { get; set; }
         public SocialAuthentication User { get; set; }
 
-        [StringLength (360, MinimumLength = 5, ErrorMessage = "Description Length must be alteast 200 character long.")]
+        [StringLength (600, MinimumLength = 5, ErrorMessage = "Description Length must be alteast 200 character long.")]
         public string Descriptions { get; set; }
         public string ImagesUrl { get; set; }
         public string ImageName { get; set; } 

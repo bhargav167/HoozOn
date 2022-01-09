@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "PVi7bLmU9gsmGWEpxe+CnztnBSRNGmpCUrVtIZQXeNDubDVHFLff8Q5/Y+UEyPCWe60AKSJRXaf902Spwr0Opw==",
+  "dgSpecHash": "TLm5MzHgZac17I90n8oNHmNWPaZDbi3hrRTfVP2N6BwKX+1Kv/6UGyOEUhglEZIkaSdikRCgdOsHHBAu7euVUA==",
   "success": true,
-  "projectFilePath": "K:\\Workspace\\hoozon\\HoozOn.csproj",
+  "projectFilePath": "K:\\Workspace\\HoozOn\\HoozOn.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\kshitiz Bhargav\\.nuget\\packages\\automapper\\6.1.1\\automapper.6.1.1.nupkg.sha512",
     "C:\\Users\\kshitiz Bhargav\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\3.0.1\\automapper.extensions.microsoft.dependencyinjection.3.0.1.nupkg.sha512",

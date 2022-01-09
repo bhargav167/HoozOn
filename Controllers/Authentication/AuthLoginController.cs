@@ -77,7 +77,7 @@ namespace HoozOn.Controllers.Authentication {
                 socialAuthentication.Name = socialAuthentication.UserName;
                 socialAuthentication.UserName = createdUserName;
                 socialAuthentication.ImageUrl = "https://res.cloudinary.com/livsolution/image/upload/v1641635510/DefaultUser_ktw7ga.png";
-                socialAuthentication.CoverImageUrl = "https://i.pinimg.com/originals/0c/f6/c3/0cf6c362a7cf6bc8e4e404811176f5c1.png";
+                socialAuthentication.CoverImageUrl = "https://res.cloudinary.com/livsolution/image/upload/v1641738686/banner_ni97mf.png";
                 socialAuthentication.Success = true;
                 socialAuthentication.LoginTime = DateTime.Now;
                 socialAuthentication.Status_Message = "User added to database successfully";
