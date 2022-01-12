@@ -215,6 +215,7 @@ namespace HoozOn.Data.JobRepo {
                         item.Job.ThumbNailImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
                                 .Quality ("auto").FetchFormat ("auto").Width (500).Height (500).Gravity ("faces").Crop ("fill"))
                             .BuildUrl (item.Job.ImageName);
+                             
                     }
                     item.Job.TimeAgo = DateFormat.RelativeDate (item.Job.CreatedBy);
                     jobTags.Success = true;

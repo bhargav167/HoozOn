@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "K:\\Workspace\\HoozOn\\HoozOn.csproj": {}
+    "K:\\Workspace\\Hoozon\\HoozOn.csproj": {}
   },
   "projects": {
-    "K:\\Workspace\\HoozOn\\HoozOn.csproj": {
+    "K:\\Workspace\\Hoozon\\HoozOn.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "K:\\Workspace\\HoozOn\\HoozOn.csproj",
+        "projectUniqueName": "K:\\Workspace\\Hoozon\\HoozOn.csproj",
         "projectName": "HoozOn",
-        "projectPath": "K:\\Workspace\\HoozOn\\HoozOn.csproj",
+        "projectPath": "K:\\Workspace\\Hoozon\\HoozOn.csproj",
         "packagesPath": "C:\\Users\\kshitiz Bhargav\\.nuget\\packages\\",
-        "outputPath": "K:\\Workspace\\HoozOn\\obj\\",
+        "outputPath": "K:\\Workspace\\Hoozon\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"

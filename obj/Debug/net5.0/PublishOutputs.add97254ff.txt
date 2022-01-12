@@ -30,8 +30,8 @@ K:\Workspace\hoozon\bin\Debug\net5.0\publish\wwwroot\fa-solid-900.c6ec080084769a
 K:\Workspace\hoozon\bin\Debug\net5.0\publish\wwwroot\fa-solid-900.efbd5d20e407bbf85f2b.eot
 K:\Workspace\hoozon\bin\Debug\net5.0\publish\wwwroot\favicon.ico
 K:\Workspace\hoozon\bin\Debug\net5.0\publish\wwwroot\index.html
-K:\Workspace\hoozon\bin\Debug\net5.0\publish\wwwroot\main-es2015.d30adf0630160655dd10.js
-K:\Workspace\hoozon\bin\Debug\net5.0\publish\wwwroot\main-es5.d30adf0630160655dd10.js
+K:\Workspace\hoozon\bin\Debug\net5.0\publish\wwwroot\main-es2015.fadbe091dfcd9fddc073.js
+K:\Workspace\hoozon\bin\Debug\net5.0\publish\wwwroot\main-es5.fadbe091dfcd9fddc073.js
 K:\Workspace\hoozon\bin\Debug\net5.0\publish\wwwroot\polyfills-es2015.2d6da2267fbc010988d6.js
 K:\Workspace\hoozon\bin\Debug\net5.0\publish\wwwroot\polyfills-es5.60fbebe625f1711aa0f9.js
 K:\Workspace\hoozon\bin\Debug\net5.0\publish\wwwroot\runtime-es2015.a4dadbc03350107420a4.js
