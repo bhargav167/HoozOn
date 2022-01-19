@@ -11,6 +11,6 @@ namespace HoozOn.Helpers.Job {
         public string Address { get; set; }
         public string searchTag { get; set; }="";
          public string JobStatus { get; set; } = "OPEN";
-        public int? UserId { get; set; }
+        public int UserId { get; set; }
     }
 }

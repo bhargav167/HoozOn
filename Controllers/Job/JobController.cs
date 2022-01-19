@@ -270,6 +270,9 @@ namespace HoozOn.Controllers.Job {
 
             foreach (var item in res.data) {
                 item.TimeAgo = DateFormat.RelativeDate (item.CreatedBy);
+                 item.User.UserImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
+                            .Quality ("auto").FetchFormat ("auto").Width (128).Height (128).Gravity ("faces").Crop ("fill"))
+                        .BuildUrl (item.User.ProfileImageName);
                 if (item.ImagesUrl == null) {
                     item.ThumbNailImage = null;
                 } else {
@@ -326,6 +329,9 @@ namespace HoozOn.Controllers.Job {
             decimal pagecount = AllJob.Count / res.PageSize;
             res.TotalPage = Convert.ToInt16 (Math.Ceiling (pagecount + 1));
             foreach (var item in res.data) {
+                item.User.UserImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
+                            .Quality ("auto").FetchFormat ("auto").Width (128).Height (128).Gravity ("faces").Crop ("fill"))
+                        .BuildUrl (item.User.ProfileImageName);
                 item.TimeAgo = DateFormat.RelativeDate (item.CreatedBy);
                 if (item.ImagesUrl == null) {
                     item.ThumbNailImage = null;
@@ -524,45 +530,7 @@ namespace HoozOn.Controllers.Job {
             return null;
         }
 
-        //Testing APIS
-        [HttpPost ("TestAddjob")]
-        public async Task<IActionResult> TestAddjob ([FromForm] JobModel job) {
-            //Instances of Responces
-            ResponceData responceData = new ResponceData ();
-            // Checking Duplicate Entry
-            if (await _jobrepo.IsJobExist (job.Id)) {
-                var jobToUpdate = await _jobrepo.getJobToUpdate (job.Id);
-                jobToUpdate.JobStatus = job.JobStatus;
-                jobToUpdate.Latitude = job.Latitude;
-                jobToUpdate.Longitude = job.Longitude;
-                jobToUpdate.Address = job.Address;
-                jobToUpdate.Descriptions = job.Descriptions;
-                jobToUpdate.IsAnonymous = job.IsAnonymous;
-                jobToUpdate.ImagesUrl = jobToUpdate.ImagesUrl;
-
-                _context.Jobs.Update (jobToUpdate);
-                await _context.SaveChangesAsync ();
-
-                // ModelState.AddModelError ("Duplicates", "This Job already taken! Please Add another Job");
-                responceData.Status = 200;
-                responceData.Success = true;
-                responceData.Status_Message = "Job Updated Successfully";
-                return Ok (responceData);
-            }
-
-            // validate request
-            if (!ModelState.IsValid)
-                return BadRequest (ModelState);
-
-            var CreatedJob = await _jobrepo.AddJob (job);
-
-            responceData.Status = 200;
-            responceData.Success = true;
-            responceData.Status_Message = "Your Job saved Successfully";
-            return Ok (new { responceData, CreatedJob });
-
-        }
-
+        
         //For Web oNly for now later remove
         //Single Job By Job Id
         [HttpGet ("WebSingleJobByJobId/{jobId}")]
@@ -576,6 +544,9 @@ namespace HoozOn.Controllers.Job {
 
                 foreach (var item in job) {
                     item.TimeAgo = DateFormat.RelativeDate (item.CreatedBy);
+                      item.User.UserImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
+                                .Quality ("auto").FetchFormat ("auto").Width (128).Height (128).Gravity ("faces").Crop ("fill"))
+                            .BuildUrl (item.User.ProfileImageName); 
                     if (item.ImagesUrl == null) {
                         item.ThumbNailImage = null;
                     } else {

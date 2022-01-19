@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -128,7 +129,7 @@ namespace HoozOn.Data.JobRepo {
                     foreach (var job in jobs) {
                         foreach (var jobtag in job.Tags) {
                             foreach (var item in loginUserTags.tags) {
-                                if (item.TagName.ToLower() == jobtag.TagName.ToLower()) {
+                                if (item.TagName.ToLower () == jobtag.TagName.ToLower ()) {
                                     modal.Add (job);
                                 }
                             }
@@ -192,7 +193,7 @@ namespace HoozOn.Data.JobRepo {
 
         public async Task<List<Tags>> GetAllUserByMultiTag (UserParams userParam) {
             var jobBasedOnTagSearch = await _context.Tags.Include (x => x.User).Include (x => x.User.tags).
-            Where(x=>x.User.Id!=userParam.userId)
+            Where (x => x.User.Id != userParam.userId)
                 .Where (c => c.TagName.ToLower ().Contains (userParam.SearchTagTerm.Trim ().ToLower ())).ToListAsync ();
 
             return jobBasedOnTagSearch;
@@ -201,12 +202,17 @@ namespace HoozOn.Data.JobRepo {
         public async Task<PagedList<JobTags>> GetJobsByMultiTags (JobParams jobParams) {
             WallResponce jobTags = new WallResponce ();
             List<JobTags> jobs1 = new List<JobTags> ();
+           // var Loggeduser = await _context.SocialAuthentication.Where (c => c.Id == jobParams.UserId).FirstOrDefaultAsync ();
 
             if (jobParams.searchTag == null) {
                 var jobBasedOnTagSearch = await _context.JobTag.Include (x => x.Job).Include (x => x.Job.User)
                     .Include (x => x.Job.Tags).OrderByDescending (c => c.JobId).ToListAsync ();
 
                 foreach (var item in jobBasedOnTagSearch) {
+                     item.Job.User.UserImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
+                                .Quality ("auto").FetchFormat ("auto").Width (128).Height (128).Gravity ("faces").Crop ("fill"))
+                            .BuildUrl (item.Job.User.ProfileImageName); 
+                    //For Job Images
                     if (item.Job.ImagesUrl == null) {
                         item.Job.ImagesUrl = null;
                         item.Job.ThumbNailImage = null;
@@ -214,16 +220,23 @@ namespace HoozOn.Data.JobRepo {
                     } else {
                         item.Job.ThumbNailImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
                                 .Quality ("auto").FetchFormat ("auto").Width (500).Height (500).Gravity ("faces").Crop ("fill"))
-                            .BuildUrl (item.Job.ImageName);
-                             
-                    }
-                    item.Job.TimeAgo = DateFormat.RelativeDate (item.Job.CreatedBy);
-                    jobTags.Success = true;
-                    jobTags.Status = 200;
-                    jobTags.status_message = "";
-                    jobs1.Add (item);
-                    jobTags.data = jobs1.Where (x => x.Job.JobStatus == "OPEN").OrderByDescending (c => c.JobId).GroupBy (x => x.JobId).Select (x => x.First ()).ToList ();
+                            .BuildUrl (item.Job.ImageName); 
+                    } 
+                    //Calculate Distances 
+                    // double userlat = Convert.ToDouble (Loggeduser.Latitude);
+                    // double userlonng = Convert.ToDouble (Loggeduser.Longitude);
+                    // double lat = Convert.ToDouble (item.Job.Latitude);
+                    // double lonng = Convert.ToDouble (item.Job.Longitude);
+                    // var dis = CalculateDistance.DistanceTo (userlat, userlonng, lat, lonng);
+                    // if (dis <= 200) {
+                        item.Job.TimeAgo = DateFormat.RelativeDate (item.Job.CreatedBy);
+                        jobTags.Success = true;
+                        jobTags.Status = 200;
+                        jobTags.status_message = "";
+                        jobs1.Add (item);
+                        jobTags.data = jobs1.Where (x => x.Job.JobStatus == "OPEN").OrderByDescending (c => c.JobId).GroupBy (x => x.JobId).Select (x => x.First ()).ToList ();
 
+                   // } 
                 }
                 return await PagedList<JobTags>.CreateAsync1 (jobTags.data, jobParams.PageNumber, jobParams.pageSize);
             }
@@ -231,6 +244,9 @@ namespace HoozOn.Data.JobRepo {
             var jobs = await GetAllJobByMultiTag (jobParams);
 
             foreach (var item in jobs) {
+                 item.Job.User.UserImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
+                                .Quality ("auto").FetchFormat ("auto").Width (128).Height (128).Gravity ("faces").Crop ("fill"))
+                            .BuildUrl (item.Job.User.ProfileImageName); 
                 if (item.Job.ImagesUrl == null) {
                     item.Job.ImagesUrl = null;
                     item.Job.ThumbNailImage = null;
@@ -256,6 +272,9 @@ namespace HoozOn.Data.JobRepo {
                         var tag = item.TagName.Split (' ');
                         foreach (var item1 in tag) {
                             if (item2.ToLower () == item1.ToLower ()) {
+                                 item.Job.User.UserImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
+                                .Quality ("auto").FetchFormat ("auto").Width (128).Height (128).Gravity ("faces").Crop ("fill"))
+                            .BuildUrl (item.Job.User.ProfileImageName); 
                                 if (item.Job.ImagesUrl == null) {
                                     item.Job.ImagesUrl = null;
                                     item.Job.ThumbNailImage = null;
@@ -276,13 +295,12 @@ namespace HoozOn.Data.JobRepo {
                     }
                 }
 
-                //If No tag match then add that tag to tag master
-
+                //If No tag match then add that tag to tag master 
                 if (jobTags.data == null && !await _itaggingrepo.IsTagMasterExist (jobParams.searchTag)) {
-                    // TagMaster tagMaster = new TagMaster ();
-                    // tagMaster.TagName = jobParams.searchTag;
-                    // await _itaggingrepo.AddTagMaster (tagMaster);
-                    // await _context.SaveChangesAsync ();
+                    TagMaster tagMaster = new TagMaster ();
+                    tagMaster.TagName = jobParams.searchTag;
+                    await _itaggingrepo.AddTagMaster (tagMaster);
+                    await _context.SaveChangesAsync ();
 
                     return await PagedList<JobTags>.CreateAsync1 (jobTags.data, jobParams.PageNumber, jobParams.pageSize);
                 }

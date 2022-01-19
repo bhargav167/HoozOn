@@ -37,7 +37,6 @@ namespace HoozOn {
             services.AddScoped<IUserReview, UserReview> ();
             services.AddScoped<IReport, Report> ();
             services.AddControllers ();
-            services.AddCors ();
             services.Configure<CloudinarySettings> (_config.GetSection ("CloudinarySettings"));
             // Auto Mapper Configurations
             var mappingConfig = new MapperConfiguration (mc => {
@@ -45,7 +44,23 @@ namespace HoozOn {
             });
             IMapper mapper = mappingConfig.CreateMapper ();
             services.AddSingleton (mapper);
-            services.AddSignalR ();
+            
+             services.AddSignalR().AddMessagePackProtocol();
+
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(builder =>
+                {
+                    builder
+                        .WithOrigins(
+                        "http://localhost")
+                        .AllowCredentials()
+                        .AllowAnyHeader()
+                        .SetIsOriginAllowed(_ => true)
+                        .AllowAnyMethod();
+                });
+            });
+
             services.AddControllers (option => { option.EnableEndpointRouting = false; })
                 .SetCompatibilityVersion (CompatibilityVersion.Version_3_0)
                 .AddNewtonsoftJson (options => {
@@ -58,8 +73,8 @@ namespace HoozOn {
                     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
                 );
             services.AddAuthentication ().AddGoogle (options => {
-                options.ClientId = "686535990215-6j4hhcqvmi1rdlqg8rq96da45o6gkpph.apps.googleusercontent.com";
-                options.ClientSecret = "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";
+                options.ClientId = "547202752586-q5lou7tho2mp7ej1g7cfci3hq5offm46.apps.googleusercontent.com";
+                options.ClientSecret = "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";
             });
         }
 
@@ -83,7 +98,7 @@ namespace HoozOn {
 
             app.UseEndpoints (endpoints => {
                 endpoints.MapControllers ();
-                endpoints.MapHub<ChatHub> ("/chatsocket"); // path will look like this https://localhost:44379/chatsocket
+                endpoints.MapHub<ChatHub> ("/signalr");
                 endpoints.MapFallbackToController ("Index", "Fallback");
             });
         }

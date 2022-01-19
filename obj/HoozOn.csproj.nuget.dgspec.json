@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "K:\\Workspace\\Hoozon\\HoozOn.csproj": {}
+    "K:\\Workspace\\hoozon\\HoozOn.csproj": {}
   },
   "projects": {
-    "K:\\Workspace\\Hoozon\\HoozOn.csproj": {
+    "K:\\Workspace\\hoozon\\HoozOn.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "K:\\Workspace\\Hoozon\\HoozOn.csproj",
+        "projectUniqueName": "K:\\Workspace\\hoozon\\HoozOn.csproj",
         "projectName": "HoozOn",
-        "projectPath": "K:\\Workspace\\Hoozon\\HoozOn.csproj",
+        "projectPath": "K:\\Workspace\\hoozon\\HoozOn.csproj",
         "packagesPath": "C:\\Users\\kshitiz Bhargav\\.nuget\\packages\\",
-        "outputPath": "K:\\Workspace\\Hoozon\\obj\\",
+        "outputPath": "K:\\Workspace\\hoozon\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
@@ -72,6 +72,10 @@
               "version": "[3.0.0, )"
             },
             "Microsoft.AspNetCore.Server.Kestrel.Transport.Libuv": {
+              "target": "Package",
+              "version": "[3.1.8, )"
+            },
+            "Microsoft.AspNetCore.SignalR.Protocols.MessagePack": {
               "target": "Package",
               "version": "[3.1.8, )"
             },

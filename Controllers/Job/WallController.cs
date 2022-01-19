@@ -138,10 +138,10 @@ namespace HoozOn.Controllers.Job {
 
             if (jobParams.SearchTagTerm == null) {
                 var jobBasedOnTagSearch = await _context.Tags.Include (x => x.User)
-                    .Include (x => x.User.tags).Where(x=>x.User.Id!=jobParams.userId).OrderByDescending (c => c.UserId).ToListAsync ();
+                    .Include (x => x.User.tags).Where (x => x.User.Id != jobParams.userId).OrderByDescending (c => c.UserId).ToListAsync ();
 
                 foreach (var item in jobBasedOnTagSearch) {
-                    
+
                     jobTags.Success = true;
                     jobTags.Status = 200;
                     jobTags.status_message = "";
@@ -165,7 +165,7 @@ namespace HoozOn.Controllers.Job {
 
             if (jobs.Count == 0) {
                 var jobBasedOnTagSearch = await _context.Tags.Include (x => x.User)
-                    .Include (x => x.User.tags).Where(x=>x.User.Id!=jobParams.userId).ToListAsync ();
+                    .Include (x => x.User.tags).Where (x => x.User.Id != jobParams.userId).ToListAsync ();
                 var searchtag = jobParams.SearchTagTerm.Trim ().Split (' ');
                 foreach (var item2 in searchtag) {
                     foreach (var item in jobBasedOnTagSearch) {
@@ -194,13 +194,10 @@ namespace HoozOn.Controllers.Job {
         public async Task<IActionResult> WebGetJobsByMultiTags ([FromQuery] JobParams jobParams) {
             try {
                 var wallList = await _jobrepo.GetJobsByMultiTags (jobParams);
-
                 return Ok (wallList);
             } catch (System.Exception ex) {
                 throw new System.Exception ("Error " + ex);
-            }
-
+            } 
         }
-
     }
 }

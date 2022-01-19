@@ -1,16 +1,28 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CloudinaryDotNet;
 using HoozOn.Data;
 using HoozOn.Entities.Authentication;
 using HoozOn.Entities.Tag;
+using HoozOn.Helpers;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace HoozOn.Data.TaggingRepo {
     public class TaggingRepo : ITaggingRepo {
         private readonly DataContext _context;
-        public TaggingRepo (DataContext context) {
+          private readonly IOptions<CloudinarySettings> _cloudinaryConfig;
+        private Cloudinary _cloudinary;
+        public TaggingRepo (DataContext context,IOptions<CloudinarySettings> cloudinarysetting) {
             _context = context;
+              _cloudinaryConfig = cloudinarysetting;
+            Account acc = new Account (
+                _cloudinaryConfig.Value.CloudName,
+                _cloudinaryConfig.Value.ApiKey,
+                _cloudinaryConfig.Value.ApiSecret
+            );
+            _cloudinary = new Cloudinary (acc);
         }
         public void Add<T> (T entity) where T : class {
             _context.Add (entity);
@@ -46,6 +58,9 @@ namespace HoozOn.Data.TaggingRepo {
 
         public async Task<SocialAuthentication> getUserWithTagById (int id) {
             var user = await _context.SocialAuthentication.Include (c => c.tags).FirstOrDefaultAsync (c => c.Id == id);
+              user.UserImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
+                                .Quality ("auto").FetchFormat ("auto").Width (128).Height (128).Gravity ("faces").Crop ("fill"))
+                            .BuildUrl (user.ProfileImageName); 
             return user;
         }
 

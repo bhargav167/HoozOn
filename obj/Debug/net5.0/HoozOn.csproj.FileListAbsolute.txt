@@ -158,3 +158,5 @@ K:\Workspace\HoozOn\obj\Debug\net5.0\HoozOn.dll
 K:\Workspace\HoozOn\obj\Debug\net5.0\ref\HoozOn.dll
 K:\Workspace\HoozOn\obj\Debug\net5.0\HoozOn.pdb
 K:\Workspace\HoozOn\obj\Debug\net5.0\HoozOn.genruntimeconfig.cache
+K:\Workspace\hoozon\bin\Debug\net5.0\MessagePack.dll
+K:\Workspace\hoozon\bin\Debug\net5.0\Microsoft.AspNetCore.SignalR.Protocols.MessagePack.dll

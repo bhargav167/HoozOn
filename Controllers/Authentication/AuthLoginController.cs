@@ -77,6 +77,7 @@ namespace HoozOn.Controllers.Authentication {
                 socialAuthentication.Name = socialAuthentication.UserName;
                 socialAuthentication.UserName = createdUserName;
                 socialAuthentication.ImageUrl = "https://res.cloudinary.com/livsolution/image/upload/v1641635510/DefaultUser_ktw7ga.png";
+                socialAuthentication.ProfileImageName="DefaultUser_ktw7ga.png";
                 socialAuthentication.CoverImageUrl = "https://res.cloudinary.com/livsolution/image/upload/v1641738686/banner_ni97mf.png";
                 socialAuthentication.Success = true;
                 socialAuthentication.LoginTime = DateTime.Now;
@@ -202,6 +203,7 @@ namespace HoozOn.Controllers.Authentication {
                 photoDto.Status_Message = "Profile image uploaded successfully";
 
                 userToUpdate.ImageUrl = photoDto.url;
+                userToUpdate.ProfileImageName=uploadResult.PublicId + "." + uploadResult.Format;
                 if (userProfile != null) {
                     userProfile.ImageUrl = photoDto.url;
                     _context.Users.Update (userProfile);
