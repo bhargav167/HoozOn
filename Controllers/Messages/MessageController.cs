@@ -62,7 +62,7 @@ namespace HoozOn.Controllers.Messages {
         // Sending Messages to end user
 
         [HttpPost ("Send/{userId}")]
-        public async Task<IActionResult>  CreateMessage (int userId, [FromBody] MessageForCreationDto messageForCreationDto) {
+        public async Task<IActionResult> CreateMessage (int userId, [FromBody] MessageForCreationDto messageForCreationDto) {
             messageForCreationDto.SenderId = userId;
             await _hubContext.Clients.All.SendAsync ("messageReceivedFromApi", messageForCreationDto);
             messageForCreationDto.SenderId = userId;
@@ -73,13 +73,14 @@ namespace HoozOn.Controllers.Messages {
             if (recipient == null)
                 return BadRequest ("Could not find user");
 
+            var message = _mapper.Map<MessageModal> (messageForCreationDto);
+            MessagedUsers messagedUsers = new MessagedUsers ();
+            messagedUsers.SenderId = userId;
+            messagedUsers.RecipientId = messageForCreationDto.RecipientId;
+
             //Check If Usered Aready Messaged Each Othet than Update its Time Of Chat To Databases
             var isUserChat = await _context.MessagedUser.Where (x => x.RecipientId == messageForCreationDto.RecipientId && x.SenderId == userId).FirstOrDefaultAsync ();
             if (isUserChat == null) {
-                var message = _mapper.Map<MessageModal> (messageForCreationDto);
-                MessagedUsers messagedUsers = new MessagedUsers ();
-                messagedUsers.SenderId = userId;
-                messagedUsers.RecipientId = messageForCreationDto.RecipientId;
 
                 await _iMessageRepo.AddChatUser (messagedUsers);
                 _crudrepo.Add (message);
@@ -89,10 +90,10 @@ namespace HoozOn.Controllers.Messages {
                     var messageToReturn = _mapper.Map<MessageToReturnDto> (message);
                     return CreatedAtRoute ("GetMessage", new { id = messageToReturn.Id }, messageForCreationDto);
 
-                    throw new Exception ("Creating message failed"); 
+                    throw new Exception ("Creating message failed");
                 }
             } else {
-
+                 _crudrepo.Add (message);
                 isUserChat.MessageSent = TimeZoneInfo.ConvertTimeFromUtc (DateTime.UtcNow, INDIAN_ZONE);
                 _context.MessagedUser.Update (isUserChat);
                 await _context.SaveChangesAsync ();

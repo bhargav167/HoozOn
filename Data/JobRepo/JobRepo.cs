@@ -113,9 +113,9 @@ namespace HoozOn.Data.JobRepo {
             return await PagedList<JobModel>.CreateAsync (job, userParam.PageNumber, userParam.PageSize);
         }
 
-        public async Task<PagedList<JobModel>> GetAllWithAddedJob (JobParams jobParam) {
+        public async Task<PagedList<JobModel>> GetAllWithAddedJob (int userId, JobParams jobParam) {
             List<JobModel> modal = new List<JobModel> ();
-            var jobs = _context.Jobs.Where (x => x.JobStatus == jobParam.JobStatus)
+            var jobs = _context.Jobs.Where (x => x.JobStatus == jobParam.JobStatus && x.UserId!=userId)
                 .Include (x => x.Tags).Include (x => x.User).OrderByDescending (c => c.Id).AsQueryable ();
 
             var loginUserTags = await _context.SocialAuthentication.Include (x => x.tags)

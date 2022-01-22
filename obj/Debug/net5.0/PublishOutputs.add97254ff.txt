@@ -5,6 +5,7 @@ K:\Workspace\hoozon\bin\Debug\net5.0\publish\wwwroot\assets\DummyProfileImg\anon
 K:\Workspace\hoozon\bin\Debug\net5.0\publish\wwwroot\assets\DummyProfileImg\DefaultUser.png
 K:\Workspace\hoozon\bin\Debug\net5.0\publish\wwwroot\assets\DummyProfileImg\ImgThumb.png
 K:\Workspace\hoozon\bin\Debug\net5.0\publish\wwwroot\assets\DummyProfileImg\plumbing-repair.jpg
+K:\Workspace\hoozon\bin\Debug\net5.0\publish\wwwroot\assets\HoozIcon\HoozAdd.png
 K:\Workspace\hoozon\bin\Debug\net5.0\publish\wwwroot\assets\Logo\FB.png
 K:\Workspace\hoozon\bin\Debug\net5.0\publish\wwwroot\assets\Logo\google.png
 K:\Workspace\hoozon\bin\Debug\net5.0\publish\wwwroot\assets\Logo\hoozlogo.png
@@ -30,8 +31,8 @@ K:\Workspace\hoozon\bin\Debug\net5.0\publish\wwwroot\fa-solid-900.c6ec080084769a
 K:\Workspace\hoozon\bin\Debug\net5.0\publish\wwwroot\fa-solid-900.efbd5d20e407bbf85f2b.eot
 K:\Workspace\hoozon\bin\Debug\net5.0\publish\wwwroot\favicon.ico
 K:\Workspace\hoozon\bin\Debug\net5.0\publish\wwwroot\index.html
-K:\Workspace\hoozon\bin\Debug\net5.0\publish\wwwroot\main-es2015.53c059c2d129ebb4836f.js
-K:\Workspace\hoozon\bin\Debug\net5.0\publish\wwwroot\main-es5.53c059c2d129ebb4836f.js
+K:\Workspace\hoozon\bin\Debug\net5.0\publish\wwwroot\main-es2015.703e41f40dca5027c39f.js
+K:\Workspace\hoozon\bin\Debug\net5.0\publish\wwwroot\main-es5.703e41f40dca5027c39f.js
 K:\Workspace\hoozon\bin\Debug\net5.0\publish\wwwroot\polyfills-es2015.2d6da2267fbc010988d6.js
 K:\Workspace\hoozon\bin\Debug\net5.0\publish\wwwroot\polyfills-es5.60fbebe625f1711aa0f9.js
 K:\Workspace\hoozon\bin\Debug\net5.0\publish\wwwroot\runtime-es2015.a4dadbc03350107420a4.js

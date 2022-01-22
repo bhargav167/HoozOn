@@ -26,7 +26,7 @@ namespace HoozOn.Data.JobRepo {
         Task<PagedList<JobModel>> GetAllJobByPublic (UserParams userParam);
 
         //JobList By Added Job by user
-        Task<PagedList<JobModel>> GetAllWithAddedJob (JobParams userParam);
+        Task<PagedList<JobModel>> GetAllWithAddedJob (int userId, JobParams userParam);
          Task<PagedList<JobTags>> GetJobsByMultiTags (JobParams jobParams);
     }
 }

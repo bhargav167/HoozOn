@@ -292,9 +292,9 @@ namespace HoozOn.Controllers.Job {
 
         // Job List With Added Job By User
 
-        [HttpGet ("GetAllWithAddedJob")]
-        public async Task<IActionResult> GetAllWithAddedJob ([FromQuery] JobParams userParams) {
-            var jobs = await _jobrepo.GetAllWithAddedJob (userParams);
+        [HttpGet ("GetAllWithAddedJob/{userId}")]
+        public async Task<IActionResult> GetAllWithAddedJob (int userId, [FromQuery] JobParams userParams) {
+            var jobs = await _jobrepo.GetAllWithAddedJob (userId,userParams);
             var AllJob = await _context.Jobs.Where (x => x.JobStatus == userParams.JobStatus).ToListAsync ();
             JobResponces res = new JobResponces ();
             if (jobs.Count == 0) {
