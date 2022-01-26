@@ -66,8 +66,8 @@ namespace HoozOn.Data.MessagesRepo {
         }
 
         public async Task<IEnumerable<MessageDto>> GetSingleUserChatByJob (int jobId, int senderId, int RecipientId) {
-            var query = await _context.JobMessages.Where (c => c.SenderId == senderId && c.RecipientId == RecipientId ||
-                    c.SenderId == RecipientId && c.RecipientId == senderId)
+            var query = await _context.JobMessages.Where (c => c.SenderId == senderId && c.RecipientId == RecipientId && c.JobId==jobId ||
+                    c.SenderId == RecipientId && c.RecipientId == senderId && c.JobId==jobId)
                 .ProjectTo<MessageDto> (_mapper.ConfigurationProvider)
                 .ToListAsync ();
             return query;

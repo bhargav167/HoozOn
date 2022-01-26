@@ -245,7 +245,7 @@ namespace HoozOn.Controllers.Job {
                 if (userParams.JobStatus == JobStatus.CLOSED.ToString ()) {
                     res.Status = 102;
                 }
-                if (userParams.JobStatus == JobStatus.ONHOLD.ToString ()) {
+                if (userParams.JobStatus == "ON HOLD") {
                     res.Status = 103;
                 }
                 if (userParams.JobStatus == JobStatus.DELETE.ToString ()) {
@@ -307,7 +307,7 @@ namespace HoozOn.Controllers.Job {
                 if (userParams.JobStatus == JobStatus.CLOSED.ToString ()) {
                     res.Status = 102;
                 }
-                if (userParams.JobStatus == JobStatus.ONHOLD.ToString ()) {
+                if (userParams.JobStatus == "ON HOLD") {
                     res.Status = 103;
                 }
                 if (userParams.JobStatus == JobStatus.DELETE.ToString ()) {
