@@ -113,7 +113,7 @@ namespace HoozOn.Data.MessagesRepo {
         public async Task<IEnumerable<JobUserChat>> JobUserResponcesDetailsWithSender (int jobId, int userId) {
             List<JobUserChat> jobUserChats = new List<JobUserChat> ();
             var responcesDetails = await _context.JobUserChat.Include (c => c.Sender)
-                .Where (x => x.JobId == jobId).ToListAsync ();
+                .Where (x => x.JobId == jobId).OrderByDescending(x=>x.CreateDate).ToListAsync ();
 
             return responcesDetails;
         }

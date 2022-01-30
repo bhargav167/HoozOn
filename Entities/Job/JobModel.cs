@@ -20,6 +20,8 @@ namespace HoozOn.Entities.Job {
         public string ImageName { get; set; } 
         [NotMapped]
         public string ThumbNailImage { get; set; } 
+         [NotMapped]
+        public string JobDetailImage { get; set; } 
         public string Latitude { get; set; }
         public string Longitude { get; set; }
         public string Address { get; set; } 

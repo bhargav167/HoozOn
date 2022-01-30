@@ -93,7 +93,7 @@ namespace HoozOn.Controllers.Messages {
                     throw new Exception ("Creating message failed");
                 }
             } else {
-                 _crudrepo.Add (message);
+                _crudrepo.Add (message);
                 isUserChat.MessageSent = TimeZoneInfo.ConvertTimeFromUtc (DateTime.UtcNow, INDIAN_ZONE);
                 _context.MessagedUser.Update (isUserChat);
                 await _context.SaveChangesAsync ();
@@ -198,12 +198,17 @@ namespace HoozOn.Controllers.Messages {
             jobUserChat.JobId = jobId;
             jobUserChat.SenderId = senderId;
             jobUserChat.RecipientId = recipientId;
+            jobUserChat.CreateDate = TimeZoneInfo.ConvertTimeFromUtc (DateTime.UtcNow, INDIAN_ZONE);
             var isUserConnected = await _context.JobUserChat.Where (k => k.JobId == jobId && k.SenderId == senderId).FirstOrDefaultAsync ();
-            if (isUserConnected == null)
-                await _iMessageRepo.AddJobUserChat (jobUserChat);
+            if (isUserConnected == null) {
+                await _iMessageRepo.AddJobUserChat (jobUserChat); 
+            }
+            if (isUserConnected != null) {
+                isUserConnected.CreateDate = TimeZoneInfo.ConvertTimeFromUtc (DateTime.UtcNow, INDIAN_ZONE);
+                _context.JobUserChat.Update (isUserConnected);
+            }
 
             if (await _crudrepo.SaveAll ()) {
-
                 return Ok (jobMessages);
             }
             throw new Exception ("Creating the message failed on save");

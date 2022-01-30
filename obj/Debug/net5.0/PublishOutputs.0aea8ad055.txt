@@ -5,6 +5,7 @@ K:\Workspace\HoozOn\bin\Debug\net5.0\publish\wwwroot\assets\DummyProfileImg\anon
 K:\Workspace\HoozOn\bin\Debug\net5.0\publish\wwwroot\assets\DummyProfileImg\DefaultUser.png
 K:\Workspace\HoozOn\bin\Debug\net5.0\publish\wwwroot\assets\DummyProfileImg\ImgThumb.png
 K:\Workspace\HoozOn\bin\Debug\net5.0\publish\wwwroot\assets\DummyProfileImg\plumbing-repair.jpg
+K:\Workspace\HoozOn\bin\Debug\net5.0\publish\wwwroot\assets\HoozIcon\HoozAdd.png
 K:\Workspace\HoozOn\bin\Debug\net5.0\publish\wwwroot\assets\Logo\FB.png
 K:\Workspace\HoozOn\bin\Debug\net5.0\publish\wwwroot\assets\Logo\google.png
 K:\Workspace\HoozOn\bin\Debug\net5.0\publish\wwwroot\assets\Logo\hoozlogo.png
@@ -30,14 +31,14 @@ K:\Workspace\HoozOn\bin\Debug\net5.0\publish\wwwroot\fa-solid-900.c6ec080084769a
 K:\Workspace\HoozOn\bin\Debug\net5.0\publish\wwwroot\fa-solid-900.efbd5d20e407bbf85f2b.eot
 K:\Workspace\HoozOn\bin\Debug\net5.0\publish\wwwroot\favicon.ico
 K:\Workspace\HoozOn\bin\Debug\net5.0\publish\wwwroot\index.html
-K:\Workspace\HoozOn\bin\Debug\net5.0\publish\wwwroot\main-es2015.512e317a5912af6bcf81.js
-K:\Workspace\HoozOn\bin\Debug\net5.0\publish\wwwroot\main-es5.512e317a5912af6bcf81.js
+K:\Workspace\HoozOn\bin\Debug\net5.0\publish\wwwroot\main-es2015.ebf506d666429c86bbd8.js
+K:\Workspace\HoozOn\bin\Debug\net5.0\publish\wwwroot\main-es5.ebf506d666429c86bbd8.js
 K:\Workspace\HoozOn\bin\Debug\net5.0\publish\wwwroot\polyfills-es2015.2d6da2267fbc010988d6.js
 K:\Workspace\HoozOn\bin\Debug\net5.0\publish\wwwroot\polyfills-es5.60fbebe625f1711aa0f9.js
 K:\Workspace\HoozOn\bin\Debug\net5.0\publish\wwwroot\runtime-es2015.a4dadbc03350107420a4.js
 K:\Workspace\HoozOn\bin\Debug\net5.0\publish\wwwroot\runtime-es5.a4dadbc03350107420a4.js
 K:\Workspace\HoozOn\bin\Debug\net5.0\publish\wwwroot\scripts.206995907876a2c78426.js
-K:\Workspace\HoozOn\bin\Debug\net5.0\publish\wwwroot\styles.c536ad1a21eb0d7d8bd7.css
+K:\Workspace\HoozOn\bin\Debug\net5.0\publish\wwwroot\styles.2872fc607ffdcc304393.css
 K:\Workspace\HoozOn\bin\Debug\net5.0\publish\appsettings.Development.json
 K:\Workspace\HoozOn\bin\Debug\net5.0\publish\appsettings.json
 K:\Workspace\HoozOn\bin\Debug\net5.0\publish\HoozOn.dll
@@ -47,6 +48,7 @@ K:\Workspace\HoozOn\bin\Debug\net5.0\publish\HoozOn.pdb
 K:\Workspace\HoozOn\bin\Debug\net5.0\publish\AutoMapper.dll
 K:\Workspace\HoozOn\bin\Debug\net5.0\publish\AutoMapper.Extensions.Microsoft.DependencyInjection.dll
 K:\Workspace\HoozOn\bin\Debug\net5.0\publish\CloudinaryDotNet.dll
+K:\Workspace\HoozOn\bin\Debug\net5.0\publish\MessagePack.dll
 K:\Workspace\HoozOn\bin\Debug\net5.0\publish\Microsoft.AspNetCore.Authentication.Google.dll
 K:\Workspace\HoozOn\bin\Debug\net5.0\publish\Microsoft.AspNetCore.Authentication.JwtBearer.dll
 K:\Workspace\HoozOn\bin\Debug\net5.0\publish\Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
@@ -56,6 +58,7 @@ K:\Workspace\HoozOn\bin\Debug\net5.0\publish\Microsoft.AspNetCore.Identity.UI.dl
 K:\Workspace\HoozOn\bin\Debug\net5.0\publish\Microsoft.AspNetCore.JsonPatch.dll
 K:\Workspace\HoozOn\bin\Debug\net5.0\publish\Microsoft.AspNetCore.Mvc.NewtonsoftJson.dll
 K:\Workspace\HoozOn\bin\Debug\net5.0\publish\Microsoft.AspNetCore.Server.Kestrel.Transport.Libuv.dll
+K:\Workspace\HoozOn\bin\Debug\net5.0\publish\Microsoft.AspNetCore.SignalR.Protocols.MessagePack.dll
 K:\Workspace\HoozOn\bin\Debug\net5.0\publish\Microsoft.Bcl.AsyncInterfaces.dll
 K:\Workspace\HoozOn\bin\Debug\net5.0\publish\Microsoft.Bcl.HashCode.dll
 K:\Workspace\HoozOn\bin\Debug\net5.0\publish\Microsoft.Data.SqlClient.dll
