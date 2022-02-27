@@ -197,7 +197,17 @@ namespace HoozOn.Controllers.Job {
                 return Ok (wallList);
             } catch (System.Exception ex) {
                 throw new System.Exception ("Error " + ex);
-            } 
+            }
+        }
+
+        [HttpGet ("WebGetUsersByMultiTags")]
+        public async Task<IActionResult> WebGetUsersByMultiTags ([FromQuery] UserParams jobParams) {
+            try {
+                var wallList = await _jobrepo.GetUsersByMultiTags (jobParams);
+                return Ok (wallList);
+            } catch (System.Exception ex) {
+                throw new System.Exception ("Error " + ex);
+            }
         }
     }
 }

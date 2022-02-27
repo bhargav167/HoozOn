@@ -77,7 +77,7 @@ namespace HoozOn.Controllers.Authentication {
                 socialAuthentication.Name = socialAuthentication.UserName;
                 socialAuthentication.UserName = createdUserName;
                 socialAuthentication.ImageUrl = "https://res.cloudinary.com/livsolution/image/upload/v1641635510/DefaultUser_ktw7ga.png";
-                socialAuthentication.ProfileImageName="DefaultUser_ktw7ga.png";
+                socialAuthentication.ProfileImageName = "DefaultUser_ktw7ga.png";
                 socialAuthentication.CoverImageUrl = "https://res.cloudinary.com/livsolution/image/upload/v1641738686/banner_ni97mf.png";
                 socialAuthentication.Success = true;
                 socialAuthentication.LoginTime = DateTime.Now;
@@ -116,11 +116,11 @@ namespace HoozOn.Controllers.Authentication {
 
                     return Ok (Existuser);
                 }
-                  // validate request
+                // validate request
                 if (!ModelState.IsValid)
                     return BadRequest (ModelState);
 
-                   //Create random UserName on server
+                //Create random UserName on server
                 var createdUserName = RandomUserName.CreateUserName (socialAuthentication.UserName);
 
                 //TODO Check If CreatedUsername Exist
@@ -136,11 +136,11 @@ namespace HoozOn.Controllers.Authentication {
                 socialAuthentication.Status_Message = "User added to database successfully";
 
                 var CreatedAuth = await _iAuthRepo.AddAuth (socialAuthentication);
-                 return Ok (CreatedAuth);
+                return Ok (CreatedAuth);
             } catch (Exception ex) {
                 throw new Exception ($"Error in adding Auth Data {ex}");
             }
-             }
+        }
 
         //CustomUser Login ByPassword Method api/Auth/AddCustomUser
         [HttpPost ("Login")]
@@ -203,7 +203,7 @@ namespace HoozOn.Controllers.Authentication {
                 photoDto.Status_Message = "Profile image uploaded successfully";
 
                 userToUpdate.ImageUrl = photoDto.url;
-                userToUpdate.ProfileImageName=uploadResult.PublicId + "." + uploadResult.Format;
+                userToUpdate.ProfileImageName = uploadResult.PublicId + "." + uploadResult.Format;
                 if (userProfile != null) {
                     userProfile.ImageUrl = photoDto.url;
                     _context.Users.Update (userProfile);
@@ -267,6 +267,28 @@ namespace HoozOn.Controllers.Authentication {
                 return Ok (photoDto);
 
             return BadRequest ("Not Uploaded");
+        }
+
+        //Remove User Profile Image
+        [HttpPost ("RemoveAuthUserImage/{userId}")]
+        public async Task<IActionResult> RemovePhotoForUser (int userId) {
+            try {
+                var userToUpdate = await _iAuthRepo.getAuthById (userId);
+                if (userToUpdate == null)
+                    return NoContent ();
+
+                //Photo field to Remove 
+                userToUpdate.ImageUrl = "https://res.cloudinary.com/livsolution/image/upload/v1641635510/DefaultUser_ktw7ga.png";
+                userToUpdate.ProfileImageName = "DefaultUser_ktw7ga.png";
+
+                _context.SocialAuthentication.Update (userToUpdate);
+                if (await _context.SaveChangesAsync () > 0)
+                    return Ok (userToUpdate);
+
+            } catch (Exception ex) {
+                throw new Exception ($"Error in Removing file {ex}");
+            }
+            return BadRequest ("Not Removed");
         }
 
     }

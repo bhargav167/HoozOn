@@ -14,7 +14,7 @@ namespace HoozOn.Entities.Job {
         public int UserId { get; set; }
         public SocialAuthentication User { get; set; }
 
-        [StringLength (600, MinimumLength = 5, ErrorMessage = "Description Length must be alteast 200 character long.")]
+        [StringLength (2000, MinimumLength = 3, ErrorMessage = "Description Length must be alteast 5 character long.")]
         public string Descriptions { get; set; }
         public string ImagesUrl { get; set; }
         public string ImageName { get; set; } 
@@ -35,6 +35,10 @@ namespace HoozOn.Entities.Job {
         public bool IsPublic { get; set; }
         public bool IsLocal { get; set; }
         public bool IsGlobal { get; set; }
+        [NotMapped]
+        public bool IsAdded { get; set; }
+        
+        
         //End Properties
         public DateTime CreatedBy { get; set; }
         [NotMapped]

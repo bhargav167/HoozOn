@@ -6,6 +6,7 @@ using CloudinaryDotNet;
 using HoozOn.Data.TaggingRepo;
 using HoozOn.Entities.Job;
 using HoozOn.Entities.Tag;
+using HoozOn.Entities.Users;
 using HoozOn.Extensions;
 using HoozOn.Helpers;
 using HoozOn.Helpers.Job;
@@ -202,13 +203,23 @@ namespace HoozOn.Data.JobRepo {
         public async Task<PagedList<JobTags>> GetJobsByMultiTags (JobParams jobParams) {
             WallResponce jobTags = new WallResponce ();
             List<JobTags> jobs1 = new List<JobTags> ();
-           // var Loggeduser = await _context.SocialAuthentication.Where (c => c.Id == jobParams.UserId).FirstOrDefaultAsync ();
-
+         //  var Loggeduser = await _context.SocialAuthentication.Where (c => c.Id == jobParams.UserId).FirstOrDefaultAsync ();
+           
             if (jobParams.searchTag == null) {
                 var jobBasedOnTagSearch = await _context.JobTag.Include (x => x.Job).Include (x => x.Job.User)
                     .Include (x => x.Job.Tags).OrderByDescending (c => c.JobId).ToListAsync ();
-
+                     var addedJob=await _context.UserJobs.Where(x=>x.socialAuthenticationId==jobParams.UserId).ToListAsync();
                 foreach (var item in jobBasedOnTagSearch) {
+                    
+               if(addedJob.Count!=0){
+                    foreach (var item1 in addedJob)
+                    {
+                        if(item.JobId==item1.jobModelId){
+                            item.Job.IsAdded=true;
+                        } 
+                    }
+               }
+                   
                      item.Job.User.UserImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
                                 .Quality ("auto").FetchFormat ("auto").Width (128).Height (128).Gravity ("faces").Crop ("fill"))
                             .BuildUrl (item.Job.User.ProfileImageName); 
@@ -311,5 +322,64 @@ namespace HoozOn.Data.JobRepo {
             return await PagedList<JobTags>.CreateAsync1 (jobTags.data, jobParams.PageNumber, jobParams.pageSize);
         }
 
+        public async Task<PagedList<Tags>> GetUsersByMultiTags(UserParams jobParams)
+        {
+             UserResponce jobTags = new UserResponce ();
+            List<Tags> jobs1 = new List<Tags> ();
+
+            if (jobParams.SearchTagTerm == null) {
+                var jobBasedOnTagSearch = await _context.Tags.Include (x => x.User)
+                    .Include (x => x.User.tags).Where (x => x.User.Id != jobParams.userId).OrderByDescending (c => c.UserId).ToListAsync ();
+
+                foreach (var item in jobBasedOnTagSearch) {
+                    item.User.UserImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
+                                .Quality ("auto").FetchFormat ("auto").Width (128).Height (128).Gravity ("faces").Crop ("fill"))
+                            .BuildUrl (item.User.ProfileImageName); 
+                    jobTags.Success = true;
+                    jobTags.Status = 200;
+                    jobTags.status_message = "";
+                    jobs1.Add (item);
+                    jobTags.data = jobs1.OrderByDescending (c => c.UserId).GroupBy (x => x.UserId).Select (x => x.First ()).ToList ();
+
+                }
+                return await PagedList<Tags>.CreateAsync1 (jobTags.data, jobParams.PageNumber, jobParams.PageSize);
+            }
+
+            var jobs = await GetAllUserByMultiTag (jobParams);
+
+            foreach (var item in jobs) {
+
+                jobTags.Success = true;
+                jobTags.Status = 200;
+                jobTags.status_message = "";
+                jobs1.Add (item);
+                jobTags.data = jobs1.OrderByDescending (c => c.UserId).GroupBy (x => x.UserId).Select (x => x.First ()).ToList ();
+            }
+
+            if (jobs.Count == 0) {
+                var jobBasedOnTagSearch = await _context.Tags.Include (x => x.User)
+                    .Include (x => x.User.tags).Where (x => x.User.Id != jobParams.userId).ToListAsync ();
+                var searchtag = jobParams.SearchTagTerm.Trim ().Split (' ');
+                foreach (var item2 in searchtag) {
+                    foreach (var item in jobBasedOnTagSearch) {
+                        var tag = item.TagName.Split (' ');
+                        foreach (var item1 in tag) {
+                            if (item2.ToLower () == item1.ToLower ()) {
+
+                                jobTags.Success = true;
+                                jobTags.Status = 200;
+                                jobTags.status_message = "";
+                                jobs1.Add (item);
+                                jobTags.data = jobs1.OrderByDescending (c => c.UserId).GroupBy (x => x.UserId).Select (x => x.First ()).ToList ();
+                            }
+                        }
+
+                    }
+                }
+                return await PagedList<Tags>.CreateAsync1 (jobTags.data, jobParams.PageNumber, jobParams.PageSize);
+            }
+
+            return await PagedList<Tags>.CreateAsync1 (jobTags.data, jobParams.PageNumber, jobParams.PageSize);
+        }
     }
 }

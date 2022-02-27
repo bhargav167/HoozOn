@@ -92,8 +92,8 @@ namespace HoozOn.Controllers.Users {
             user.UserAddress = userDtos.UserAddress;
             user.WebSiteUrl = userDtos.WebSiteUrl;
             user.IsProfileCreated = true;
-            user.Latitude=userDtos.Latitude;
-            user.Longitude=userDtos.Longitude;
+            user.Latitude = userDtos.Latitude;
+            user.Longitude = userDtos.Longitude;
 
             userDtos.ImageUrl = user.ImageUrl;
             userDtos.CoverImageUrl = user.CoverImageUrl;
@@ -185,8 +185,8 @@ namespace HoozOn.Controllers.Users {
             }
 
             // validate request
-            if (!ModelState.IsValid)  
-                return BadRequest (); 
+            if (!ModelState.IsValid)
+                return BadRequest ();
 
             //Saving Success data.
             CreatedUserJob = await _crudrepo.AddUserJob (userjob);
@@ -194,6 +194,24 @@ namespace HoozOn.Controllers.Users {
             _responce.Status = 200;
             _responce.Status_Message = "Job added successfully!";
             return Ok (new { _responce, CreatedUserJob });
+        }
+
+        //Check This JobIs Add to loggedIn User Or Not
+        [HttpGet ("IsAddedJob/{userId}/{jobId}")]
+        public async Task<ActionResult<IEnumerable<SocialAuthentication>>> IsAddedJob (int userId, int jobId) {
+            ResponceData _responce = new ResponceData ();
+            var isAdded = await _context.UserJobs.Where (x => x.socialAuthenticationId == userId && x.jobModelId == jobId).FirstOrDefaultAsync ();
+            if (isAdded != null) {
+                _responce.Status = 200;
+                _responce.Success = true;
+                _responce.Status_Message = "This Job added successfull";
+                return Ok (_responce);
+            } else {
+                _responce.Status = 412;
+                _responce.Success = true;
+                _responce.Status_Message = "This Job Is not added yet";
+                return Ok (_responce);
+            }
         }
 
         // User List By Their Tag MACHING WIth job tag
@@ -206,7 +224,7 @@ namespace HoozOn.Controllers.Users {
             foreach (var item1 in allJob) {
                 foreach (var item3 in item1.Tags) {
                     foreach (var item2 in CurrentUser.tags) {
-                        if (item3.TagName.ToLower() == tagSearch.ToLower()) {
+                        if (item3.TagName.ToLower () == tagSearch.ToLower ()) {
                             authUser.Add (item1);
                         }
                     }
@@ -221,6 +239,6 @@ namespace HoozOn.Controllers.Users {
                 return Ok (_responces);
             }
             return Ok (authUser.GroupBy (x => x.Id).Select (x => x.First ()).ToList ());
-        } 
+        }
     }
 }
