@@ -32,5 +32,7 @@ namespace HoozOn.Data.JobRepo {
         //For Web
          Task<PagedList<JobTags>> GetJobsByMultiTags (JobParams jobParams);
          Task<PagedList<Tags>> GetUsersByMultiTags (UserParams jobParams);
+
+         Task<int> GetResponcesCount(int jobId);
     }
 }

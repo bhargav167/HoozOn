@@ -283,7 +283,7 @@ namespace HoozOn.Controllers.Job {
                             .Quality ("auto").FetchFormat ("auto").Width (500).Height (500).Gravity ("faces").Crop ("fill"))
                         .BuildUrl (item.ImageName);
                     item.JobDetailImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
-                            .Quality ("auto").FetchFormat ("auto").Width (1030).Height (412).Crop ("fill"))
+                            .Quality ("auto").FetchFormat ("auto").Width (200).Height (200).Crop ("fill"))
                         .BuildUrl (item.ImageName);
                 }
             }
@@ -346,7 +346,7 @@ namespace HoozOn.Controllers.Job {
                             .Quality ("auto").FetchFormat ("auto").Width (500).Height (500).Gravity ("faces").Crop ("fill"))
                         .BuildUrl (item.ImageName);
                     item.JobDetailImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
-                            .Quality ("auto").FetchFormat ("auto").Width (1030).Height (412).Crop ("fill"))
+                            .Quality ("auto").FetchFormat ("auto").Width (200).Height (200).Crop ("fill"))
                         .BuildUrl (item.ImageName);
                 }
             }

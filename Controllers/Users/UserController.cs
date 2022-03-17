@@ -181,6 +181,12 @@ namespace HoozOn.Controllers.Users {
                 _responce.Status = 422;
                 _responce.Status_Message = "Job already added!";
                 CreatedUserJob = null;
+
+                //Remove UserAdded Job
+                var jobtoRemove = await _context.UserJobs.Where(v=>v.jobModelId==userjob.jobModelId && v.socialAuthenticationId==userjob.socialAuthenticationId).FirstOrDefaultAsync();
+                  _context.UserJobs.Remove(jobtoRemove);
+                await _context.SaveChangesAsync();
+
                 return Ok (new { _responce, CreatedUserJob });
             }
 

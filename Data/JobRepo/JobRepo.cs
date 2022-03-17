@@ -116,7 +116,7 @@ namespace HoozOn.Data.JobRepo {
 
         public async Task<PagedList<JobModel>> GetAllWithAddedJob (int userId, JobParams jobParam) {
             List<JobModel> modal = new List<JobModel> ();
-            var jobs = _context.Jobs.Where (x => x.JobStatus == jobParam.JobStatus && x.UserId!=userId)
+            var jobs = _context.Jobs.Where (x => x.JobStatus == jobParam.JobStatus && x.UserId != userId)
                 .Include (x => x.Tags).Include (x => x.User).OrderByDescending (c => c.Id).AsQueryable ();
 
             var loginUserTags = await _context.SocialAuthentication.Include (x => x.tags)
@@ -203,43 +203,42 @@ namespace HoozOn.Data.JobRepo {
         public async Task<PagedList<JobTags>> GetJobsByMultiTags (JobParams jobParams) {
             WallResponce jobTags = new WallResponce ();
             List<JobTags> jobs1 = new List<JobTags> ();
-         //  var Loggeduser = await _context.SocialAuthentication.Where (c => c.Id == jobParams.UserId).FirstOrDefaultAsync ();
-           
-            if (jobParams.searchTag == null) {
-                var jobBasedOnTagSearch = await _context.JobTag.Include (x => x.Job).Include (x => x.Job.User)
-                    .Include (x => x.Job.Tags).OrderByDescending (c => c.JobId).ToListAsync ();
-                     var addedJob=await _context.UserJobs.Where(x=>x.socialAuthenticationId==jobParams.UserId).ToListAsync();
-                foreach (var item in jobBasedOnTagSearch) {
-                    
-               if(addedJob.Count!=0){
-                    foreach (var item1 in addedJob)
-                    {
-                        if(item.JobId==item1.jobModelId){
-                            item.Job.IsAdded=true;
-                        } 
-                    }
-               }
-                   
-                     item.Job.User.UserImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
-                                .Quality ("auto").FetchFormat ("auto").Width (128).Height (128).Gravity ("faces").Crop ("fill"))
-                            .BuildUrl (item.Job.User.ProfileImageName); 
-                    //For Job Images
-                    if (item.Job.ImagesUrl == null) {
-                        item.Job.ImagesUrl = null;
-                        item.Job.ThumbNailImage = null;
+            //  var Loggeduser = await _context.SocialAuthentication.Where (c => c.Id == jobParams.UserId).FirstOrDefaultAsync ();
+            try {
+                if (jobParams.searchTag == null) {
+                    var jobBasedOnTagSearch = await _context.JobTag.Include (x => x.Job).Include (x => x.Job.User)
+                        .Include (x => x.Job.Tags).OrderByDescending (c => c.JobId).ToListAsync ();
+                    var addedJob = await _context.UserJobs.Where (x => x.socialAuthenticationId == jobParams.UserId).ToListAsync ();
+                    foreach (var item in jobBasedOnTagSearch) {
 
-                    } else {
-                        item.Job.ThumbNailImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
-                                .Quality ("auto").FetchFormat ("auto").Width (500).Height (500).Gravity ("faces").Crop ("fill"))
-                            .BuildUrl (item.Job.ImageName); 
-                    } 
-                    //Calculate Distances 
-                    // double userlat = Convert.ToDouble (Loggeduser.Latitude);
-                    // double userlonng = Convert.ToDouble (Loggeduser.Longitude);
-                    // double lat = Convert.ToDouble (item.Job.Latitude);
-                    // double lonng = Convert.ToDouble (item.Job.Longitude);
-                    // var dis = CalculateDistance.DistanceTo (userlat, userlonng, lat, lonng);
-                    // if (dis <= 200) {
+                        if (addedJob.Count != 0) {
+                            foreach (var item1 in addedJob) {
+                                if (item.JobId == item1.jobModelId) {
+                                    item.Job.IsAdded = true;
+                                }
+                            }
+                        }
+
+                        item.Job.User.UserImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
+                                .Quality ("auto").FetchFormat ("auto").Width (128).Height (128).Gravity ("faces").Crop ("fill"))
+                            .BuildUrl (item.Job.User.ProfileImageName);
+                        //For Job Images
+                        if (item.Job.ImagesUrl == null) {
+                            item.Job.ImagesUrl = null;
+                            item.Job.ThumbNailImage = null;
+
+                        } else {
+                            item.Job.ThumbNailImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
+                                    .Quality ("auto").FetchFormat ("auto").Width (500).Height (500).Gravity ("faces").Crop ("fill"))
+                                .BuildUrl (item.Job.ImageName);
+                        }
+                        //Calculate Distances 
+                        // double userlat = Convert.ToDouble (Loggeduser.Latitude);
+                        // double userlonng = Convert.ToDouble (Loggeduser.Longitude);
+                        // double lat = Convert.ToDouble (item.Job.Latitude);
+                        // double lonng = Convert.ToDouble (item.Job.Longitude);
+                        // var dis = CalculateDistance.DistanceTo (userlat, userlonng, lat, lonng);
+                        // if (dis <= 200) {
                         item.Job.TimeAgo = DateFormat.RelativeDate (item.Job.CreatedBy);
                         jobTags.Success = true;
                         jobTags.Status = 200;
@@ -247,84 +246,87 @@ namespace HoozOn.Data.JobRepo {
                         jobs1.Add (item);
                         jobTags.data = jobs1.Where (x => x.Job.JobStatus == "OPEN").OrderByDescending (c => c.JobId).GroupBy (x => x.JobId).Select (x => x.First ()).ToList ();
 
-                   // } 
+                        // } 
+                    }
+                    return await PagedList<JobTags>.CreateAsync1 (jobTags.data, jobParams.PageNumber, jobParams.pageSize);
                 }
-                return await PagedList<JobTags>.CreateAsync1 (jobTags.data, jobParams.PageNumber, jobParams.pageSize);
-            }
 
-            var jobs = await GetAllJobByMultiTag (jobParams);
-
-            foreach (var item in jobs) {
-                 item.Job.User.UserImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
+                var jobs = await GetAllJobByMultiTag (jobParams);
+                if (jobs.Count != 0) {
+                    foreach (var item in jobs) {
+                        item.Job.User.UserImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
                                 .Quality ("auto").FetchFormat ("auto").Width (128).Height (128).Gravity ("faces").Crop ("fill"))
-                            .BuildUrl (item.Job.User.ProfileImageName); 
-                if (item.Job.ImagesUrl == null) {
-                    item.Job.ImagesUrl = null;
-                    item.Job.ThumbNailImage = null;
-                } else {
-                    item.Job.ThumbNailImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
-                            .Quality ("auto").FetchFormat ("auto").Width (500).Height (500).Gravity ("faces").Crop ("fill"))
-                        .BuildUrl (item.Job.ImageName);
-                }
-                item.Job.TimeAgo = DateFormat.RelativeDate (item.Job.CreatedBy);
-                jobTags.Success = true;
-                jobTags.Status = 200;
-                jobTags.status_message = "";
-                jobs1.Add (item);
-                jobTags.data = jobs1.Where (x => x.Job.JobStatus == "OPEN").OrderByDescending (c => c.JobId).GroupBy (x => x.JobId).Select (x => x.First ()).ToList ();
-            }
-
-            if (jobs.Count == 0) {
-                var jobBasedOnTagSearch = await _context.JobTag.Include (x => x.Job)
-                    .Include (x => x.Job.Tags).Include (x => x.Job.User).ToListAsync ();
-                var searchtag = jobParams.searchTag.Trim ().Split (' ');
-                foreach (var item2 in searchtag) {
-                    foreach (var item in jobBasedOnTagSearch) {
-                        var tag = item.TagName.Split (' ');
-                        foreach (var item1 in tag) {
-                            if (item2.ToLower () == item1.ToLower ()) {
-                                 item.Job.User.UserImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
-                                .Quality ("auto").FetchFormat ("auto").Width (128).Height (128).Gravity ("faces").Crop ("fill"))
-                            .BuildUrl (item.Job.User.ProfileImageName); 
-                                if (item.Job.ImagesUrl == null) {
-                                    item.Job.ImagesUrl = null;
-                                    item.Job.ThumbNailImage = null;
-                                } else {
-                                    item.Job.ThumbNailImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
-                                            .Quality ("auto").FetchFormat ("auto").Width (500).Height (500).Gravity ("faces").Crop ("fill"))
-                                        .BuildUrl (item.Job.ImageName);
-                                }
-                                item.Job.TimeAgo = DateFormat.RelativeDate (item.Job.CreatedBy);
-                                jobTags.Success = true;
-                                jobTags.Status = 200;
-                                jobTags.status_message = "";
-                                jobs1.Add (item);
-                                jobTags.data = jobs1.Where (x => x.Job.JobStatus == "OPEN").OrderByDescending (c => c.JobId).GroupBy (x => x.JobId).Select (x => x.First ()).ToList ();
-                            }
+                            .BuildUrl (item.Job.User.ProfileImageName);
+                        if (item.Job.ImagesUrl == null) {
+                            item.Job.ImagesUrl = null;
+                            item.Job.ThumbNailImage = null;
+                        } else {
+                            item.Job.ThumbNailImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
+                                    .Quality ("auto").FetchFormat ("auto").Width (500).Height (500).Gravity ("faces").Crop ("fill"))
+                                .BuildUrl (item.Job.ImageName);
                         }
-
+                        item.Job.TimeAgo = DateFormat.RelativeDate (item.Job.CreatedBy);
+                        jobTags.Success = true;
+                        jobTags.Status = 200;
+                        jobTags.status_message = "";
+                        jobs1.Add (item);
+                        jobTags.data = jobs1.Where (x => x.Job.JobStatus == "OPEN").OrderByDescending (c => c.JobId).GroupBy (x => x.JobId).Select (x => x.First ()).ToList ();
                     }
                 }
+                if (jobs.Count == 0) {
+                    var jobBasedOnTagSearch = await _context.JobTag.Include (x => x.Job)
+                        .Include (x => x.Job.Tags).Include (x => x.Job.User).ToListAsync ();
+                    var searchtag = jobParams.searchTag.Trim ().Split (' ');
+                    foreach (var item2 in searchtag) {
+                        foreach (var item in jobBasedOnTagSearch) {
+                            var tag = item.TagName.Split (' ');
+                            foreach (var item1 in tag) {
+                                if (item2.ToLower () == item1.ToLower ()) {
+                                    item.Job.User.UserImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
+                                            .Quality ("auto").FetchFormat ("auto").Width (128).Height (128).Gravity ("faces").Crop ("fill"))
+                                        .BuildUrl (item.Job.User.ProfileImageName);
+                                    if (item.Job.ImagesUrl == null) {
+                                        item.Job.ImagesUrl = null;
+                                        item.Job.ThumbNailImage = null;
+                                    } else {
+                                        item.Job.ThumbNailImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
+                                                .Quality ("auto").FetchFormat ("auto").Width (500).Height (500).Gravity ("faces").Crop ("fill"))
+                                            .BuildUrl (item.Job.ImageName);
+                                    }
+                                    item.Job.TimeAgo = DateFormat.RelativeDate (item.Job.CreatedBy);
+                                    jobTags.Success = true;
+                                    jobTags.Status = 200;
+                                    jobTags.status_message = "";
+                                    jobs1.Add (item);
+                                    jobTags.data = jobs1.Where (x => x.Job.JobStatus == "OPEN").OrderByDescending (c => c.JobId).GroupBy (x => x.JobId).Select (x => x.First ()).ToList ();
+                                }
+                            }
 
-                //If No tag match then add that tag to tag master 
-                if (jobTags.data == null && !await _itaggingrepo.IsTagMasterExist (jobParams.searchTag)) {
-                    TagMaster tagMaster = new TagMaster ();
-                    tagMaster.TagName = jobParams.searchTag;
-                    await _itaggingrepo.AddTagMaster (tagMaster);
-                    await _context.SaveChangesAsync ();
+                        }
+                    }
+
+                    //If No tag match then add that tag to tag master 
+                    if (jobTags.data == null && !await _itaggingrepo.IsTagMasterExist (jobParams.searchTag)) {
+                        // TagMaster tagMaster = new TagMaster ();
+                        // tagMaster.TagName = jobParams.searchTag;
+                        // await _itaggingrepo.AddTagMaster (tagMaster);
+                        // await _context.SaveChangesAsync ();
+
+                        return await PagedList<JobTags>.CreateAsync1 (jobTags.data, jobParams.PageNumber, jobParams.pageSize);
+                    }
 
                     return await PagedList<JobTags>.CreateAsync1 (jobTags.data, jobParams.PageNumber, jobParams.pageSize);
                 }
 
                 return await PagedList<JobTags>.CreateAsync1 (jobTags.data, jobParams.PageNumber, jobParams.pageSize);
+            } catch (System.Exception ex) {
+                throw new Exception ("Error in featching data from server :" + ex.Message);
             }
 
-            return await PagedList<JobTags>.CreateAsync1 (jobTags.data, jobParams.PageNumber, jobParams.pageSize);
         }
 
-        public async Task<PagedList<Tags>> GetUsersByMultiTags(UserParams jobParams)
-        {
-             UserResponce jobTags = new UserResponce ();
+        public async Task<PagedList<Tags>> GetUsersByMultiTags (UserParams jobParams) {
+            UserResponce jobTags = new UserResponce ();
             List<Tags> jobs1 = new List<Tags> ();
 
             if (jobParams.SearchTagTerm == null) {
@@ -333,8 +335,8 @@ namespace HoozOn.Data.JobRepo {
 
                 foreach (var item in jobBasedOnTagSearch) {
                     item.User.UserImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
-                                .Quality ("auto").FetchFormat ("auto").Width (128).Height (128).Gravity ("faces").Crop ("fill"))
-                            .BuildUrl (item.User.ProfileImageName); 
+                            .Quality ("auto").FetchFormat ("auto").Width (128).Height (128).Gravity ("faces").Crop ("fill"))
+                        .BuildUrl (item.User.ProfileImageName);
                     jobTags.Success = true;
                     jobTags.Status = 200;
                     jobTags.status_message = "";
@@ -380,6 +382,12 @@ namespace HoozOn.Data.JobRepo {
             }
 
             return await PagedList<Tags>.CreateAsync1 (jobTags.data, jobParams.PageNumber, jobParams.PageSize);
+        }
+
+        public async Task<int> GetResponcesCount (int jobId) {
+             var totalMessages = await _context.JobUserChat.Where (c => c.JobId == jobId && c.IsRead==false).ToListAsync ();
+                 int TotalResponces = totalMessages.Count ();
+                 return TotalResponces;
         }
     }
 }

@@ -16,7 +16,9 @@ K:\Workspace\hoozon\bin\Debug\net5.0\publish\wwwroot\assets\Logo\LoginHooz.png
 K:\Workspace\hoozon\bin\Debug\net5.0\publish\wwwroot\assets\Logo\searchIco.png
 K:\Workspace\hoozon\bin\Debug\net5.0\publish\wwwroot\assets\Logo\share.png
 K:\Workspace\hoozon\bin\Debug\net5.0\publish\wwwroot\assets\Logo\shareDot.png
+K:\Workspace\hoozon\bin\Debug\net5.0\publish\wwwroot\assets\Logo\ThreeDotForJobDetailsPage.png
 K:\Workspace\hoozon\bin\Debug\net5.0\publish\wwwroot\assets\Logo\Toggle.png
+K:\Workspace\hoozon\bin\Debug\net5.0\publish\wwwroot\assets\thumbImg.png
 K:\Workspace\hoozon\bin\Debug\net5.0\publish\wwwroot\fa-brands-400.216edb96b562c79adc09.svg
 K:\Workspace\hoozon\bin\Debug\net5.0\publish\wwwroot\fa-brands-400.329a95a9172fdb2cccb4.woff
 K:\Workspace\hoozon\bin\Debug\net5.0\publish\wwwroot\fa-brands-400.89a52ae1d02b86d61439.eot
@@ -34,14 +36,14 @@ K:\Workspace\hoozon\bin\Debug\net5.0\publish\wwwroot\fa-solid-900.c6ec080084769a
 K:\Workspace\hoozon\bin\Debug\net5.0\publish\wwwroot\fa-solid-900.efbd5d20e407bbf85f2b.eot
 K:\Workspace\hoozon\bin\Debug\net5.0\publish\wwwroot\favicon.ico
 K:\Workspace\hoozon\bin\Debug\net5.0\publish\wwwroot\index.html
-K:\Workspace\hoozon\bin\Debug\net5.0\publish\wwwroot\main-es2015.120e19fbb69c0fa50d6f.js
-K:\Workspace\hoozon\bin\Debug\net5.0\publish\wwwroot\main-es5.120e19fbb69c0fa50d6f.js
+K:\Workspace\hoozon\bin\Debug\net5.0\publish\wwwroot\main-es2015.a8e90f8ecf9268d7c1f2.js
+K:\Workspace\hoozon\bin\Debug\net5.0\publish\wwwroot\main-es5.a8e90f8ecf9268d7c1f2.js
 K:\Workspace\hoozon\bin\Debug\net5.0\publish\wwwroot\polyfills-es2015.2d6da2267fbc010988d6.js
 K:\Workspace\hoozon\bin\Debug\net5.0\publish\wwwroot\polyfills-es5.60fbebe625f1711aa0f9.js
 K:\Workspace\hoozon\bin\Debug\net5.0\publish\wwwroot\runtime-es2015.a4dadbc03350107420a4.js
 K:\Workspace\hoozon\bin\Debug\net5.0\publish\wwwroot\runtime-es5.a4dadbc03350107420a4.js
 K:\Workspace\hoozon\bin\Debug\net5.0\publish\wwwroot\scripts.206995907876a2c78426.js
-K:\Workspace\hoozon\bin\Debug\net5.0\publish\wwwroot\styles.222b1941790bb28f28ba.css
+K:\Workspace\hoozon\bin\Debug\net5.0\publish\wwwroot\styles.1dab3743e6f293b7290d.css
 K:\Workspace\hoozon\bin\Debug\net5.0\publish\appsettings.Development.json
 K:\Workspace\hoozon\bin\Debug\net5.0\publish\appsettings.json
 K:\Workspace\hoozon\bin\Debug\net5.0\publish\HoozOn.dll

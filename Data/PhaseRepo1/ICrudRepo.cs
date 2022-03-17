@@ -22,6 +22,6 @@ namespace HoozOn.Data.PhaseRepo1 {
 
         //AddUserJob
         Task<bool> IsUserJobExist (int userId,int jobId);
-        Task<UserJobs> AddUserJob (UserJobs usersJob);
+        Task<UserJobs> AddUserJob (UserJobs usersJob); 
     }
 }

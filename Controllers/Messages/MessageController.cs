@@ -222,7 +222,7 @@ namespace HoozOn.Controllers.Messages {
             return Ok (userJobResponces);
         }
 
-        [HttpGet ("UserJobResponceWithSender/{jobId}/{userId}")]
+        [HttpGet ("  {jobId}/{userId}")]
         public async Task<ActionResult<IEnumerable<JobUserChat>>> UserJobResponceWithSender (int jobId, int userId) {
             var userJobResponces = await _iMessageRepo.JobUserResponcesDetailsWithSender (jobId, userId);
             return Ok (userJobResponces);
