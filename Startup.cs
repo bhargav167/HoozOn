@@ -53,7 +53,7 @@ namespace HoozOn {
                 {
                     builder
                         .WithOrigins(
-                        "https://localhost:5001/")
+                        "https://hoozonline.com/")
                         .AllowCredentials()
                         .AllowAnyHeader()
                         .SetIsOriginAllowed(_ => true)

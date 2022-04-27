@@ -1,30 +1,25 @@
 {
   "format": 1,
   "restore": {
-    "K:\\Workspace\\hoozon\\HoozOn.csproj": {}
+    "/Users/kshitizprobhargav/Projects/HoozOnline/API/HoozOn.csproj": {}
   },
   "projects": {
-    "K:\\Workspace\\hoozon\\HoozOn.csproj": {
+    "/Users/kshitizprobhargav/Projects/HoozOnline/API/HoozOn.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "K:\\Workspace\\hoozon\\HoozOn.csproj",
+        "projectUniqueName": "/Users/kshitizprobhargav/Projects/HoozOnline/API/HoozOn.csproj",
         "projectName": "HoozOn",
-        "projectPath": "K:\\Workspace\\hoozon\\HoozOn.csproj",
-        "packagesPath": "C:\\Users\\kshitiz Bhargav\\.nuget\\packages\\",
-        "outputPath": "K:\\Workspace\\hoozon\\obj\\",
+        "projectPath": "/Users/kshitizprobhargav/Projects/HoozOnline/API/HoozOn.csproj",
+        "packagesPath": "/Users/kshitizprobhargav/.nuget/packages/",
+        "outputPath": "/Users/kshitizprobhargav/Projects/HoozOnline/API/obj/",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-        ],
         "configFilePaths": [
-          "C:\\Users\\kshitiz Bhargav\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "/Users/kshitizprobhargav/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net5.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -130,7 +125,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.404\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/x64/sdk/6.0.201/RuntimeIdentifierGraph.json"
         }
       }
     }

@@ -172,14 +172,18 @@ namespace HoozOn.Controllers.Messages {
             foreach (var item in messages) {
                 if (item.SenderId == senderId) {
                     item.SenderContent = item.Content;
-                    item.TimeAgo = DateFormat.RelativeDate (item.MessageSent);
-                    item.Times = DateFormat.MeridianTime (item.MessageSent);
+                 DateTime timeago=   TimeZoneInfo.ConvertTimeFromUtc (item.MessageSent, INDIAN_ZONE);
+                   DateTime timeago1=   TimeZoneInfo.ConvertTimeFromUtc (item.MessageSent, INDIAN_ZONE);
+                    item.TimeAgo =  DateFormat.RelativeDate (timeago);
+                    item.Times = DateFormat.MeridianTime (timeago1);
                     users.Add (item);
                 }
                 if (item.SenderId == recipentId) {
                     item.RecipientContent = item.Content;
-                    item.TimeAgo = DateFormat.RelativeDate (item.MessageSent);
-                    item.Times = DateFormat.MeridianTime (item.MessageSent);
+                      DateTime timeago=   TimeZoneInfo.ConvertTimeFromUtc (item.MessageSent, INDIAN_ZONE);
+                   DateTime timeago1=   TimeZoneInfo.ConvertTimeFromUtc (item.MessageSent, INDIAN_ZONE);
+                    item.TimeAgo = DateFormat.RelativeDate (timeago);
+                    item.Times = DateFormat.MeridianTime (timeago1);
                     users.Add (item);
                 }
             }
@@ -222,7 +226,7 @@ namespace HoozOn.Controllers.Messages {
             return Ok (userJobResponces);
         }
 
-        [HttpGet ("  {jobId}/{userId}")]
+        [HttpGet ("{jobId}/{userId}")]
         public async Task<ActionResult<IEnumerable<JobUserChat>>> UserJobResponceWithSender (int jobId, int userId) {
             var userJobResponces = await _iMessageRepo.JobUserResponcesDetailsWithSender (jobId, userId);
             return Ok (userJobResponces);

@@ -122,7 +122,9 @@ namespace HoozOn.Data.JobRepo {
             var loginUserTags = await _context.SocialAuthentication.Include (x => x.tags)
                 .Where (c => c.Id == jobParam.UserId).FirstOrDefaultAsync ();
 
-            var addedJobs = await _context.UserJobs.Include (c => c.jobModel).Include (c => c.jobModel.Tags).Include (c => c.jobModel.User).Where (x => x.socialAuthenticationId == jobParam.UserId && x.jobModel.JobStatus == jobParam.JobStatus).ToListAsync ();
+            var addedJobs = await _context.UserJobs.Include (c => c.jobModel).Include (c => c.jobModel.Tags).Include (c => c.jobModel.User)
+            .Where (x => x.socialAuthenticationId == jobParam.UserId && x.jobModel.JobStatus == jobParam.JobStatus)
+            .ToListAsync ();
 
             // GetAllJob Job With Address And User Tags Related 
             if (jobs.Count () > 0) {
@@ -350,7 +352,9 @@ namespace HoozOn.Data.JobRepo {
             var jobs = await GetAllUserByMultiTag (jobParams);
 
             foreach (var item in jobs) {
-
+                  item.User.UserImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
+                            .Quality ("auto").FetchFormat ("auto").Width (128).Height (128).Gravity ("faces").Crop ("fill"))
+                        .BuildUrl (item.User.ProfileImageName);
                 jobTags.Success = true;
                 jobTags.Status = 200;
                 jobTags.status_message = "";
@@ -367,7 +371,9 @@ namespace HoozOn.Data.JobRepo {
                         var tag = item.TagName.Split (' ');
                         foreach (var item1 in tag) {
                             if (item2.ToLower () == item1.ToLower ()) {
-
+                                  item.User.UserImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
+                            .Quality ("auto").FetchFormat ("auto").Width (128).Height (128).Gravity ("faces").Crop ("fill"))
+                        .BuildUrl (item.User.ProfileImageName);
                                 jobTags.Success = true;
                                 jobTags.Status = 200;
                                 jobTags.status_message = "";
