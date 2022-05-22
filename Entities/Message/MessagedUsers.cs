@@ -15,6 +15,7 @@ namespace HoozOn.Entities.Message
         public MessagedUsers()
         {
              MessageSent = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow,INDIAN_ZONE);
+               
         }
     }
 }

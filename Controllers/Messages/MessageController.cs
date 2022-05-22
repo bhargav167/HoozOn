@@ -64,7 +64,7 @@ namespace HoozOn.Controllers.Messages {
         [HttpPost ("Send/{userId}")]
         public async Task<IActionResult> CreateMessage (int userId, [FromBody] MessageForCreationDto messageForCreationDto) {
             messageForCreationDto.SenderId = userId;
-            await _hubContext.Clients.All.SendAsync ("messageReceivedFromApi", messageForCreationDto);
+           // await _hubContext.Clients.All.SendAsync ("messageReceivedFromApi", messageForCreationDto);
             messageForCreationDto.SenderId = userId;
             var sender = await _iAuthRepo.getAuthById (userId);
 
@@ -94,7 +94,8 @@ namespace HoozOn.Controllers.Messages {
                 }
             } else {
                 _crudrepo.Add (message);
-                isUserChat.MessageSent = TimeZoneInfo.ConvertTimeFromUtc (DateTime.UtcNow, INDIAN_ZONE);
+              //  isUserChat.MessageSent = TimeZoneInfo.ConvertTimeFromUtc (DateTime.UtcNow, INDIAN_ZONE);
+               isUserChat.MessageSent = DateTime.UtcNow;
                 _context.MessagedUser.Update (isUserChat);
                 await _context.SaveChangesAsync ();
                 return Ok (messageForCreationDto);
@@ -172,18 +173,18 @@ namespace HoozOn.Controllers.Messages {
             foreach (var item in messages) {
                 if (item.SenderId == senderId) {
                     item.SenderContent = item.Content;
-                 DateTime timeago=   TimeZoneInfo.ConvertTimeFromUtc (item.MessageSent, INDIAN_ZONE);
-                   DateTime timeago1=   TimeZoneInfo.ConvertTimeFromUtc (item.MessageSent, INDIAN_ZONE);
-                    item.TimeAgo =  DateFormat.RelativeDate (timeago);
-                    item.Times = DateFormat.MeridianTime (timeago1);
+                DateTime timeago=   TimeZoneInfo.ConvertTimeFromUtc (item.MessageSent, INDIAN_ZONE);
+                DateTime timeago1=   TimeZoneInfo.ConvertTimeFromUtc (item.MessageSent, INDIAN_ZONE);
+                item.TimeAgo =  DateFormat.RelativeDate (timeago);
+                item.Times = DateFormat.MeridianTime (timeago1);
                     users.Add (item);
                 }
                 if (item.SenderId == recipentId) {
                     item.RecipientContent = item.Content;
-                      DateTime timeago=   TimeZoneInfo.ConvertTimeFromUtc (item.MessageSent, INDIAN_ZONE);
-                   DateTime timeago1=   TimeZoneInfo.ConvertTimeFromUtc (item.MessageSent, INDIAN_ZONE);
-                    item.TimeAgo = DateFormat.RelativeDate (timeago);
-                    item.Times = DateFormat.MeridianTime (timeago1);
+                    DateTime timeago=   TimeZoneInfo.ConvertTimeFromUtc (item.MessageSent, INDIAN_ZONE);
+                  DateTime timeago1=   TimeZoneInfo.ConvertTimeFromUtc (item.MessageSent, INDIAN_ZONE);
+                   item.TimeAgo = DateFormat.RelativeDate (timeago);
+                   item.Times = DateFormat.MeridianTime (timeago1);
                     users.Add (item);
                 }
             }
@@ -196,23 +197,24 @@ namespace HoozOn.Controllers.Messages {
             jobMessages.JobId = jobId;
             jobMessages.SenderId = senderId;
             jobMessages.RecipientId = recipientId;
+            jobMessages.IsRead=false;
             await _iMessageRepo.AddJobChat (jobMessages);
-
+            await _hubContext.Clients.All.SendAsync ("messageReceivedFromApi", jobMessages);
             JobUserChat jobUserChat = new JobUserChat ();
             jobUserChat.JobId = jobId;
             jobUserChat.SenderId = senderId;
             jobUserChat.RecipientId = recipientId;
-            jobUserChat.CreateDate = TimeZoneInfo.ConvertTimeFromUtc (DateTime.UtcNow, INDIAN_ZONE);
+           jobUserChat.CreateDate = DateTime.Now;
             var isUserConnected = await _context.JobUserChat.Where (k => k.JobId == jobId && k.SenderId == senderId).FirstOrDefaultAsync ();
             if (isUserConnected == null) {
                 await _iMessageRepo.AddJobUserChat (jobUserChat); 
             }
             if (isUserConnected != null) {
-                isUserConnected.CreateDate = TimeZoneInfo.ConvertTimeFromUtc (DateTime.UtcNow, INDIAN_ZONE);
+                isUserConnected.CreateDate = DateTime.Now;
                 _context.JobUserChat.Update (isUserConnected);
             }
 
-            if (await _crudrepo.SaveAll ()) {
+            if (await _crudrepo.SaveAll ()) { 
                 return Ok (jobMessages);
             }
             throw new Exception ("Creating the message failed on save");
@@ -242,16 +244,20 @@ namespace HoozOn.Controllers.Messages {
         public async Task<ActionResult<IEnumerable<MessageDto>>> GetSingleUserChatByJob (int jobId, int senderId, int recipentId) {
             List<MessageDto> users = new List<MessageDto> ();
             var messages = await _iMessageRepo.GetSingleUserChatByJob (jobId, senderId, recipentId);
+            var recipientUser= await _iAuthRepo.getAuthById(recipentId);
             foreach (var item in messages) {
                 if (item.SenderId == senderId) {
                     item.SenderContent = item.Content;
+                    item.RecipientPhotoUrl=recipientUser.ImageUrl;
                     item.TimeAgo = DateFormat.RelativeDate (item.MessageSent);
                     item.Times = DateFormat.MeridianTime (item.MessageSent);
                     users.Add (item);
                 }
                 if (item.SenderId == recipentId) {
                     item.RecipientContent = item.Content;
-                    item.TimeAgo = DateFormat.RelativeDate (item.MessageSent);
+                    item.SenderContent=null;
+                    item.RecipientPhotoUrl=recipientUser.ImageUrl;
+                   item.TimeAgo = DateFormat.RelativeDate (item.MessageSent);
                     item.Times = DateFormat.MeridianTime (item.MessageSent);
                     users.Add (item);
                 }

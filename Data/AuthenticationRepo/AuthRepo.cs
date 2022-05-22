@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using HoozOn.Data;
 using HoozOn.Entities.Authentication;
@@ -10,7 +11,19 @@ namespace HoozOn.Data.AuthenticationRepo {
             _context = context;
         }
         public async Task<SocialAuthentication> AddAuth (SocialAuthentication socialAuthentication) {
+            socialAuthentication.LastActive=System.DateTime.Now;
+            socialAuthentication.IsOnline=true;
             await _context.SocialAuthentication.AddAsync (socialAuthentication);
+            await _context.SaveChangesAsync ();
+
+            return socialAuthentication;
+        }
+        public async Task<SocialAuthentication> LogOut(int loginId)
+        {
+            var socialAuthentication=await _context.SocialAuthentication.Where(x=>x.Id==loginId).FirstOrDefaultAsync();
+             socialAuthentication.LastActive=System.DateTime.Now;
+            socialAuthentication.IsOnline=false;
+             _context.SocialAuthentication.Update (socialAuthentication);
             await _context.SaveChangesAsync ();
 
             return socialAuthentication;

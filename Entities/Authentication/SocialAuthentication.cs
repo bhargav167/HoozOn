@@ -33,10 +33,13 @@ namespace HoozOn.Entities.Authentication
         public string Status_Message { get; set; }
         public DateTime LoginTime { get; set; }
         public bool IsProfileCreated { get; set; }
+        public DateTime LastActive { get; set; }
+        public bool IsOnline { get; set; }
         public SocialAuthentication()
         {
             LoginTime=DateTime.Now;
             IsProfileCreated=false;
+            IsOnline=true;
         }
     }
 }

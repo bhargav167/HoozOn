@@ -19,16 +19,15 @@ namespace HoozOn.DTOs.Message
         public DateTime? DateRead { get; set; }
         public DateTime MessageSent { get; set; }
         public string TimeAgo { get; set; }
-        public string Times { get; set; }
-        
-        
+        public string Times { get; set; } 
         [JsonIgnore]
         public bool SenderDeleted { get; set; }
         [JsonIgnore]
         public bool RecipientDeleted { get; set; }
         public MessageDto()
         {
-            MessageSent = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow,INDIAN_ZONE);
+          //  MessageSent = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow,INDIAN_ZONE);
+           MessageSent =DateTime.Now;
         }
     }
 }

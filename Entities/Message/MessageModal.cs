@@ -6,6 +6,7 @@ namespace HoozOn.Entities.Message
 {
     public class MessageModal
     {
+         private static TimeZoneInfo INDIAN_ZONE = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
         public int Id { get; set; }
         public int SenderId { get; set; }
         public virtual SocialAuthentication Sender { get; set; }
@@ -21,7 +22,8 @@ namespace HoozOn.Entities.Message
         public bool RecipientDeleted { get; set; }
         public MessageModal()
         {
-            MessageSent=DateTime.Now;
+           MessageSent=TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow,INDIAN_ZONE);
+            
         }
     }
 }

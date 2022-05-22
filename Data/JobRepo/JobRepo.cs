@@ -114,42 +114,65 @@ namespace HoozOn.Data.JobRepo {
             return await PagedList<JobModel>.CreateAsync (job, userParam.PageNumber, userParam.PageSize);
         }
 
-        public async Task<PagedList<JobModel>> GetAllWithAddedJob (int userId, JobParams jobParam) {
-            List<JobModel> modal = new List<JobModel> ();
-            var jobs = _context.Jobs.Where (x => x.JobStatus == jobParam.JobStatus && x.UserId != userId)
-                .Include (x => x.Tags).Include (x => x.User).OrderByDescending (c => c.Id).AsQueryable ();
+        public async Task<PagedList<JobModel>> GetAllWithAddedJob(int userId, JobParams jobParam)
+        {
+            try
+            {
+                List<JobModel> modal = new List<JobModel>();
+                var jobs = _context.Jobs.Where(x => x.JobStatus == jobParam.JobStatus && x.UserId != userId)
+                    .Include(x => x.Tags).Include(x => x.User).AsQueryable();
 
-            var loginUserTags = await _context.SocialAuthentication.Include (x => x.tags)
-                .Where (c => c.Id == jobParam.UserId).FirstOrDefaultAsync ();
+                var loginUserTags = await _context.Tags.Where(x => x.UserId == userId).ToListAsync();
 
-            var addedJobs = await _context.UserJobs.Include (c => c.jobModel).Include (c => c.jobModel.Tags).Include (c => c.jobModel.User)
-            .Where (x => x.socialAuthenticationId == jobParam.UserId && x.jobModel.JobStatus == jobParam.JobStatus)
-            .ToListAsync ();
+                var addedJobs = await _context.UserJobs.Include(c => c.jobModel).Include(c => c.jobModel.Tags).Include(c => c.jobModel.User)
+                .Where(x => x.socialAuthenticationId == userId && x.jobModel.JobStatus == jobParam.JobStatus)
+                .ToListAsync();
 
-            // GetAllJob Job With Address And User Tags Related 
-            if (jobs.Count () > 0) {
-                if (loginUserTags != null) {
-                    foreach (var job in jobs) {
-                        foreach (var jobtag in job.Tags) {
-                            foreach (var item in loginUserTags.tags) {
-                                if (item.TagName.ToLower () == jobtag.TagName.ToLower ()) {
-                                    modal.Add (job);
+                var messagedJobs = await _context.JobUserChat.Include(c => c.Job).Include(c => c.Job.Tags)
+               .Where(x => x.SenderId == userId)
+               .ToListAsync();
+
+                // GetAllJob Job With Address And User Tags Related 
+                if (jobs.Count() > 0)
+                {
+                    if (loginUserTags != null)
+                    {
+                        foreach (var job in jobs)
+                        {
+                            foreach (var jobtag in job.Tags)
+                            {
+                                foreach (var item in loginUserTags)
+                                {
+                                    if (item.TagName.ToLower() == jobtag.TagName.ToLower())
+                                    {
+                                        modal.Add(job);
+                                    }
                                 }
                             }
                         }
-                    }
-                    foreach (var item in addedJobs) {
-                        modal.Insert (0, item.jobModel);
-                    }
-                } else {
-                    foreach (var job in jobs) {
-                        modal.Add (job);
-                    }
-                }
-            }
-            return await PagedList<JobModel>.CreateAsync1 (modal, jobParam.PageNumber, jobParam.pageSize);
-        }
+                        // Add Addrd job 
+                        foreach (var item in addedJobs)
+                        {
+                            modal.Add(item.jobModel);
+                        }
 
+                        // Add messaged job 
+                        foreach (var item in messagedJobs)
+                        { 
+                            modal.Add(item.Job);
+                        }
+                    } 
+                }
+
+               // var results = modal.OrderByDescending(x => x.CreatedBy).GroupBy(x => x.Id).Select(x => x.Single()).ToList();
+             
+                return await PagedList<JobModel>.CreateAsync1(modal.ToList(), jobParam.PageNumber, jobParam.pageSize);
+            }
+            catch (System.Exception e)
+            {
+                throw new Exception("Throw Exceptions" + e);
+            }
+        }
         public async Task<PagedList<JobModel>> GetJob (UserParams userParam) {
             var job = _context.Jobs.AsQueryable ();
             return await PagedList<JobModel>.CreateAsync (job, userParam.PageNumber, userParam.PageSize);
@@ -220,20 +243,13 @@ namespace HoozOn.Data.JobRepo {
                                 }
                             }
                         }
-
                         item.Job.User.UserImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
                                 .Quality ("auto").FetchFormat ("auto").Width (128).Height (128).Gravity ("faces").Crop ("fill"))
                             .BuildUrl (item.Job.User.ProfileImageName);
                         //For Job Images
-                        if (item.Job.ImagesUrl == null) {
-                            item.Job.ImagesUrl = null;
-                            item.Job.ThumbNailImage = null;
-
-                        } else {
-                            item.Job.ThumbNailImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
-                                    .Quality ("auto").FetchFormat ("auto").Width (500).Height (500).Gravity ("faces").Crop ("fill"))
-                                .BuildUrl (item.Job.ImageName);
-                        }
+                         item.Job.ThumbNailImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
+                                     .Quality ("auto").FetchFormat ("auto").Width (500).Height (500).Gravity ("faces").Crop ("fill"))
+                                 .BuildUrl (item.Job.ImageName);
                         //Calculate Distances 
                         // double userlat = Convert.ToDouble (Loggeduser.Latitude);
                         // double userlonng = Convert.ToDouble (Loggeduser.Longitude);
@@ -241,7 +257,7 @@ namespace HoozOn.Data.JobRepo {
                         // double lonng = Convert.ToDouble (item.Job.Longitude);
                         // var dis = CalculateDistance.DistanceTo (userlat, userlonng, lat, lonng);
                         // if (dis <= 200) {
-                        item.Job.TimeAgo = DateFormat.RelativeDate (item.Job.CreatedBy);
+                      //  item.Job.TimeAgo = DateFormat.RelativeDate (item.Job.CreatedBy);
                         jobTags.Success = true;
                         jobTags.Status = 200;
                         jobTags.status_message = "";
@@ -250,24 +266,28 @@ namespace HoozOn.Data.JobRepo {
 
                         // } 
                     }
-                    return await PagedList<JobTags>.CreateAsync1 (jobTags.data, jobParams.PageNumber, jobParams.pageSize);
-                }
+                    if(jobTags.data!=null){
+                        return await PagedList<JobTags>.CreateAsync1 (jobTags.data, jobParams.PageNumber, jobParams.pageSize);
+                    }else{
+                        return null;
+                    }
+                    }
 
                 var jobs = await GetAllJobByMultiTag (jobParams);
                 if (jobs.Count != 0) {
                     foreach (var item in jobs) {
-                        item.Job.User.UserImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
-                                .Quality ("auto").FetchFormat ("auto").Width (128).Height (128).Gravity ("faces").Crop ("fill"))
-                            .BuildUrl (item.Job.User.ProfileImageName);
+                        // item.Job.User.UserImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
+                        //         .Quality ("auto").FetchFormat ("auto").Width (128).Height (128).Gravity ("faces").Crop ("fill"))
+                        //     .BuildUrl (item.Job.User.ProfileImageName);
                         if (item.Job.ImagesUrl == null) {
                             item.Job.ImagesUrl = null;
                             item.Job.ThumbNailImage = null;
                         } else {
-                            item.Job.ThumbNailImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
-                                    .Quality ("auto").FetchFormat ("auto").Width (500).Height (500).Gravity ("faces").Crop ("fill"))
-                                .BuildUrl (item.Job.ImageName);
+                            // item.Job.ThumbNailImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
+                            //         .Quality ("auto").FetchFormat ("auto").Width (500).Height (500).Gravity ("faces").Crop ("fill"))
+                            //     .BuildUrl (item.Job.ImageName);
                         }
-                        item.Job.TimeAgo = DateFormat.RelativeDate (item.Job.CreatedBy);
+                       // item.Job.TimeAgo = DateFormat.RelativeDate (item.Job.CreatedBy);
                         jobTags.Success = true;
                         jobTags.Status = 200;
                         jobTags.status_message = "";
@@ -284,18 +304,18 @@ namespace HoozOn.Data.JobRepo {
                             var tag = item.TagName.Split (' ');
                             foreach (var item1 in tag) {
                                 if (item2.ToLower () == item1.ToLower ()) {
-                                    item.Job.User.UserImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
-                                            .Quality ("auto").FetchFormat ("auto").Width (128).Height (128).Gravity ("faces").Crop ("fill"))
-                                        .BuildUrl (item.Job.User.ProfileImageName);
+                                    // item.Job.User.UserImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
+                                    //         .Quality ("auto").FetchFormat ("auto").Width (128).Height (128).Gravity ("faces").Crop ("fill"))
+                                    //     .BuildUrl (item.Job.User.ProfileImageName);
                                     if (item.Job.ImagesUrl == null) {
                                         item.Job.ImagesUrl = null;
                                         item.Job.ThumbNailImage = null;
                                     } else {
-                                        item.Job.ThumbNailImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
-                                                .Quality ("auto").FetchFormat ("auto").Width (500).Height (500).Gravity ("faces").Crop ("fill"))
-                                            .BuildUrl (item.Job.ImageName);
+                                        // item.Job.ThumbNailImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
+                                        //         .Quality ("auto").FetchFormat ("auto").Width (500).Height (500).Gravity ("faces").Crop ("fill"))
+                                        //     .BuildUrl (item.Job.ImageName);
                                     }
-                                    item.Job.TimeAgo = DateFormat.RelativeDate (item.Job.CreatedBy);
+                                   // item.Job.TimeAgo = DateFormat.RelativeDate (item.Job.CreatedBy);
                                     jobTags.Success = true;
                                     jobTags.Status = 200;
                                     jobTags.status_message = "";
@@ -390,8 +410,8 @@ namespace HoozOn.Data.JobRepo {
             return await PagedList<Tags>.CreateAsync1 (jobTags.data, jobParams.PageNumber, jobParams.PageSize);
         }
 
-        public async Task<int> GetResponcesCount (int jobId) {
-             var totalMessages = await _context.JobUserChat.Where (c => c.JobId == jobId && c.IsRead==false).ToListAsync ();
+        public async Task<int> GetResponcesCount (int jobId,int senderId) {
+             var totalMessages = await _context.JobUserChat.Where (c => c.JobId == jobId && c.SenderId!=senderId && c.IsRead==false).ToListAsync ();
                  int TotalResponces = totalMessages.Count ();
                  return TotalResponces;
         }

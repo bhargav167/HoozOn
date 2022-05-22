@@ -23,6 +23,7 @@ namespace HoozOn.Entities.Message.JobMessage
         {
           IsRead=false;
           CreateDate= TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow,INDIAN_ZONE);
+         
         }
     }
 }

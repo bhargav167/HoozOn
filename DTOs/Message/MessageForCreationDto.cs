@@ -13,7 +13,8 @@ namespace HoozOn.DTOs.Message
         public string Content { get; set; }
         public MessageForCreationDto()
         {
-            MessageSent = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow,INDIAN_ZONE);
+           // MessageSent = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow,INDIAN_ZONE);
+            MessageSent = DateTime.Now;
         }
     }
 }

@@ -42,8 +42,14 @@ namespace HoozOn.Migrations
                     b.Property<string>("ImageUrl")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsOnline")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsProfileCreated")
                         .HasColumnType("bit");
+
+                    b.Property<DateTime>("LastActive")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Latitude")
                         .HasColumnType("nvarchar(max)");

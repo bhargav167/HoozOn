@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace HoozOn.Entities.Job {
     public class JobModel { 
+        private static TimeZoneInfo INDIAN_ZONE = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
         public int Id { get; set; }
 
         [Required]
@@ -52,7 +53,7 @@ namespace HoozOn.Entities.Job {
         public IFormFile JobImges { get; set; } 
         public ICollection<JobTags> Tags { get; set; }
         public JobModel () {
-            CreatedBy = DateTime.Now;
+            CreatedBy = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow,INDIAN_ZONE);
             JobStatus="OPEN";
         }
     }  

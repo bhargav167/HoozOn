@@ -34,9 +34,9 @@ namespace HoozOn.Controllers.Web.Post {
             );
             _cloudinary = new Cloudinary (acc);
         }
-          [HttpGet ("ResponceCount/{JobId}")]
-        public async Task<IActionResult> JobById (int JobId) {
-            var job = await _jobrepo.GetResponcesCount (JobId);
+          [HttpGet ("ResponceCount/{JobId}/{senderId}")]
+        public async Task<IActionResult> JobById (int JobId,int senderId) {
+            var job = await _jobrepo.GetResponcesCount (JobId,senderId);
             return Ok (job);
         }
 

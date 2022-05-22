@@ -20,6 +20,7 @@ namespace HoozOn.Entities.Message.JobMessage
         public JobMessages()
         {
           MessageSent = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow,INDIAN_ZONE);
+         
             IsRead=false;
         }
     }

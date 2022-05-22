@@ -55,11 +55,14 @@ namespace HoozOn.Controllers.Authentication {
                 // Checking Duplicate Entry
                 if (await _iAuthRepo.IsAuthExist (socialAuthentication.Email)) {
                     var Existuser = await _iAuthRepo.getAuthByEmail (socialAuthentication.Email);
+                    Existuser.LastActive = DateTime.Now;
+                    Existuser.IsOnline = true;
                     Existuser.Status = 409;
                     Existuser.Success = true;
                     Existuser.LoginTime = DateTime.Now;
                     Existuser.Status_Message = "User with this google account already exist";
-
+                    _context.SocialAuthentication.Update(Existuser);
+                    await _context.SaveChangesAsync();
                     return Ok (Existuser);
                 }
 
@@ -76,13 +79,14 @@ namespace HoozOn.Controllers.Authentication {
                 socialAuthentication.Status = 200;
                 socialAuthentication.Name = socialAuthentication.UserName;
                 socialAuthentication.UserName = createdUserName;
-                socialAuthentication.ImageUrl = "https://res.cloudinary.com/livsolution/image/upload/v1641635510/DefaultUser_ktw7ga.png";
-                socialAuthentication.ProfileImageName = "DefaultUser_ktw7ga.png";
-                socialAuthentication.CoverImageUrl = "https://res.cloudinary.com/livsolution/image/upload/v1641738686/banner_ni97mf.png";
+                socialAuthentication.ImageUrl = "https://res.cloudinary.com/drmnyie0t/image/upload/v1652501879/Default_User_1_esjtmm.png";
+                socialAuthentication.ProfileImageName = "Default_User_1_esjtmm.png";
+                socialAuthentication.CoverImageUrl = "https://res.cloudinary.com/drmnyie0t/image/upload/v1652498915/banner_rtgv2n.png";
                 socialAuthentication.Success = true;
                 socialAuthentication.LoginTime = DateTime.Now;
                 socialAuthentication.Status_Message = "User added to database successfully";
-
+                 socialAuthentication.LastActive=DateTime.Now;
+            socialAuthentication.IsOnline=true;
                 var CreatedAuth = await _iAuthRepo.AddAuth (socialAuthentication);
 
                 //Assign User Profile detail to create
@@ -129,8 +133,8 @@ namespace HoozOn.Controllers.Authentication {
                 socialAuthentication.Status = 200;
                 socialAuthentication.Name = socialAuthentication.UserName;
                 socialAuthentication.UserName = createdUserName;
-                socialAuthentication.ImageUrl = "https://res.cloudinary.com/livsolution/image/upload/v1640110201/imgs_pg46ar.png";
-                socialAuthentication.CoverImageUrl = "https://i.pinimg.com/originals/0c/f6/c3/0cf6c362a7cf6bc8e4e404811176f5c1.png";
+                socialAuthentication.ImageUrl = "https://res.cloudinary.com/drmnyie0t/image/upload/v1652501879/Default_User_1_esjtmm.png";
+                socialAuthentication.CoverImageUrl = "https://res.cloudinary.com/drmnyie0t/image/upload/v1652498915/banner_rtgv2n.png";
                 socialAuthentication.Success = true;
                 socialAuthentication.LoginTime = DateTime.Now;
                 socialAuthentication.Status_Message = "User added to database successfully";
@@ -164,6 +168,42 @@ namespace HoozOn.Controllers.Authentication {
             }
             return NoContent ();
         }
+
+
+        //LogOut Activity
+        [HttpPost("LogOut/{loginId}")]
+        public async Task<IActionResult> LogOut(int loginId)
+        {
+            try
+            {
+               await _iAuthRepo.LogOut(loginId);
+                
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error in adding Auth Data {ex}");
+            }
+            return NoContent();
+        }
+
+         //LogOut Activity
+        [HttpGet("IsOnline/{loginId}")]
+        public async Task<IActionResult> IsOnline(int loginId)
+        {
+            try
+            {
+               var user =_context.SocialAuthentication.Where(x=>x.Id==loginId).Select(x=> new {x.IsOnline,x.LastActive}).FirstOrDefault();
+               return Ok(user);
+                
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error in adding Auth Data {ex}");
+            }
+            
+        }
+
+
 
         //Add User Profile Image
         [HttpPost ("AddAuthUserImage/{userId}")]
@@ -278,8 +318,8 @@ namespace HoozOn.Controllers.Authentication {
                     return NoContent ();
 
                 //Photo field to Remove 
-                userToUpdate.ImageUrl = "https://res.cloudinary.com/livsolution/image/upload/v1641635510/DefaultUser_ktw7ga.png";
-                userToUpdate.ProfileImageName = "DefaultUser_ktw7ga.png";
+                userToUpdate.ImageUrl = "https://res.cloudinary.com/drmnyie0t/image/upload/v1652501879/Default_User_1_esjtmm.png";
+                userToUpdate.ProfileImageName = "Default_User_1_esjtmm.png";
 
                 _context.SocialAuthentication.Update (userToUpdate);
                 if (await _context.SaveChangesAsync () > 0)

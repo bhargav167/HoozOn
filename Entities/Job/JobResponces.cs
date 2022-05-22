@@ -12,6 +12,6 @@ namespace HoozOn.Entities.Job
         public int PageSize { get; set; }
         public int TotalRecord { get; set; }
         public int TotalPage { get; set; }
-        public List<JobModel> data { get; set; }
+        public IEnumerable<JobModel> data { get; set; }
     }
 }

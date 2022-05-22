@@ -107,20 +107,29 @@ namespace HoozOn.Controllers.Job {
                 Random _random = new Random ();
 
                 List<string> colorCode = new List<string> ();
-                colorCode.Add ("#2D3E50");
-                colorCode.Add ("#F44236");
-                colorCode.Add ("#1BBC9B");
-                colorCode.Add ("#03A9F5");
-                colorCode.Add ("#FFBB00");
+                colorCode.Add ("https://res.cloudinary.com/drmnyie0t/image/upload/v1652498915/yellow_nqizfk_vwqwci.png");
+                colorCode.Add ("https://res.cloudinary.com/drmnyie0t/image/upload/v1652498915/blue_oz08g2_fzsuc7.png");
+                colorCode.Add ("https://res.cloudinary.com/drmnyie0t/image/upload/v1652498915/dark_fuuilg_wfwzl4.png");
+                colorCode.Add ("https://res.cloudinary.com/drmnyie0t/image/upload/v1652498915/red_a5ofay_dbezfi.png"); 
 
                 var choosesColorIndex = _random.Next (0, 4);
                 string selectedColor = colorCode[choosesColorIndex];
                 var LastJobs = await _context.Jobs.FirstOrDefaultAsync (c => c.Id == jobId);
 
                 //Photo field for responces 
-                LastJobs.ImagesUrl = null;
-                LastJobs.ImageName = null;
-                LastJobs.ColorCode = selectedColor;
+                LastJobs.ImagesUrl = selectedColor;
+                if(selectedColor=="https://res.cloudinary.com/drmnyie0t/image/upload/v1652498915/yellow_nqizfk_vwqwci.png"){
+                     LastJobs.ImageName = "yellow_nqizfk_vwqwci.png";
+                }
+                if(selectedColor=="https://res.cloudinary.com/drmnyie0t/image/upload/v1652498915/blue_oz08g2_fzsuc7.png"){
+                     LastJobs.ImageName = "blue_oz08g2_fzsuc7.png";
+                }
+                if(selectedColor=="https://res.cloudinary.com/drmnyie0t/image/upload/v1652498915/dark_fuuilg_wfwzl4.png"){
+                    LastJobs.ImageName = "dark_fuuilg_wfwzl4.png";
+                }
+                if(selectedColor=="https://res.cloudinary.com/drmnyie0t/image/upload/v1652498915/red_a5ofay_dbezfi.png"){
+                    LastJobs.ImageName = "red_a5ofay_dbezfi.png";
+                }
                 _context.Jobs.Update (LastJobs);
                 await _context.SaveChangesAsync ();
                 return Ok (LastJobs);
@@ -136,6 +145,7 @@ namespace HoozOn.Controllers.Job {
                 using (var stream = imgfile.OpenReadStream ()) {
                     var uploadParms = new ImageUploadParams () {
                     File = new FileDescription (imgfile.Name, stream),
+                    
                     Transformation = new Transformation ()
 
                     };
@@ -272,20 +282,16 @@ namespace HoozOn.Controllers.Job {
             res.TotalPage = Convert.ToInt16 (Math.Ceiling (pagecount) + 1);
 
             foreach (var item in res.data) {
-                item.TimeAgo = DateFormat.RelativeDate (item.CreatedBy);
+              //  item.TimeAgo = DateFormat.RelativeDate (item.CreatedBy);
                 item.User.UserImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
                         .Quality ("auto").FetchFormat ("auto").Width (128).Height (128).Gravity ("faces").Crop ("fill"))
                     .BuildUrl (item.User.ProfileImageName);
-                if (item.ImagesUrl == null) {
-                    item.ThumbNailImage = null;
-                } else {
-                    item.ThumbNailImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
+               item.ThumbNailImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
                             .Quality ("auto").FetchFormat ("auto").Width (500).Height (500).Gravity ("faces").Crop ("fill"))
                         .BuildUrl (item.ImageName);
                     item.JobDetailImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
                             .Quality ("auto").FetchFormat ("auto").Width (200).Height (200).Crop ("fill"))
                         .BuildUrl (item.ImageName);
-                }
             }
             foreach (var item in res.data) {
                 var totalMessages = await _context.JobUserChat.Where (c => c.JobId == item.Id).ToListAsync ();
@@ -377,7 +383,7 @@ namespace HoozOn.Controllers.Job {
             res.data = job;
             res.TotalRecord = res.data.Count ();
             foreach (var item in res.data) {
-                item.TimeAgo = DateFormat.RelativeDate (item.CreatedBy);
+               item.TimeAgo = DateFormat.RelativeDate (item.CreatedBy);
                 if (item.ImagesUrl == null) {
                     item.ThumbNailImage = null;
                 } else {
@@ -557,7 +563,7 @@ namespace HoozOn.Controllers.Job {
                 var totalMessagesRead = await _context.JobUserChat.Where (c => c.JobId == jobId && c.IsRead == true).ToListAsync ();
 
                 foreach (var item in job) {
-                    item.TimeAgo = DateFormat.RelativeDate (item.CreatedBy);
+                 //  item.TimeAgo = DateFormat.RelativeDate (item.CreatedBy);
                     item.User.UserImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
                             .Quality ("auto").FetchFormat ("auto").Width (128).Height (128).Gravity ("faces").Crop ("fill"))
                         .BuildUrl (item.User.ProfileImageName);
