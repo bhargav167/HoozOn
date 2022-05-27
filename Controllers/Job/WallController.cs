@@ -200,6 +200,7 @@ namespace HoozOn.Controllers.Job {
             }
         }
 
+        //Get User list who have tags
         [HttpGet ("WebGetUsersByMultiTags")]
         public async Task<IActionResult> WebGetUsersByMultiTags ([FromQuery] UserParams jobParams) {
             try {
@@ -209,5 +210,7 @@ namespace HoozOn.Controllers.Job {
                 throw new System.Exception ("Error " + ex);
             }
         }
+
+        
     }
 }

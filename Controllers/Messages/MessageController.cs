@@ -71,17 +71,17 @@ namespace HoozOn.Controllers.Messages {
             var recipient = await _iAuthRepo.getAuthById (messageForCreationDto.RecipientId);
 
             if (recipient == null)
-                return BadRequest ("Could not find user");
+                return BadRequest("Could not find user");
 
-            var message = _mapper.Map<MessageModal> (messageForCreationDto);
-            MessagedUsers messagedUsers = new MessagedUsers ();
+            var message = _mapper.Map<MessageModal>(messageForCreationDto);
+            MessagedUsers messagedUsers = new MessagedUsers();
             messagedUsers.SenderId = userId;
             messagedUsers.RecipientId = messageForCreationDto.RecipientId;
 
             //Check If Usered Aready Messaged Each Othet than Update its Time Of Chat To Databases
             var isUserChat = await _context.MessagedUser.Where (x => x.RecipientId == messageForCreationDto.RecipientId && x.SenderId == userId).FirstOrDefaultAsync ();
             if (isUserChat == null) {
-
+                message.MessageSent=TimeZoneInfo.ConvertTimeFromUtc (DateTime.UtcNow, INDIAN_ZONE);
                 await _iMessageRepo.AddChatUser (messagedUsers);
                 _crudrepo.Add (message);
 
@@ -93,9 +93,10 @@ namespace HoozOn.Controllers.Messages {
                     throw new Exception ("Creating message failed");
                 }
             } else {
+                  message.MessageSent=TimeZoneInfo.ConvertTimeFromUtc (DateTime.UtcNow, INDIAN_ZONE);
                 _crudrepo.Add (message);
-              //  isUserChat.MessageSent = TimeZoneInfo.ConvertTimeFromUtc (DateTime.UtcNow, INDIAN_ZONE);
-               isUserChat.MessageSent = DateTime.UtcNow;
+                 
+               //isUserChat.MessageSent = DateTime.UtcNow;
                 _context.MessagedUser.Update (isUserChat);
                 await _context.SaveChangesAsync ();
                 return Ok (messageForCreationDto);
@@ -198,19 +199,21 @@ namespace HoozOn.Controllers.Messages {
             jobMessages.SenderId = senderId;
             jobMessages.RecipientId = recipientId;
             jobMessages.IsRead=false;
+            jobMessages.MessageSent=TimeZoneInfo.ConvertTimeFromUtc (DateTime.UtcNow, INDIAN_ZONE);
             await _iMessageRepo.AddJobChat (jobMessages);
             await _hubContext.Clients.All.SendAsync ("messageReceivedFromApi", jobMessages);
             JobUserChat jobUserChat = new JobUserChat ();
             jobUserChat.JobId = jobId;
             jobUserChat.SenderId = senderId;
             jobUserChat.RecipientId = recipientId;
-           jobUserChat.CreateDate = DateTime.Now;
+           jobUserChat.CreateDate = TimeZoneInfo.ConvertTimeFromUtc (DateTime.UtcNow, INDIAN_ZONE);
             var isUserConnected = await _context.JobUserChat.Where (k => k.JobId == jobId && k.SenderId == senderId).FirstOrDefaultAsync ();
             if (isUserConnected == null) {
+                jobUserChat.CreateDate=TimeZoneInfo.ConvertTimeFromUtc (DateTime.UtcNow, INDIAN_ZONE);
                 await _iMessageRepo.AddJobUserChat (jobUserChat); 
             }
             if (isUserConnected != null) {
-                isUserConnected.CreateDate = DateTime.Now;
+                isUserConnected.CreateDate = TimeZoneInfo.ConvertTimeFromUtc (DateTime.UtcNow, INDIAN_ZONE);
                 _context.JobUserChat.Update (isUserConnected);
             }
 

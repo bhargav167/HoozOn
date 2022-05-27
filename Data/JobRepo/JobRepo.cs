@@ -128,7 +128,7 @@ namespace HoozOn.Data.JobRepo {
                 .Where(x => x.socialAuthenticationId == userId && x.jobModel.JobStatus == jobParam.JobStatus)
                 .ToListAsync();
 
-                var messagedJobs = await _context.JobUserChat.Include(c => c.Job).Include(c => c.Job.Tags)
+                var messagedJobs = await _context.JobUserChat.Include(c => c.Job).Include(c => c.Job.Tags).Include(c => c.Job.User)
                .Where(x => x.SenderId == userId)
                .ToListAsync();
 
@@ -157,16 +157,17 @@ namespace HoozOn.Data.JobRepo {
                         }
 
                         // Add messaged job 
+
                         foreach (var item in messagedJobs)
-                        { 
+                        {
                             modal.Add(item.Job);
                         }
-                    } 
+                    }
                 }
 
-               // var results = modal.OrderByDescending(x => x.CreatedBy).GroupBy(x => x.Id).Select(x => x.Single()).ToList();
-             
-                return await PagedList<JobModel>.CreateAsync1(modal.ToList(), jobParam.PageNumber, jobParam.pageSize);
+                // var results = modal.OrderByDescending(x => x.CreatedBy).GroupBy(x => x.Id).Select(x => x.Single()).ToList();
+
+                return await PagedList<JobModel>.CreateAsync1(modal.OrderByDescending(x => x.CreatedBy).GroupBy(x => x.Id).Select(x => x.First()).ToList() ,jobParam.PageNumber, jobParam.pageSize);
             }
             catch (System.Exception e)
             {
@@ -228,8 +229,7 @@ namespace HoozOn.Data.JobRepo {
         public async Task<PagedList<JobTags>> GetJobsByMultiTags (JobParams jobParams) {
             WallResponce jobTags = new WallResponce ();
             List<JobTags> jobs1 = new List<JobTags> ();
-            //  var Loggeduser = await _context.SocialAuthentication.Where (c => c.Id == jobParams.UserId).FirstOrDefaultAsync ();
-            try {
+             try {
                 if (jobParams.searchTag == null) {
                     var jobBasedOnTagSearch = await _context.JobTag.Include (x => x.Job).Include (x => x.Job.User)
                         .Include (x => x.Job.Tags).OrderByDescending (c => c.JobId).ToListAsync ();
@@ -276,9 +276,9 @@ namespace HoozOn.Data.JobRepo {
                 var jobs = await GetAllJobByMultiTag (jobParams);
                 if (jobs.Count != 0) {
                     foreach (var item in jobs) {
-                        // item.Job.User.UserImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
-                        //         .Quality ("auto").FetchFormat ("auto").Width (128).Height (128).Gravity ("faces").Crop ("fill"))
-                        //     .BuildUrl (item.Job.User.ProfileImageName);
+                         item.Job.User.UserImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
+                                 .Quality ("auto").FetchFormat ("auto").Width (128).Height (128).Gravity ("faces").Crop ("fill"))
+                             .BuildUrl (item.Job.User.ProfileImageName);
                         if (item.Job.ImagesUrl == null) {
                             item.Job.ImagesUrl = null;
                             item.Job.ThumbNailImage = null;
@@ -304,9 +304,9 @@ namespace HoozOn.Data.JobRepo {
                             var tag = item.TagName.Split (' ');
                             foreach (var item1 in tag) {
                                 if (item2.ToLower () == item1.ToLower ()) {
-                                    // item.Job.User.UserImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
-                                    //         .Quality ("auto").FetchFormat ("auto").Width (128).Height (128).Gravity ("faces").Crop ("fill"))
-                                    //     .BuildUrl (item.Job.User.ProfileImageName);
+                                    item.Job.User.UserImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
+                                            .Quality ("auto").FetchFormat ("auto").Width (128).Height (128).Gravity ("faces").Crop ("fill"))
+                                        .BuildUrl (item.Job.User.ProfileImageName);
                                     if (item.Job.ImagesUrl == null) {
                                         item.Job.ImagesUrl = null;
                                         item.Job.ThumbNailImage = null;
@@ -351,18 +351,24 @@ namespace HoozOn.Data.JobRepo {
             UserResponce jobTags = new UserResponce ();
             List<Tags> jobs1 = new List<Tags> ();
 
-            if (jobParams.SearchTagTerm == null) {
+            if (jobParams.SearchTagTerm == null) 
+            {
                 var jobBasedOnTagSearch = await _context.Tags.Include (x => x.User)
                     .Include (x => x.User.tags).Where (x => x.User.Id != jobParams.userId).OrderByDescending (c => c.UserId).ToListAsync ();
-
-                foreach (var item in jobBasedOnTagSearch) {
-                    item.User.UserImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
+                    
+                    var alluser=await _context.SocialAuthentication.Where(x=>x.Id!= jobParams.userId).ToListAsync();
+                    
+                foreach (var item in alluser) {
+                    item.UserImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
                             .Quality ("auto").FetchFormat ("auto").Width (128).Height (128).Gravity ("faces").Crop ("fill"))
-                        .BuildUrl (item.User.ProfileImageName);
+                        .BuildUrl (item.ProfileImageName);
                     jobTags.Success = true;
                     jobTags.Status = 200;
                     jobTags.status_message = "";
-                    jobs1.Add (item);
+                    Tags tg=new Tags();
+                    tg.UserId=item.Id;
+                    tg.User=item;
+                    jobs1.Add (tg);
                     jobTags.data = jobs1.OrderByDescending (c => c.UserId).GroupBy (x => x.UserId).Select (x => x.First ()).ToList ();
 
                 }

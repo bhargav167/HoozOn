@@ -24,6 +24,9 @@ namespace HoozOn.Entities.Authentication
         public string Latitude { get; set; } 
         public string Longitude { get; set; }
         public string City { get; set; }
+        public string Country { get; set; }
+        public string Pincode { get; set; }
+         public string State { get; set; }
         public string UserAddress { get; set; } 
         public string AboutUs { get; set; }
         public ICollection<Tags> tags { get; set; }

@@ -86,7 +86,7 @@ namespace HoozOn.Controllers.Job {
                 return BadRequest (ModelState);
 
             if (job.IsAnonymous == true) {
-                job.AnonmousUserPic = "https://res.cloudinary.com/livsolution/image/upload/v1641136836/Anonymous_zt4y7i.png";
+                job.AnonmousUserPic = "https://res.cloudinary.com/drmnyie0t/image/upload/v1653390397/anonymous_hmtlx2.png";
             } else {
                 job.AnonmousUserPic = null;
             }
@@ -294,10 +294,8 @@ namespace HoozOn.Controllers.Job {
                         .BuildUrl (item.ImageName);
             }
             foreach (var item in res.data) {
-                var totalMessages = await _context.JobUserChat.Where (c => c.JobId == item.Id).ToListAsync ();
-                var totalMessagesRead = await _context.JobUserChat.Where (c => c.JobId == item.Id && c.IsRead == false).ToListAsync ();
-                item.TotalResponces = totalMessages.Count ();
-                item.TotalRead = totalMessagesRead.Count ();
+                 item.TotalResponces = await _jobrepo.GetResponcesCount(item.Id,userParams.userId);
+                
             }
             return Ok (res);
         }
@@ -307,6 +305,7 @@ namespace HoozOn.Controllers.Job {
         [HttpGet ("GetAllWithAddedJob/{userId}")]
         public async Task<IActionResult> GetAllWithAddedJob (int userId, [FromQuery] JobParams userParams) {
             var jobs = await _jobrepo.GetAllWithAddedJob (userId, userParams);
+           
             var AllJob = await _context.Jobs.Where (x => x.JobStatus == userParams.JobStatus).ToListAsync ();
             JobResponces res = new JobResponces ();
             if (jobs.Count == 0) {
@@ -344,7 +343,7 @@ namespace HoozOn.Controllers.Job {
                 item.User.UserImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
                         .Quality ("auto").FetchFormat ("auto").Width (128).Height (128).Gravity ("faces").Crop ("fill"))
                     .BuildUrl (item.User.ProfileImageName);
-                item.TimeAgo = DateFormat.RelativeDate (item.CreatedBy);
+ 
                 if (item.ImagesUrl == null) {
                     item.ThumbNailImage = null;
                 } else {
@@ -356,12 +355,7 @@ namespace HoozOn.Controllers.Job {
                         .BuildUrl (item.ImageName);
                 }
             }
-            foreach (var item in res.data) {
-                var totalMessages = await _context.JobUserChat.Where (c => c.JobId == item.Id).ToListAsync ();
-                var totalMessagesRead = await _context.JobUserChat.Where (c => c.JobId == item.Id && c.IsRead == false).ToListAsync ();
-                item.TotalResponces = totalMessages.Count ();
-                item.TotalRead = totalMessagesRead.Count ();
-            }
+            
             return Ok (res);
         }
 

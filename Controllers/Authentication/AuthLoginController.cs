@@ -28,6 +28,7 @@ namespace HoozOn.Controllers.Authentication {
         private readonly IWebHostEnvironment _environment;
         private readonly IOptions<CloudinarySettings> _cloudinaryConfig;
         private Cloudinary _cloudinary;
+         private static TimeZoneInfo INDIAN_ZONE = TimeZoneInfo.FindSystemTimeZoneById ("India Standard Time");
         public AuthLoginController (IAuthRepo iAuthRepo,
             ICrudRepo iUserRepo,
             IWebHostEnvironment environment,
@@ -55,7 +56,7 @@ namespace HoozOn.Controllers.Authentication {
                 // Checking Duplicate Entry
                 if (await _iAuthRepo.IsAuthExist (socialAuthentication.Email)) {
                     var Existuser = await _iAuthRepo.getAuthByEmail (socialAuthentication.Email);
-                    Existuser.LastActive = DateTime.Now;
+                    Existuser.LastActive = TimeZoneInfo.ConvertTimeFromUtc (DateTime.UtcNow, INDIAN_ZONE);
                     Existuser.IsOnline = true;
                     Existuser.Status = 409;
                     Existuser.Success = true;
@@ -83,22 +84,13 @@ namespace HoozOn.Controllers.Authentication {
                 socialAuthentication.ProfileImageName = "Default_User_1_esjtmm.png";
                 socialAuthentication.CoverImageUrl = "https://res.cloudinary.com/drmnyie0t/image/upload/v1652498915/banner_rtgv2n.png";
                 socialAuthentication.Success = true;
-                socialAuthentication.LoginTime = DateTime.Now;
+                socialAuthentication.LoginTime = TimeZoneInfo.ConvertTimeFromUtc (DateTime.UtcNow, INDIAN_ZONE);
                 socialAuthentication.Status_Message = "User added to database successfully";
-                 socialAuthentication.LastActive=DateTime.Now;
+                 socialAuthentication.LastActive=TimeZoneInfo.ConvertTimeFromUtc (DateTime.UtcNow, INDIAN_ZONE);
             socialAuthentication.IsOnline=true;
                 var CreatedAuth = await _iAuthRepo.AddAuth (socialAuthentication);
 
-                //Assign User Profile detail to create
-                User userDtos = new User ();
-                userDtos.Name = socialAuthentication.Name;
-                userDtos.UserName = socialAuthentication.UserName;
-
-                userDtos.ImageUrl = socialAuthentication.ImageUrl;
-                userDtos.CoverImageUrl = socialAuthentication.CoverImageUrl;
-                userDtos.SocialAuthenticationId = CreatedAuth.Id;
-
-                var CreateUser = await _iUserRepo.AddUser (userDtos);
+             
                 return Ok (CreatedAuth);
             } catch (Exception ex) {
                 throw new Exception ($"Error in adding Auth Data {ex}");

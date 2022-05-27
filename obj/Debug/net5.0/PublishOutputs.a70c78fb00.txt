@@ -42,14 +42,14 @@
 /Users/kshitizprobhargav/Projects/HoozOnline/API/bin/Debug/net5.0/publish/wwwroot/fa-v4compatibility.afac89562a5301459069.woff2
 /Users/kshitizprobhargav/Projects/HoozOnline/API/bin/Debug/net5.0/publish/wwwroot/favicon.ico
 /Users/kshitizprobhargav/Projects/HoozOnline/API/bin/Debug/net5.0/publish/wwwroot/index.html
-/Users/kshitizprobhargav/Projects/HoozOnline/API/bin/Debug/net5.0/publish/wwwroot/main-es2015.aa9d4960c7a0f96a5620.js
-/Users/kshitizprobhargav/Projects/HoozOnline/API/bin/Debug/net5.0/publish/wwwroot/main-es5.aa9d4960c7a0f96a5620.js
+/Users/kshitizprobhargav/Projects/HoozOnline/API/bin/Debug/net5.0/publish/wwwroot/main-es2015.a3192051b4404693f013.js
+/Users/kshitizprobhargav/Projects/HoozOnline/API/bin/Debug/net5.0/publish/wwwroot/main-es5.a3192051b4404693f013.js
 /Users/kshitizprobhargav/Projects/HoozOnline/API/bin/Debug/net5.0/publish/wwwroot/polyfills-es2015.2d6da2267fbc010988d6.js
 /Users/kshitizprobhargav/Projects/HoozOnline/API/bin/Debug/net5.0/publish/wwwroot/polyfills-es5.60fbebe625f1711aa0f9.js
 /Users/kshitizprobhargav/Projects/HoozOnline/API/bin/Debug/net5.0/publish/wwwroot/runtime-es2015.a4dadbc03350107420a4.js
 /Users/kshitizprobhargav/Projects/HoozOnline/API/bin/Debug/net5.0/publish/wwwroot/runtime-es5.a4dadbc03350107420a4.js
 /Users/kshitizprobhargav/Projects/HoozOnline/API/bin/Debug/net5.0/publish/wwwroot/scripts.206995907876a2c78426.js
-/Users/kshitizprobhargav/Projects/HoozOnline/API/bin/Debug/net5.0/publish/wwwroot/styles.fa6da284461bf46d5b07.css
+/Users/kshitizprobhargav/Projects/HoozOnline/API/bin/Debug/net5.0/publish/wwwroot/styles.f401be6c9573900c39ec.css
 /Users/kshitizprobhargav/Projects/HoozOnline/API/bin/Debug/net5.0/publish/appsettings.Development.json
 /Users/kshitizprobhargav/Projects/HoozOnline/API/bin/Debug/net5.0/publish/appsettings.json
 /Users/kshitizprobhargav/Projects/HoozOnline/API/bin/Debug/net5.0/publish/HoozOn.dll
