@@ -1,7 +1,7 @@
 {
   "version": 3,
   "targets": {
-    "net5.0": {
+    "net6.0": {
       "AutoMapper/6.1.1": {
         "type": "package",
         "dependencies": {
@@ -1175,15 +1175,6 @@
           "lib/netstandard2.0/Newtonsoft.Json.Bson.dll": {}
         }
       },
-      "Otp.NET/1.2.2": {
-        "type": "package",
-        "compile": {
-          "lib/netstandard2.0/Otp.NET.dll": {}
-        },
-        "runtime": {
-          "lib/netstandard2.0/Otp.NET.dll": {}
-        }
-      },
       "runtime.native.System/4.3.0": {
         "type": "package",
         "dependencies": {
@@ -1230,28 +1221,6 @@
             "assetType": "native",
             "rid": "win-x86"
           }
-        }
-      },
-      "SendGrid/9.21.0": {
-        "type": "package",
-        "dependencies": {
-          "Newtonsoft.Json": "9.0.1",
-          "starkbank-ecdsa": "[1.2.0, 2.0.0)"
-        },
-        "compile": {
-          "lib/netstandard2.0/SendGrid.dll": {}
-        },
-        "runtime": {
-          "lib/netstandard2.0/SendGrid.dll": {}
-        }
-      },
-      "starkbank-ecdsa/1.2.0": {
-        "type": "package",
-        "compile": {
-          "lib/netstandard2.1/StarkbankEcdsa.dll": {}
-        },
-        "runtime": {
-          "lib/netstandard2.1/StarkbankEcdsa.dll": {}
         }
       },
       "Swashbuckle.AspNetCore/4.0.1": {
@@ -2398,21 +2367,6 @@
         },
         "runtime": {
           "lib/netstandard1.3/System.Xml.XmlSerializer.dll": {}
-        }
-      },
-      "Twilio/5.52.0": {
-        "type": "package",
-        "dependencies": {
-          "Microsoft.IdentityModel.Tokens": "5.3.0",
-          "Newtonsoft.Json": "11.0.2",
-          "System.Collections.Specialized": "4.3.0",
-          "System.IdentityModel.Tokens.Jwt": "5.3.0"
-        },
-        "compile": {
-          "lib/netstandard2.0/Twilio.dll": {}
-        },
-        "runtime": {
-          "lib/netstandard2.0/Twilio.dll": {}
         }
       }
     }
@@ -3971,20 +3925,6 @@
         "newtonsoft.json.bson.nuspec"
       ]
     },
-    "Otp.NET/1.2.2": {
-      "sha512": "2hrZfkbzeWJ3tNXXt/1beg4IY+nS4F3gIfh4NVFvW0f6Pj51hGpiJ4prBz7Dmrr4ZYrA96rTERVGieZ4xYm7jA==",
-      "type": "package",
-      "path": "otp.net/1.2.2",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "lib/net45/Otp.NET.dll",
-        "lib/netstandard1.3/Otp.NET.dll",
-        "lib/netstandard2.0/Otp.NET.dll",
-        "otp.net.1.2.2.nupkg.sha512",
-        "otp.net.nuspec"
-      ]
-    },
     "runtime.native.System/4.3.0": {
       "sha512": "c/qWt2LieNZIj1jGnVNsE2Kl23Ya2aSTBuXMD6V7k9KWr6l16Tqdwq+hJScEpWER9753NWC8h96PaVNY5Ld7Jw==",
       "type": "package",
@@ -4060,45 +4000,6 @@
         "runtimes/win-x86/native/sni.dll",
         "useSharedDesignerContext.txt",
         "version.txt"
-      ]
-    },
-    "SendGrid/9.21.0": {
-      "sha512": "GY7NZcS0K4WjepDZhs5XxORqZDC1FmTz6iT/j9crCSCMBG4Y/9I/ia9b6ws8209Yv1uVjnDcNr0gf54ibIxIsw==",
-      "type": "package",
-      "path": "sendgrid/9.21.0",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "lib/net40/SendGrid.dll",
-        "lib/net40/SendGrid.pdb",
-        "lib/net40/SendGrid.xml",
-        "lib/net452/SendGrid.dll",
-        "lib/net452/SendGrid.pdb",
-        "lib/net452/SendGrid.xml",
-        "lib/netstandard1.3/SendGrid.dll",
-        "lib/netstandard1.3/SendGrid.pdb",
-        "lib/netstandard1.3/SendGrid.xml",
-        "lib/netstandard2.0/SendGrid.dll",
-        "lib/netstandard2.0/SendGrid.pdb",
-        "lib/netstandard2.0/SendGrid.xml",
-        "sendgrid.9.21.0.nupkg.sha512",
-        "sendgrid.nuspec"
-      ]
-    },
-    "starkbank-ecdsa/1.2.0": {
-      "sha512": "hP53QPYOOEIR44EK9phz+DYliM6DEieDZxpb8GZzE+++qyrWqUscKcyHCC6L9yu/ehllYtqxtT4qrjWDsuQlUQ==",
-      "type": "package",
-      "path": "starkbank-ecdsa/1.2.0",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "lib/net40/StarkbankEcdsa.dll",
-        "lib/net452/StarkbankEcdsa.dll",
-        "lib/netstandard1.3/StarkbankEcdsa.dll",
-        "lib/netstandard2.0/StarkbankEcdsa.dll",
-        "lib/netstandard2.1/StarkbankEcdsa.dll",
-        "starkbank-ecdsa.1.2.0.nupkg.sha512",
-        "starkbank-ecdsa.nuspec"
       ]
     },
     "Swashbuckle.AspNetCore/4.0.1": {
@@ -7761,29 +7662,10 @@
         "system.xml.xmlserializer.4.3.0.nupkg.sha512",
         "system.xml.xmlserializer.nuspec"
       ]
-    },
-    "Twilio/5.52.0": {
-      "sha512": "Wg2wYx6utsJFJeLHFlObBgGuEwdgb7BOQqOBchhJuCqBB4JYjVn/eXg8WEnlDJqjssBJ4AwZTfus2Qh12WLuaQ==",
-      "type": "package",
-      "path": "twilio/5.52.0",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "lib/net35/Twilio.dll",
-        "lib/net35/Twilio.xml",
-        "lib/net451/Twilio.dll",
-        "lib/net451/Twilio.xml",
-        "lib/netstandard1.4/Twilio.dll",
-        "lib/netstandard1.4/Twilio.xml",
-        "lib/netstandard2.0/Twilio.dll",
-        "lib/netstandard2.0/Twilio.xml",
-        "twilio.5.52.0.nupkg.sha512",
-        "twilio.nuspec"
-      ]
     }
   },
   "projectFileDependencyGroups": {
-    "net5.0": [
+    "net6.0": [
       "AutoMapper.Extensions.Microsoft.DependencyInjection >= 3.0.1",
       "CloudinaryDotNet >= 1.15.2",
       "Microsoft.AspNetCore.Authentication.Google >= 3.1.8",
@@ -7797,36 +7679,33 @@
       "Microsoft.EntityFrameworkCore.SqlServer >= 3.1.17",
       "Microsoft.EntityFrameworkCore.Tools >= 3.1.17",
       "Microsoft.Extensions.Configuration >= 3.1.17",
-      "Otp.NET >= 1.2.2",
-      "SendGrid >= 9.21.0",
-      "Swashbuckle.AspNetCore >= 4.0.1",
-      "Twilio >= 5.52.0"
+      "Swashbuckle.AspNetCore >= 4.0.1"
     ]
   },
   "packageFolders": {
-    "/Users/kshitizprobhargav/.nuget/packages/": {}
+    "/Users/kshitizbhargav/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/kshitizprobhargav/Projects/HoozOnline/API/HoozOn.csproj",
+      "projectUniqueName": "/Users/kshitizbhargav/Projects/HoozOnline/API/HoozOn.csproj",
       "projectName": "HoozOn",
-      "projectPath": "/Users/kshitizprobhargav/Projects/HoozOnline/API/HoozOn.csproj",
-      "packagesPath": "/Users/kshitizprobhargav/.nuget/packages/",
-      "outputPath": "/Users/kshitizprobhargav/Projects/HoozOnline/API/obj/",
+      "projectPath": "/Users/kshitizbhargav/Projects/HoozOnline/API/HoozOn.csproj",
+      "packagesPath": "/Users/kshitizbhargav/.nuget/packages/",
+      "outputPath": "/Users/kshitizbhargav/Projects/HoozOnline/API/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/Users/kshitizprobhargav/.nuget/NuGet/NuGet.Config"
+        "/Users/kshitizbhargav/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
-        "net5.0"
+        "net6.0"
       ],
       "sources": {
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
-        "net5.0": {
-          "targetAlias": "net5.0",
+        "net6.0": {
+          "targetAlias": "net6.0",
           "projectReferences": {}
         }
       },
@@ -7837,8 +7716,8 @@
       }
     },
     "frameworks": {
-      "net5.0": {
-        "targetAlias": "net5.0",
+      "net6.0": {
+        "targetAlias": "net6.0",
         "dependencies": {
           "AutoMapper.Extensions.Microsoft.DependencyInjection": {
             "target": "Package",
@@ -7892,21 +7771,9 @@
             "target": "Package",
             "version": "[3.1.17, )"
           },
-          "Otp.NET": {
-            "target": "Package",
-            "version": "[1.2.2, )"
-          },
-          "SendGrid": {
-            "target": "Package",
-            "version": "[9.21.0, )"
-          },
           "Swashbuckle.AspNetCore": {
             "target": "Package",
             "version": "[4.0.1, )"
-          },
-          "Twilio": {
-            "target": "Package",
-            "version": "[5.52.0, )"
           }
         },
         "imports": [
@@ -7927,7 +7794,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/x64/sdk/6.0.201/RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/6.0.301/RuntimeIdentifierGraph.json"
       }
     }
   }

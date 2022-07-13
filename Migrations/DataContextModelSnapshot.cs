@@ -173,6 +173,30 @@ namespace HoozOn.Migrations
                     b.ToTable("Jobs");
                 });
 
+            modelBuilder.Entity("HoozOn.Entities.Job.UserJobListModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("AddedType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("JobId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UserJobListModels");
+                });
+
             modelBuilder.Entity("HoozOn.Entities.Message.JobMessage.JobMessages", b =>
                 {
                     b.Property<int>("Id")
@@ -215,6 +239,9 @@ namespace HoozOn.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<bool>("ActiveNotification")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("datetime2");

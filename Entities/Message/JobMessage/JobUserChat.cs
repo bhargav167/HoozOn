@@ -18,10 +18,12 @@ namespace HoozOn.Entities.Message.JobMessage
         public int RecipientId { get; set; }
         public SocialAuthentication Recipient { get; set; } 
         public bool IsRead { get; set; }
+        public bool ActiveNotification { get; set; }
         public DateTime CreateDate { get; set; }
         public JobUserChat()
         {
           IsRead=false;
+          ActiveNotification=true;
           CreateDate= TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow,INDIAN_ZONE);
          
         }

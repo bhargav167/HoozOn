@@ -16,8 +16,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json.Serialization;
-
+using Newtonsoft.Json.Serialization; 
 namespace HoozOn {
     public class Startup {
         private readonly IConfiguration _config;
@@ -53,7 +52,7 @@ namespace HoozOn {
                 {
                     builder
                         .WithOrigins(
-                        "https://hoozonline.com/")
+                        "*","*")
                         .AllowCredentials()
                         .AllowAnyHeader()
                         .SetIsOriginAllowed(_ => true)
@@ -76,12 +75,12 @@ namespace HoozOn {
                 options.ClientId = "547202752586-q5lou7tho2mp7ej1g7cfci3hq5offm46.apps.googleusercontent.com";
                 options.ClientSecret = "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";
             });
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure (IApplicationBuilder app, IWebHostEnvironment env) {
-            // app.UseMiddleware<ExceptionMiddleware> ();
-
+            
             app.UseHttpsRedirection ();
 
             app.UseRouting ();
@@ -95,12 +94,12 @@ namespace HoozOn {
 
             //    app.UseDefaultFiles ();
             app.UseStaticFiles ();
-
             app.UseEndpoints (endpoints => {
                 endpoints.MapControllers ();
                 endpoints.MapHub<ChatHub> ("/signalr");
                 endpoints.MapFallbackToController ("Index", "Fallback");
             });
+             
         }
     }
 }

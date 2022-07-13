@@ -15,8 +15,8 @@ namespace HoozOn.Data {
         public DbSet<User> Users { get; set; }
         public DbSet<UserJobs> UserJobs { get; set; }
         public DbSet<Tags> Tags { get; set; }
-        public DbSet<JobModel> Jobs { get; set; }
-
+        public DbSet<JobModel> Jobs { get; set; } 
+        public DbSet<UserJobListModel> UserJobListModels { get; set; }
         //Authentication
         public DbSet<Role> RolesIdentity { get; set; }
         public DbSet<SocialAuthentication> SocialAuthentication { get; set; }

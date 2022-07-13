@@ -162,7 +162,7 @@ namespace HoozOn.Controllers.Job {
             var LastJob = await _context.Jobs.FirstOrDefaultAsync (c => c.Id == jobId);
 
             //Photo field for responces 
-            LastJob.ImagesUrl = uploadResult.Url.ToString ();
+            LastJob.ImagesUrl = uploadResult.Url.ToString ().Replace("http","https");
             LastJob.ImageName = uploadResult.PublicId + "." + uploadResult.Format;
             _context.Jobs.Update (LastJob);
             await _context.SaveChangesAsync ();
@@ -285,13 +285,13 @@ namespace HoozOn.Controllers.Job {
               //  item.TimeAgo = DateFormat.RelativeDate (item.CreatedBy);
                 item.User.UserImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
                         .Quality ("auto").FetchFormat ("auto").Width (128).Height (128).Gravity ("faces").Crop ("fill"))
-                    .BuildUrl (item.User.ProfileImageName);
+                    .BuildUrl (item.User.ProfileImageName).Replace("http","https");
                item.ThumbNailImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
                             .Quality ("auto").FetchFormat ("auto").Width (500).Height (500).Gravity ("faces").Crop ("fill"))
-                        .BuildUrl (item.ImageName);
+                        .BuildUrl (item.ImageName).Replace("http","https");
                     item.JobDetailImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
                             .Quality ("auto").FetchFormat ("auto").Width (200).Height (200).Crop ("fill"))
-                        .BuildUrl (item.ImageName);
+                        .BuildUrl (item.ImageName).Replace("http","https");
             }
             foreach (var item in res.data) {
                  item.TotalResponces = await _jobrepo.GetResponcesCount(item.Id,userParams.userId);
@@ -342,17 +342,17 @@ namespace HoozOn.Controllers.Job {
             foreach (var item in res.data) {
                 item.User.UserImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
                         .Quality ("auto").FetchFormat ("auto").Width (128).Height (128).Gravity ("faces").Crop ("fill"))
-                    .BuildUrl (item.User.ProfileImageName);
+                    .BuildUrl (item.User.ProfileImageName).Replace("http","https");
  
                 if (item.ImagesUrl == null) {
                     item.ThumbNailImage = null;
                 } else {
                     item.ThumbNailImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
                             .Quality ("auto").FetchFormat ("auto").Width (500).Height (500).Gravity ("faces").Crop ("fill"))
-                        .BuildUrl (item.ImageName);
+                        .BuildUrl (item.ImageName).Replace("http","https");
                     item.JobDetailImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
                             .Quality ("auto").FetchFormat ("auto").Width (200).Height (200).Crop ("fill"))
-                        .BuildUrl (item.ImageName);
+                        .BuildUrl (item.ImageName).Replace("http","https");
                 }
             }
             
@@ -383,11 +383,11 @@ namespace HoozOn.Controllers.Job {
                 } else {
                     item.ThumbNailImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
                             .Quality ("auto").FetchFormat ("auto").Width (500).Height (500).Gravity ("faces").Crop ("fill"))
-                        .BuildUrl (item.ImageName);
+                        .BuildUrl (item.ImageName).Replace("http","https");
                 }
                 item.JobDetailImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
                         .Quality ("auto").FetchFormat ("auto").Width (1030).Height (412).Crop ("fill"))
-                    .BuildUrl (item.ImageName);
+                    .BuildUrl (item.ImageName).Replace("http","https");
             }
             foreach (var item in res.data) {
                 var totalMessages = await _context.JobUserChat.Where (c => c.JobId == item.Id).ToListAsync ();
@@ -416,7 +416,7 @@ namespace HoozOn.Controllers.Job {
                 } else {
                     item.ThumbNailImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
                             .Quality ("auto").FetchFormat ("auto").Width (500).Height (500).Gravity ("faces").Crop ("fill"))
-                        .BuildUrl (item.ImageName);
+                        .BuildUrl (item.ImageName).Replace("http","https");
                 }
             }
             return Ok (res);
@@ -503,10 +503,10 @@ namespace HoozOn.Controllers.Job {
                 } else {
                     item.ThumbNailImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
                             .Quality ("auto").FetchFormat ("auto").Width (500).Height (500).Gravity ("faces").Crop ("fill"))
-                        .BuildUrl (item.ImageName);
+                        .BuildUrl (item.ImageName).Replace("http","https");
                     item.JobDetailImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
                             .Quality ("auto").FetchFormat ("auto").Width (1030).Height (412).Crop ("fill"))
-                        .BuildUrl (item.ImageName);
+                        .BuildUrl (item.ImageName).Replace("http","https");
                 }
             }
             foreach (var item in res.data) {
@@ -560,16 +560,16 @@ namespace HoozOn.Controllers.Job {
                  //  item.TimeAgo = DateFormat.RelativeDate (item.CreatedBy);
                     item.User.UserImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
                             .Quality ("auto").FetchFormat ("auto").Width (128).Height (128).Gravity ("faces").Crop ("fill"))
-                        .BuildUrl (item.User.ProfileImageName);
+                        .BuildUrl (item.User.ProfileImageName).Replace("http","https");
                     if (item.ImagesUrl == null) {
                         item.ThumbNailImage = null;
                     } else {
                         item.ThumbNailImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
                                 .Quality ("auto").FetchFormat ("auto").Width (500).Height (500).Gravity ("faces").Crop ("fill"))
-                            .BuildUrl (item.ImageName);
+                            .BuildUrl (item.ImageName).Replace("http","https");
                         item.JobDetailImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
                                 .Quality ("auto").FetchFormat ("auto").Width (1030).Height (412).Crop ("fill"))
-                            .BuildUrl (item.ImageName);
+                            .BuildUrl (item.ImageName).Replace("http","https");
                     }
                     item.TotalResponces = totalMessages.Count ();
                     item.TotalRead = totalMessagesRead.Count ();

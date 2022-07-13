@@ -80,9 +80,9 @@ namespace HoozOn.Controllers.Authentication {
                 socialAuthentication.Status = 200;
                 socialAuthentication.Name = socialAuthentication.UserName;
                 socialAuthentication.UserName = createdUserName;
-                socialAuthentication.ImageUrl = "https://res.cloudinary.com/drmnyie0t/image/upload/v1652501879/Default_User_1_esjtmm.png";
+                socialAuthentication.ImageUrl = "http://res.cloudinary.com/drmnyie0t/image/upload/v1652501879/Default_User_1_esjtmm.png";
                 socialAuthentication.ProfileImageName = "Default_User_1_esjtmm.png";
-                socialAuthentication.CoverImageUrl = "https://res.cloudinary.com/drmnyie0t/image/upload/v1652498915/banner_rtgv2n.png";
+                socialAuthentication.CoverImageUrl = "http://res.cloudinary.com/drmnyie0t/image/upload/v1652498915/banner_rtgv2n.png";
                 socialAuthentication.Success = true;
                 socialAuthentication.LoginTime = TimeZoneInfo.ConvertTimeFromUtc (DateTime.UtcNow, INDIAN_ZONE);
                 socialAuthentication.Status_Message = "User added to database successfully";
@@ -125,8 +125,8 @@ namespace HoozOn.Controllers.Authentication {
                 socialAuthentication.Status = 200;
                 socialAuthentication.Name = socialAuthentication.UserName;
                 socialAuthentication.UserName = createdUserName;
-                socialAuthentication.ImageUrl = "https://res.cloudinary.com/drmnyie0t/image/upload/v1652501879/Default_User_1_esjtmm.png";
-                socialAuthentication.CoverImageUrl = "https://res.cloudinary.com/drmnyie0t/image/upload/v1652498915/banner_rtgv2n.png";
+                socialAuthentication.ImageUrl = "http://res.cloudinary.com/drmnyie0t/image/upload/v1652501879/Default_User_1_esjtmm.png";
+                socialAuthentication.CoverImageUrl = "http://res.cloudinary.com/drmnyie0t/image/upload/v1652498915/banner_rtgv2n.png";
                 socialAuthentication.Success = true;
                 socialAuthentication.LoginTime = DateTime.Now;
                 socialAuthentication.Status_Message = "User added to database successfully";
@@ -228,13 +228,13 @@ namespace HoozOn.Controllers.Authentication {
                     }
                 }
                 //Photo field for responces 
-                photoDto.url = uploadResult.Url.ToString ();
+                photoDto.url = uploadResult.Url.ToString ().Replace("http","https");
                 photoDto.PublicId = uploadResult.PublicId;
                 photoDto.Success = true;
                 photoDto.Status = 200;
                 photoDto.Status_Message = "Profile image uploaded successfully";
 
-                userToUpdate.ImageUrl = photoDto.url;
+                userToUpdate.ImageUrl = photoDto.url.Replace("http","https");;
                 userToUpdate.ProfileImageName = uploadResult.PublicId + "." + uploadResult.Format;
                 if (userProfile != null) {
                     userProfile.ImageUrl = photoDto.url;
@@ -281,17 +281,17 @@ namespace HoozOn.Controllers.Authentication {
                 }
             }
             //Photo field for responces 
-            photoDto.url = uploadResult.Url.ToString ();
+            photoDto.url = uploadResult.Url.ToString ().Replace("http","https");
             photoDto.PublicId = uploadResult.PublicId;
             photoDto.Success = true;
             photoDto.Status = 200;
             photoDto.Status_Message = "Cover image uploaded successfully";
 
-            userToUpdate.CoverImageUrl = photoDto.url;
+            userToUpdate.CoverImageUrl = photoDto.url.Replace("http","https");
             _context.SocialAuthentication.Update (userToUpdate);
 
             if (userProfile != null) {
-                userProfile.CoverImageUrl = photoDto.url;
+                userProfile.CoverImageUrl = photoDto.url.Replace("http","https");
                 _context.Users.Update (userProfile);
             }
 
@@ -310,7 +310,7 @@ namespace HoozOn.Controllers.Authentication {
                     return NoContent ();
 
                 //Photo field to Remove 
-                userToUpdate.ImageUrl = "https://res.cloudinary.com/drmnyie0t/image/upload/v1652501879/Default_User_1_esjtmm.png";
+                userToUpdate.ImageUrl = "http://res.cloudinary.com/drmnyie0t/image/upload/v1652501879/Default_User_1_esjtmm.png";
                 userToUpdate.ProfileImageName = "Default_User_1_esjtmm.png";
 
                 _context.SocialAuthentication.Update (userToUpdate);

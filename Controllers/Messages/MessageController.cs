@@ -200,6 +200,7 @@ namespace HoozOn.Controllers.Messages {
             jobMessages.RecipientId = recipientId;
             jobMessages.IsRead=false;
             jobMessages.MessageSent=TimeZoneInfo.ConvertTimeFromUtc (DateTime.UtcNow, INDIAN_ZONE);
+          
             await _iMessageRepo.AddJobChat (jobMessages);
             await _hubContext.Clients.All.SendAsync ("messageReceivedFromApi", jobMessages);
             JobUserChat jobUserChat = new JobUserChat ();
@@ -210,10 +211,12 @@ namespace HoozOn.Controllers.Messages {
             var isUserConnected = await _context.JobUserChat.Where (k => k.JobId == jobId && k.SenderId == senderId).FirstOrDefaultAsync ();
             if (isUserConnected == null) {
                 jobUserChat.CreateDate=TimeZoneInfo.ConvertTimeFromUtc (DateTime.UtcNow, INDIAN_ZONE);
+                jobUserChat.ActiveNotification=true;
                 await _iMessageRepo.AddJobUserChat (jobUserChat); 
             }
             if (isUserConnected != null) {
                 isUserConnected.CreateDate = TimeZoneInfo.ConvertTimeFromUtc (DateTime.UtcNow, INDIAN_ZONE);
+                isUserConnected.ActiveNotification=true;
                 _context.JobUserChat.Update (isUserConnected);
             }
 

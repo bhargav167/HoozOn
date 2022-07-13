@@ -40,5 +40,17 @@ namespace HoozOn.Controllers.Web.Post {
             return Ok (job);
         }
 
+         [HttpGet ("ResponceCountGlobal/{senderId}")]
+        public async Task<IActionResult> ResponceCountGlobal (int senderId) {
+            var job = await _jobrepo.GetResponcesCountGlobal (senderId);
+
+            return Ok (job);
+        }
+         [HttpGet ("GetCount/{senderId}")]
+        public async Task<IActionResult> GetCount (int senderId) {
+            var job = await _jobrepo.GetCount (senderId);
+            
+            return Ok (job);
+        }
     }
 }

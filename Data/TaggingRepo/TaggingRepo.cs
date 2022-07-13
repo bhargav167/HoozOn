@@ -60,7 +60,7 @@ namespace HoozOn.Data.TaggingRepo {
             var user = await _context.SocialAuthentication.Include (c => c.tags).FirstOrDefaultAsync (c => c.Id == id);
               user.UserImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
                                 .Quality ("auto").FetchFormat ("auto").Width (128).Height (128).Gravity ("faces").Crop ("fill"))
-                            .BuildUrl (user.ProfileImageName); 
+                            .BuildUrl (user.ProfileImageName).Replace("http","https");
             return user;
         }
 

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using HoozOn.Entities.Job;
+using HoozOn.Entities.Message.JobMessage;
 using HoozOn.Entities.Tag;
 using HoozOn.Helpers;
 using HoozOn.Helpers.Job;
@@ -30,9 +31,10 @@ namespace HoozOn.Data.JobRepo {
 
 
         //For Web
-         Task<PagedList<JobTags>> GetJobsByMultiTags (JobParams jobParams);
-         Task<PagedList<Tags>> GetUsersByMultiTags (UserParams jobParams);
-
-         Task<int> GetResponcesCount(int jobId ,int senderId);
+        Task<PagedList<JobTags>> GetJobsByMultiTags(JobParams jobParams);
+        Task<PagedList<Tags>> GetUsersByMultiTags(UserParams jobParams);
+        Task<int> GetResponcesCount(int jobId, int senderId);
+         Task<int> GetCount(int senderId);
+        Task<List<JobUserChat>> GetResponcesCountGlobal(int senderId);
     }
 }

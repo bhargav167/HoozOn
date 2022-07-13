@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using CloudinaryDotNet;
 using HoozOn.Data.TaggingRepo;
 using HoozOn.Entities.Job;
+using HoozOn.Entities.Message.JobMessage;
 using HoozOn.Entities.Tag;
 using HoozOn.Entities.Users;
-using HoozOn.Extensions;
 using HoozOn.Helpers;
 using HoozOn.Helpers.Job;
 using Microsoft.EntityFrameworkCore;
@@ -178,7 +178,6 @@ namespace HoozOn.Data.JobRepo {
             var job = _context.Jobs.AsQueryable ();
             return await PagedList<JobModel>.CreateAsync (job, userParam.PageNumber, userParam.PageSize);
         }
-
         public async Task<PagedList<JobModel>> getJobById (int Id, UserParams userParam) {
             var job = _context.Jobs.Where (u => u.UserId == Id && u.JobStatus == userParam.JobStatus)
                 .Include (c => c.Tags).Include (c => c.User)
@@ -245,11 +244,11 @@ namespace HoozOn.Data.JobRepo {
                         }
                         item.Job.User.UserImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
                                 .Quality ("auto").FetchFormat ("auto").Width (128).Height (128).Gravity ("faces").Crop ("fill"))
-                            .BuildUrl (item.Job.User.ProfileImageName);
+                            .BuildUrl (item.Job.User.ProfileImageName).Replace("http","https");
                         //For Job Images
                          item.Job.ThumbNailImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
                                      .Quality ("auto").FetchFormat ("auto").Width (500).Height (500).Gravity ("faces").Crop ("fill"))
-                                 .BuildUrl (item.Job.ImageName);
+                                 .BuildUrl (item.Job.ImageName).Replace("http","https");
                         //Calculate Distances 
                         // double userlat = Convert.ToDouble (Loggeduser.Latitude);
                         // double userlonng = Convert.ToDouble (Loggeduser.Longitude);
@@ -278,7 +277,7 @@ namespace HoozOn.Data.JobRepo {
                     foreach (var item in jobs) {
                          item.Job.User.UserImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
                                  .Quality ("auto").FetchFormat ("auto").Width (128).Height (128).Gravity ("faces").Crop ("fill"))
-                             .BuildUrl (item.Job.User.ProfileImageName);
+                             .BuildUrl (item.Job.User.ProfileImageName).Replace("http","https");
                         if (item.Job.ImagesUrl == null) {
                             item.Job.ImagesUrl = null;
                             item.Job.ThumbNailImage = null;
@@ -306,7 +305,7 @@ namespace HoozOn.Data.JobRepo {
                                 if (item2.ToLower () == item1.ToLower ()) {
                                     item.Job.User.UserImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
                                             .Quality ("auto").FetchFormat ("auto").Width (128).Height (128).Gravity ("faces").Crop ("fill"))
-                                        .BuildUrl (item.Job.User.ProfileImageName);
+                                        .BuildUrl (item.Job.User.ProfileImageName).Replace("http","https");
                                     if (item.Job.ImagesUrl == null) {
                                         item.Job.ImagesUrl = null;
                                         item.Job.ThumbNailImage = null;
@@ -361,7 +360,7 @@ namespace HoozOn.Data.JobRepo {
                 foreach (var item in alluser) {
                     item.UserImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
                             .Quality ("auto").FetchFormat ("auto").Width (128).Height (128).Gravity ("faces").Crop ("fill"))
-                        .BuildUrl (item.ProfileImageName);
+                        .BuildUrl (item.ProfileImageName).Replace("http","https");
                     jobTags.Success = true;
                     jobTags.Status = 200;
                     jobTags.status_message = "";
@@ -380,7 +379,7 @@ namespace HoozOn.Data.JobRepo {
             foreach (var item in jobs) {
                   item.User.UserImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
                             .Quality ("auto").FetchFormat ("auto").Width (128).Height (128).Gravity ("faces").Crop ("fill"))
-                        .BuildUrl (item.User.ProfileImageName);
+                        .BuildUrl (item.User.ProfileImageName).Replace("http","https");
                 jobTags.Success = true;
                 jobTags.Status = 200;
                 jobTags.status_message = "";
@@ -399,7 +398,7 @@ namespace HoozOn.Data.JobRepo {
                             if (item2.ToLower () == item1.ToLower ()) {
                                   item.User.UserImage = _cloudinary.Api.UrlImgUp.Transform (new Transformation ()
                             .Quality ("auto").FetchFormat ("auto").Width (128).Height (128).Gravity ("faces").Crop ("fill"))
-                        .BuildUrl (item.User.ProfileImageName);
+                        .BuildUrl (item.User.ProfileImageName).Replace("http","https");
                                 jobTags.Success = true;
                                 jobTags.Status = 200;
                                 jobTags.status_message = "";
@@ -418,6 +417,19 @@ namespace HoozOn.Data.JobRepo {
 
         public async Task<int> GetResponcesCount (int jobId,int senderId) {
              var totalMessages = await _context.JobUserChat.Where (c => c.JobId == jobId && c.SenderId!=senderId && c.IsRead==false).ToListAsync ();
+                 int TotalResponces = totalMessages.Count ();
+                 return TotalResponces;
+        }
+        public async Task<List<JobUserChat>> GetResponcesCountGlobal(int senderId)
+        {
+            var notification = await _context.JobUserChat.Where(c => c.RecipientId == senderId)
+            .Include(c=>c.Job).OrderBy(c=>c.CreateDate)
+            .ToListAsync();
+             
+            return notification;
+        }
+         public async Task<int> GetCount (int senderId) {
+             var totalMessages = await _context.JobUserChat.Where (c => c.RecipientId == senderId && c.IsRead==false).ToListAsync ();
                  int TotalResponces = totalMessages.Count ();
                  return TotalResponces;
         }

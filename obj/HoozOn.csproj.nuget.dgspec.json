@@ -1,30 +1,30 @@
 {
   "format": 1,
   "restore": {
-    "/Users/kshitizprobhargav/Projects/HoozOnline/API/HoozOn.csproj": {}
+    "/Users/kshitizbhargav/Projects/HoozOnline/API/HoozOn.csproj": {}
   },
   "projects": {
-    "/Users/kshitizprobhargav/Projects/HoozOnline/API/HoozOn.csproj": {
+    "/Users/kshitizbhargav/Projects/HoozOnline/API/HoozOn.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/kshitizprobhargav/Projects/HoozOnline/API/HoozOn.csproj",
+        "projectUniqueName": "/Users/kshitizbhargav/Projects/HoozOnline/API/HoozOn.csproj",
         "projectName": "HoozOn",
-        "projectPath": "/Users/kshitizprobhargav/Projects/HoozOnline/API/HoozOn.csproj",
-        "packagesPath": "/Users/kshitizprobhargav/.nuget/packages/",
-        "outputPath": "/Users/kshitizprobhargav/Projects/HoozOnline/API/obj/",
+        "projectPath": "/Users/kshitizbhargav/Projects/HoozOnline/API/HoozOn.csproj",
+        "packagesPath": "/Users/kshitizbhargav/.nuget/packages/",
+        "outputPath": "/Users/kshitizbhargav/Projects/HoozOnline/API/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/Users/kshitizprobhargav/.nuget/NuGet/NuGet.Config"
+          "/Users/kshitizbhargav/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
-          "net5.0"
+          "net6.0"
         ],
         "sources": {
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
-          "net5.0": {
-            "targetAlias": "net5.0",
+          "net6.0": {
+            "targetAlias": "net6.0",
             "projectReferences": {}
           }
         },
@@ -35,8 +35,8 @@
         }
       },
       "frameworks": {
-        "net5.0": {
-          "targetAlias": "net5.0",
+        "net6.0": {
+          "targetAlias": "net6.0",
           "dependencies": {
             "AutoMapper.Extensions.Microsoft.DependencyInjection": {
               "target": "Package",
@@ -90,21 +90,9 @@
               "target": "Package",
               "version": "[3.1.17, )"
             },
-            "Otp.NET": {
-              "target": "Package",
-              "version": "[1.2.2, )"
-            },
-            "SendGrid": {
-              "target": "Package",
-              "version": "[9.21.0, )"
-            },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
               "version": "[4.0.1, )"
-            },
-            "Twilio": {
-              "target": "Package",
-              "version": "[5.52.0, )"
             }
           },
           "imports": [
@@ -125,7 +113,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/x64/sdk/6.0.201/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/6.0.301/RuntimeIdentifierGraph.json"
         }
       }
     }
