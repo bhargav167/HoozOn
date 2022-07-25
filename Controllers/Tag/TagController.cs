@@ -115,16 +115,25 @@ namespace hoozonlinedatabase.Controllers.Tag {
         }
 
 
-// Add Tag To Master
-        [HttpPost ("AddTagMaster")]
-        public async Task<IActionResult> AddTagMaster ([FromBody] TagMaster tag) {
-            try { 
-                await _itaggingrepo.AddTagMaster(tag);
-                await _itaggingrepo.SaveAll();
+        // Add Tag To Master
+        [HttpPost("AddTagMaster")]
+        public async Task<IActionResult> AddTagMaster([FromBody] TagMaster tag)
+        {
+            try
+            {
+                if (!await _itaggingrepo.IsTagMasterExist(tag.TagName))
+                {
+                    //Add Tagging To master
+                    await _itaggingrepo.AddTagMaster(tag);
+                    await _itaggingrepo.SaveAll();
+                }
+
                 return Ok(200);
-            } catch (Exception ex) {
-                throw new Exception ($"Encouter error during saving tags {ex}");
-            } 
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Encouter error during saving tags {ex}");
+            }
         }
 
     }

@@ -254,6 +254,7 @@ namespace HoozOn.Controllers.Messages {
             foreach (var item in messages) {
                 if (item.SenderId == senderId) {
                     item.SenderContent = item.Content;
+                    item.RecipientContent=null;
                     item.RecipientPhotoUrl=recipientUser.ImageUrl;
                     item.TimeAgo = DateFormat.RelativeDate (item.MessageSent);
                     item.Times = DateFormat.MeridianTime (item.MessageSent);

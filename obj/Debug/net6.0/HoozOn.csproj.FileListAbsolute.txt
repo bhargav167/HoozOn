@@ -160,3 +160,6 @@
 /Users/kshitizbhargav/Projects/HoozOnline/API/obj/Debug/net6.0/HoozOn.csproj.CopyComplete
 /Users/kshitizbhargav/Projects/HoozOnline/API/obj/Debug/net6.0/HoozOn.genruntimeconfig.cache
 /Users/kshitizbhargav/Projects/HoozOnline/API/obj/Debug/net6.0/ref/HoozOn.dll
+/Users/kshitizbhargav/Projects/HoozOnline/API/bin/Debug/net6.0/Microsoft.AspNetCore.NodeServices.dll
+/Users/kshitizbhargav/Projects/HoozOnline/API/bin/Debug/net6.0/Microsoft.AspNetCore.SpaServices.dll
+/Users/kshitizbhargav/Projects/HoozOnline/API/bin/Debug/net6.0/Microsoft.Extensions.Configuration.dll
