@@ -1,3 +1,4 @@
+using API.Data.AdminRepo;
 using AutoMapper;
 using HoozOn.Data;
 using HoozOn.Data.AuthenticationRepo;
@@ -34,6 +35,7 @@ namespace HoozOn {
             services.AddScoped<ITaggingRepo, TaggingRepo> ();
             services.AddScoped<IMessageRepo, MessageRepo> ();
             services.AddScoped<IUserReview, UserReview> ();
+             services.AddScoped<IAdmin, Admin> ();
             services.AddScoped<IReport, Report> ();
             services.AddControllers ();
             services.Configure<CloudinarySettings> (_config.GetSection ("CloudinarySettings"));

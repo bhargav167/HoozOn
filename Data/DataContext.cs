@@ -1,3 +1,4 @@
+using API.Entities.Control;
 using HoozOn.Entities.Authentication;
 using HoozOn.Entities.Job;
 using HoozOn.Entities.Message;
@@ -35,9 +36,13 @@ namespace HoozOn.Data {
         public DbSet<Review> UserReview{get;set;}
 
         //Reporting---------------------------------------------------
-         public DbSet<Reporting> Reporting{get; set;}
-         public DbSet<ContactUs> ContactUs{get; set;} 
-         public DbSet<UserReport> UserReport{get; set;} 
+        public DbSet<Reporting> Reporting{get; set;}
+        public DbSet<ContactUs> ContactUs{get; set;} 
+        public DbSet<UserReport> UserReport{get; set;} 
+
+        //Admin---------------------------------------------------
+        public DbSet<SetJob> setJob{get; set;}
+        public DbSet<Sets> sets{get; set;} 
         protected override void OnModelCreating (ModelBuilder builder) {
             base.OnModelCreating (builder);
         }
