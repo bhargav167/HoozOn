@@ -31,7 +31,15 @@ namespace API.Data.AdminRepo
             return set;
         }
 
-       
+        public async Task<List<SetJob>> GetJobSets(int setId){
+         var JobSets= await _context.setJob.Where(x=>x.SetId==setId).Include(x=>x.Job).Include(x=>x.Set).ToListAsync();
+          return JobSets;
+        }
+
+        public async Task<List<Sets>> GetSets(){
+            var sets = await _context.sets.ToListAsync();
+            return sets;
+        }
 
         public async Task<bool> IsSetExist(string name){
                if (await _context.sets.AnyAsync (e => e.Name == name))

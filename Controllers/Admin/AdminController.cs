@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 using API.Entities.Control;
 using System;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 
 namespace API.Controllers.Admin
 {
@@ -53,5 +54,25 @@ namespace API.Controllers.Admin
             }
 
         }
+    
+    
+       [HttpGet ("GetAllSet")]
+        public async Task<IActionResult> GetAllSet () {
+            var sets = await _iAdminRepo.GetSets();
+            List<SetJob> setsJobs=new List<SetJob>();
+           foreach (var item in sets){
+              var jobSets = await _iAdminRepo.GetJobSets(item.Id);
+              setsJobs.Add(jobSets[0]);
+           }
+            return Ok (setsJobs);
+        }
+
+         [HttpGet ("GetAllSetJob/{setId}")]
+        public async Task<IActionResult> GetAllSetJob (int setId) {
+            var jobSets = await _iAdminRepo.GetJobSets(setId);
+           
+            return Ok (jobSets);
+        }
+
     }
 }
